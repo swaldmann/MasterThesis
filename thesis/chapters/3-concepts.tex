@@ -1,0 +1,66 @@
+\section{Concepts}
+
+\subsection{Domain-Specific Algorithms}
+
+\subsubsection{DPCPP}
+
+\subsubsection{Adaptive Radix Tree}
+
+\subsection{Server}
+\subsubsection{API Entry Points}
+
+\subsection{Client}
+
+\subsubsection{Query Graphs}
+
+With $n$ we define the number of nodes, $\hat{h}$ is the height of our canvas, $w$ is its width, $m$ the margin to the canvas bounds, $r$ the radius of a node.
+
+\paragraph{Chain} For chain query graphs we first calculate a drawable width. This is given by 
+
+\begin{equation}\label{eqn:painting-h_hat}
+    \hat{h} = h - 2(m - r)    
+\end{equation}
+
+\begin{equation}\label{eqn:painting-w_hat}
+    \hat{w} = w - 2(m - r)
+\end{equation}
+
+\begin{equation}
+    (x_i, y_i) = m + r + \frac{i\hat{w}}{n - 1}
+\end{equation}
+
+\paragraph{Star} 
+We start on the right side of the canvas and paint nodes in a circle around the center.
+For the current node we define
+\begin{equation}\label{eqn:painting-theta}
+    \theta = \frac{2i\pi}{n - 1}
+\end{equation}
+
+\begin{equation}\label{eqn:painting-r_star}
+    r_{star} = \frac{w}{2} - r - m
+\end{equation}
+
+\begin{equation}
+    (x_i, y_i) = 
+    \begin{cases}
+        (\frac{w}{2}, \frac{h}{2}),& \text{if } i = 0\\
+        (r_{star}\cos{\theta} + r_{star} + r + m, r_{star}\sin{\theta} + r_{star} + r + m), & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+\paragraph{Tree}
+
+The node position calculation for tree query graphs requires an additional parameter. 
+By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn.
+First, we calculate the vertical position for each given node $i$.
+
+\begin{equation}
+    (x_i, y_i) = (i - 2^{\lfloor \log_k(i+1) \rfloor}, r + m + \frac{\hat{w}}{\lfloor \log_kn \rfloor} \lfloor \log_k(i + 1) \rfloor)
+\end{equation}
+
+\paragraph{Cycle} 
+
+We define $\theta$ and $r_{star}$ the same way as we did in \eqref{eqn:painting-theta} and \eqref{eqn:painting-r_star} respectively.
+\begin{equation}
+    (x_i, y_i) = r\sin{\theta} + r_{star} + r + m
+\end{equation}
