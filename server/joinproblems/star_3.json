@@ -1,0 +1,68 @@
+[
+    {
+        "problem_id": 0,
+        "problem_neighbors": {
+            "0": "1,2",
+            "1": "0",
+            "2": "0"
+        },
+        "problem_num_relations": 3,
+        "problem_relations": [
+            {
+                "relation_cardinality": 2639.119216814652,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 135.1106833796348,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 1
+            },
+            {
+                "relation_cardinality": 7.70954008593561,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 2
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 0.002289626746113203,
+            "0,2": 0.028670481651054514
+        }
+    },
+    {
+        "problem_id": 1,
+        "problem_neighbors": {
+            "0": "1,2",
+            "1": "0",
+            "2": "0"
+        },
+        "problem_num_relations": 3,
+        "problem_relations": [
+            {
+                "relation_cardinality": 2482.2094302355895,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 124.77665702357163,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 1
+            },
+            {
+                "relation_cardinality": 15.944411927357038,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 2
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 0.00775552111230237,
+            "0,2": 0.06249596043511876
+        }
+    }
+]

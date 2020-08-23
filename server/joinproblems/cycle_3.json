@@ -1,0 +1,70 @@
+[
+    {
+        "problem_id": 0,
+        "problem_neighbors": {
+            "0": "1,2",
+            "1": "0,2",
+            "2": "0,1"
+        },
+        "problem_num_relations": 3,
+        "problem_relations": [
+            {
+                "relation_cardinality": 2639.119216814652,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 135.1106833796348,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 1
+            },
+            {
+                "relation_cardinality": 7.70954008593561,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 2
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 0.0016381325205645997,
+            "0,2": 0.5496948590650461,
+            "1,2": 0.04063634631352568
+        }
+    },
+    {
+        "problem_id": 1,
+        "problem_neighbors": {
+            "0": "1,2",
+            "1": "0,2",
+            "2": "0,1"
+        },
+        "problem_num_relations": 3,
+        "problem_relations": [
+            {
+                "relation_cardinality": 3479.0735024697747,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 174.41657773922586,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 1
+            },
+            {
+                "relation_cardinality": 8.767639520943622,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 2
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 0.005548235351765417,
+            "0,2": 0.9811174053045117,
+            "1,2": 0.08296541347895402
+        }
+    }
+]

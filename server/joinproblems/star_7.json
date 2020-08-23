@@ -1,0 +1,132 @@
+[
+    {
+        "problem_id": 0,
+        "problem_neighbors": {
+            "0": "1,2,3,4,5,6",
+            "1": "0",
+            "2": "0",
+            "3": "0",
+            "4": "0",
+            "5": "0",
+            "6": "0"
+        },
+        "problem_num_relations": 7,
+        "problem_relations": [
+            {
+                "relation_cardinality": 21092.007781042135,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 14467.13436269978,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 1
+            },
+            {
+                "relation_cardinality": 6761.230546061097,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 2
+            },
+            {
+                "relation_cardinality": 4011.368000267313,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 3
+            },
+            {
+                "relation_cardinality": 2639.119216814652,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 4
+            },
+            {
+                "relation_cardinality": 135.1106833796348,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 5
+            },
+            {
+                "relation_cardinality": 7.70954008593561,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 6
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 7.5981633506047466e-06,
+            "0,2": 0.00014510815526584735,
+            "0,3": 0.0001809454936978256,
+            "0,4": 0.00036667344576365334,
+            "0,5": 0.007375148290443812,
+            "0,6": 0.12878606127609402
+        }
+    },
+    {
+        "problem_id": 1,
+        "problem_neighbors": {
+            "0": "1,2,3,4,5,6",
+            "1": "0",
+            "2": "0",
+            "3": "0",
+            "4": "0",
+            "5": "0",
+            "6": "0"
+        },
+        "problem_num_relations": 7,
+        "problem_relations": [
+            {
+                "relation_cardinality": 17416.911382595146,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 8467.310549467225,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 1
+            },
+            {
+                "relation_cardinality": 3057.8746174995003,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 2
+            },
+            {
+                "relation_cardinality": 1320.5822019291215,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 3
+            },
+            {
+                "relation_cardinality": 1005.2521221829077,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 4
+            },
+            {
+                "relation_cardinality": 198.20607738758991,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 5
+            },
+            {
+                "relation_cardinality": 20.96211713499099,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 6
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 8.757731963850698e-05,
+            "0,2": 0.00013039730784626113,
+            "0,3": 0.0005159539009207404,
+            "0,4": 0.00021081709524924347,
+            "0,5": 0.0018228199967989592,
+            "0,6": 0.03806526840880422
+        }
+    }
+]

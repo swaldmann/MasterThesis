@@ -1,0 +1,52 @@
+[
+    {
+        "problem_id": 0,
+        "problem_neighbors": {
+            "0": "1",
+            "1": "0"
+        },
+        "problem_num_relations": 2,
+        "problem_relations": [
+            {
+                "relation_cardinality": 135.1106833796348,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 7.70954008593561,
+                "relation_name": "<unknown>",
+                "relation_pid": 0,
+                "relation_rid": 1
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 0.12570116771021658
+        }
+    },
+    {
+        "problem_id": 1,
+        "problem_neighbors": {
+            "0": "1",
+            "1": "0"
+        },
+        "problem_num_relations": 2,
+        "problem_relations": [
+            {
+                "relation_cardinality": 90.65055581258125,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 0
+            },
+            {
+                "relation_cardinality": 9.420680859654098,
+                "relation_name": "<unknown>",
+                "relation_pid": 1,
+                "relation_rid": 1
+            }
+        ],
+        "problem_selectivities": {
+            "0,1": 0.05861735288713219
+        }
+    }
+]
