@@ -1,0 +1,24 @@
+{
+ "ProblemID": 0,
+ "ProblemNeighbors": {
+  "0": "1"
+ },
+ "ProblemNumberOfRelations": 2,
+ "ProblemRelations": [
+  {
+   "RelationCardinality": 6046.602879796195,
+   "RelationName": "\u003cunknown\u003e",
+   "RelationPID": 0,
+   "RelationRID": 0
+  },
+  {
+   "RelationCardinality": 9405.090880450125,
+   "RelationName": "\u003cunknown\u003e",
+   "RelationPID": 0,
+   "RelationRID": 1
+  }
+ ],
+ "ProblemSelectivities": {
+  "0,1": 0.6645600532184904
+ }
+}

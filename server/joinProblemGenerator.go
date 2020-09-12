@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"math"
 	"math/rand"
@@ -14,35 +13,16 @@ import (
 func GenerateTreeQueryGraph(degree uint, size uint) {
 
 	neighborEntry := func(i uint, size uint) string {
-
-		i64 := uint64(i + 1)
-		logI := log2_64(i64)
-		level := uint(logI)
+		level := uint(log2_64(uint64(i + 1)))
 		numberOfPredecessorNodes := uint(1<<(level+1) - 1)
 		columnIndex := i - 1<<(level) + 1
-		fmt.Println("====")
-		fmt.Println(size)
-		fmt.Println("---")
-		fmt.Println(i)
-		fmt.Println(level)
-		fmt.Println(numberOfPredecessorNodes)
-		fmt.Println(columnIndex)
+		numberOfChildrenOnLevel := min(1<<(level+1), size-numberOfPredecessorNodes)
+		numberOfChildren := min(degree, numberOfChildrenOnLevel-columnIndex*2)
 
-		numberOfNeighborsOnLevel := min(1<<(level+1), size-numberOfPredecessorNodes)
-		fmt.Println(numberOfNeighborsOnLevel)
-
-		numberOfNeighbors := min(degree, numberOfNeighborsOnLevel-columnIndex*2)
-		//numberOfNeighbors := min(degree, uint(log2_64(uint64(i))))
-		fmt.Println(numberOfNeighbors)
-
-		neighbors := make([]string, numberOfNeighbors)
+		neighbors := make([]string, numberOfChildren)
 		for j := range neighbors {
-			//numberOfNeighborsInRow := size - degree *
-			//if numberOfPredecessorNodes + degree *
-			//column :=
-
-			lowestNeighborIndex := i*degree + 1     //uint(1<<(uintLogI+1) - 1)
-			neighborIndexOffset := uint(j) % degree //uint(log2_64(uint64(uint(i) + 1)))
+			lowestNeighborIndex := i*degree + 1
+			neighborIndexOffset := uint(j) % degree
 			neighborIndex := lowestNeighborIndex + neighborIndexOffset
 			neighbors[j] = strconv.FormatUint(uint64(neighborIndex), 10)
 		}
@@ -62,7 +42,7 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 		for i := uint(0); i < size; i++ {
 			array[i] = JSONRelation{
 				RelationCardinality: rand.Float64() * 10000,
-				RelationName:        "<unknown>",
+				RelationName:        "unknown",
 				RelationPID:         0,
 				RelationRID:         i,
 			}
@@ -106,7 +86,7 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 	if marshallErr != nil {
 		panic("Can't marshall query graph with shape tree and size " + sizeString)
 	}
-	writeErr := ioutil.WriteFile("joinproblems/tree"+"_"+".json", file, 0644)
+	writeErr := ioutil.WriteFile("joinproblems/tree"+"_"+sizeString+".json", file, 0644)
 	if writeErr != nil {
 		panic("Can't write query graph with shape tree and size " + sizeString)
 	}

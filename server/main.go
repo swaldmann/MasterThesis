@@ -8,5 +8,5 @@ func main() {
 	}*/
 	//HumanPrintUIntArray("", PowerSet(uint(16)))
 	//startServer()
-	GenerateTreeQueryGraph(2, 8)
+	GenerateTreeQueryGraph(2, 10)
 }
