@@ -1,6 +1,5 @@
 import React from "react"
 import Select from "react-select"
-import AlgorithmGraph from "../math/AlgorithmGraph"
 import QueryGraph from "../math/QueryGraph"
 import { ALGORITHMS, QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
 
@@ -8,8 +7,10 @@ const ENDPOINT = "http://localhost:8080/api"
 
 class AlgorithmCanvas extends React.Component {
     state = {
-        nodeColors: [],
-        step: 0
+        initialGraphState: [],
+        graphState: [],
+        counters: [],
+        diffs: []
     }
 
     constructor(props) {
@@ -26,17 +27,26 @@ class AlgorithmCanvas extends React.Component {
     }
 
     async updateAlgorithm() {
-        const response = await fetch(ENDPOINT + "/algorithm/" + this.props.algorithm.value)
+        const { actions, numberOfRelations, graphTypeIndex } = this.props
+        const graphType = QUERY_GRAPH_OPTIONS[graphTypeIndex]
+        const response = await fetch(ENDPOINT + "/algorithm/" + this.props.algorithm.value
+                                              + "/relations/" + numberOfRelations
+                                              + "/graphType/" + graphType.value)
         const json = await response.json()
-        console.log("JSON");
-        console.log(json);
-        //const object = JSON.parse(json)
-        console.log(json.graphStates)
-        console.log(json.graphStates)
+        console.log("Res")
+        console.log(response)
+        console.log(json)
 
-        /*this.setState({
-            nodeColors: json.graphStates[0].nodeColors
-        })*/
+        actions.updateConfiguration(json.configuration)
+        actions.updateSteps(json.diffs)
+
+        this.setState({
+            initialGraphState: JSON.parse(JSON.stringify(json.begin.graphState)),
+            graphState: json.diffs[0].graphState,
+            counters: json.begin.counters,
+            diffs: json.diffs,
+            step: 0
+        })
     }
 
     handleAlgorithmChange = algorithm => {
@@ -48,14 +58,38 @@ class AlgorithmCanvas extends React.Component {
     }
 
     handleNextStep = step => {
+        const { graphState, diffs } = this.state
+        const diff = diffs[step + 1]
+
+        console.log("Next step");
+        console.log(diff);
+        console.log(this.state)
+
+        const { actions } = this.props
+        actions.increaseStep(1)
+
         this.setState({
-            step: step + 1
+            graphState: Object.assign(graphState, diff.graphState)
         })
     } 
 
     handlePreviousStep = step => {
+        const { graphState, diffs } = this.state
+        const diff = diffs[step - 1]
+
+        //let newGraphState
+        /*if (step === 1) {
+            newGraphState = JSON.parse(JSON.stringify(this.state.initialGraphState))
+        } else {
+            
+        }*/
+        const newGraphState = Object.assign(graphState, diff.graphState)
+
+        const { actions } = this.props
+        actions.decreaseStep(1)
+
         this.setState({
-            step: step === 0 ? step : step - 1
+            graphState: newGraphState
         })
     }
 
@@ -65,13 +99,15 @@ class AlgorithmCanvas extends React.Component {
         const { numberOfRelations, graphTypeIndex } = this.props
         const queryGraph = new QueryGraph(numberOfRelations)
         const graphType = QUERY_GRAPH_OPTIONS[graphTypeIndex]
-        const { nodeColors } = this.state
+        const { graphState } = this.state
 
-        queryGraph.draw(graphType.value, nodeColors, ctx)
+        queryGraph.draw(graphType.value, graphState.nodeColors, ctx)
     }
 
     render() {
-        const { algorithm, step } = this.state
+        const { algorithm, diffs } = this.state
+        const { step } = this.props
+
         return (
             <div>
                 <h3>Algorithm</h3>
@@ -82,10 +118,10 @@ class AlgorithmCanvas extends React.Component {
                        value={algorithm}
                     onChange={this.handleAlgorithmChange} 
                      options={ALGORITHMS} />
-                <button onClick={() => this.handlePreviousStep(step)}>Previous Step</button>
-                <button onClick={() => this.handleNextStep(step)}>Next Step</button>
-                <p>Step {step}</p>
-                <canvas ref={this.algorithmCanvasRef} width="800px" height="800px" style={{width:"800px", height:"800px"}}></canvas>
+                <button onClick={() => this.handlePreviousStep(step)} disabled={step === 0}>Previous Step</button>
+                <button onClick={() => this.handleNextStep(step)} disabled={step === diffs.length - 1}>Next Step</button>
+                <p>Step {step + 1} of {diffs.length}</p>
+                <canvas ref={this.algorithmCanvasRef} width="400px" height="400px" style={{width:"400px", height:"400px"}}></canvas>
             </div>
         )
     }

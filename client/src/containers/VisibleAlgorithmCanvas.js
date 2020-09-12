@@ -9,7 +9,8 @@ const mapStateToProps = state => {
     return {
         algorithm: ALGORITHMS[state.algorithmIndex],
         numberOfRelations: state.queryGraph.numberOfRelations,
-        graphTypeIndex: state.queryGraph.graphTypeIndex
+        graphTypeIndex: state.queryGraph.graphTypeIndex,
+        step: state.step
     }
 }
 

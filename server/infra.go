@@ -11,22 +11,23 @@ import (
 )
 
 // only to get name of costfunction
-// only to get name of costfunction
 
 // used in SubsetsSizeK for error checking
 
-// type definition: costfunction_t is another name for "func(*Tree, *Tree, QueryGraph) float64"
-type costfunction_t func(*Tree, *Tree, QueryGraph) float64
+// type definition: costfunctionT is another name for "func(*Tree, *Tree, QueryGraph) float64"
+type costfunctionT func(*Tree, *Tree, QueryGraph) float64
 
+// Tree Data structure representing a join tree
 type Tree struct {
 	Card     float64
 	Rels     uint
 	Left     *Tree
 	Right    *Tree
 	Cost     float64
-	Costfunc costfunction_t
+	Costfunc costfunctionT
 }
 
+// ToString string of a tree
 func (T *Tree) ToString() string {
 	var isBaseRel bool = (T.Rels&(T.Rels-1) == 0) // is base relation if is power of two (exactly one bit set)
 	if isBaseRel {
@@ -52,7 +53,7 @@ func (T *Tree) ToString() string {
 	return res
 }
 
-func mergeTrees(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunction_t) *Tree {
+func mergeTrees(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunctionT) *Tree {
 	var parent Tree
 	parent.Card = T1.Card * T2.Card * QG.GetUnionSelTwoSets(T1.Rels, T2.Rels)
 	parent.Rels = T1.Rels | T2.Rels
@@ -63,12 +64,13 @@ func mergeTrees(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunction_t) *Tre
 	return &parent
 }
 
-/*
-Representation of a query graph:
+/* Representation of a query graph:
 - a slice of relations named R
 - a map from uint to float for the join selectivities. Named S:
   - Let idx be a uint. Set bit i and j in idx to 1. Assign a selectivity to the S[idx]
 */
+
+// QueryGraph Representation of a query graph
 type QueryGraph struct {
 	R []uint
 	S map[uint]float64
@@ -83,11 +85,13 @@ type QueryGraph struct {
 	return result
 }*/
 
-func (QG *QueryGraph) SetSel(relA uint, relB uint, sel float64) {
+// SetSelectivity Set a selectivity for two relations
+func (QG *QueryGraph) SetSelectivity(relA uint, relB uint, sel float64) {
 	QG.S[1<<relA|1<<relB] = sel
 }
 
-func (QG *QueryGraph) GetSel(relA uint, relB uint) float64 {
+// GetSelectivity Get the selectivity for two relations
+func (QG *QueryGraph) GetSelectivity(relA uint, relB uint) float64 {
 	val, ok := QG.S[1<<relA|1<<relB]
 	if ok {
 		return val
@@ -95,17 +99,19 @@ func (QG *QueryGraph) GetSel(relA uint, relB uint) float64 {
 	return 1.0
 }
 
+// GetAllSels Get all selectivities for a given relation
 func (QG *QueryGraph) GetAllSels(Srels uint, rel uint) float64 {
 	var sel float64 = 1.0
 	for Srels != 0 {
 		idx := uint(bits.TrailingZeros(Srels)) // number of trailing zeros == position of least significant bit set
-		sel *= QG.GetSel(idx, rel)
+		sel *= QG.GetSelectivity(idx, rel)
 		Srels &= ^(1 << idx) // "unary" ^ operator flips all bits
 	}
 
 	return sel
 }
 
+// GetUnionSelTwoSets Get the union of two selectivity sets
 func (QG *QueryGraph) GetUnionSelTwoSets(Srels uint, Rrels uint) float64 {
 	var sel float64 = 1.0
 	for key := range QG.S {
@@ -122,6 +128,7 @@ func (QG *QueryGraph) GetUnionSelTwoSets(Srels uint, Rrels uint) float64 {
 	return sel
 }
 
+// Connected Checks if two relations are connected.
 func (QG *QueryGraph) Connected(R1 uint, R2 uint) bool {
 	for key := range QG.S {
 		if ((key & R1) != 0) && ((key & R2) != 0) {
@@ -131,6 +138,7 @@ func (QG *QueryGraph) Connected(R1 uint, R2 uint) bool {
 	return false
 }
 
+// SubsetsSizeK Gives all subsets of size k
 func (QG *QueryGraph) SubsetsSizeK(k uint) []uint {
 	if k < 1 {
 		fmt.Println("k cannot be smaller than 1")
@@ -187,17 +195,15 @@ func (QG *QueryGraph) ToString() string {
 	return res
 }
 
-// Subsets return subsets of S.
+// Subsets Returns all subsets of S, excluding ∅ and S itself.
 func Subsets(S uint) []uint {
-	// S itself and the empty set are not included
-	// see script near DP-Bushy for details
-	var res []uint
+	subsets := []uint{}
 	S1 := S & (-S)
-	for ok := true; ok; ok = (S1 != S) { // golang style for: do {...} while (S1 != S)
-		res = append(res, S1)
+	for ok := true; ok; ok = (S1 != S && S1 != 0) {
+		subsets = append(subsets, S1)
 		S1 = S & (S1 - S)
 	}
-	return res
+	return subsets
 }
 
 // SetMinus Difference between two sets
@@ -279,14 +285,14 @@ func ValuesOfUnsetBits(S uint, length uint) []uint {
 type JoinTreeCreator struct {
 	RightDeepOnly bool
 	LeftDeepOnly  bool
-	Costfunctions []costfunction_t
+	Costfunctions []costfunctionT
 }
 
 // CreateJoinTree This implementation avoids cross products if possible
 func (JTC JoinTreeCreator) CreateJoinTree(T1 *Tree, T2 *Tree, QG QueryGraph) *Tree {
 	if QG.Connected(T1.Rels, T2.Rels) { // are the relations of T1 and T2 connected in QG?
 		mincost := math.Inf(1) // positive infinity
-		var costfuncidx costfunction_t
+		var costfuncidx costfunctionT
 		var left bool // join(T1, T2)  or  join(T2, T1)
 		for _, impl := range JTC.Costfunctions {
 			if !JTC.RightDeepOnly {
@@ -358,13 +364,13 @@ func Ccross(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
 	return joincost + childrencost
 }
 
-func applyCostfuncRec(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunction_t) float64 {
+func applyCostfuncRec(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunctionT) float64 {
 	// ToDo
 	return -1.0
 }
 
 // GetJoinImplNameFromCostFunc helper method for convenience.
-func GetJoinImplNameFromCostFunc(impl costfunction_t) string {
+func GetJoinImplNameFromCostFunc(impl costfunctionT) string {
 	// ValueOf returns a new Value initialized to the concrete value stored in the interface i. ValueOf(nil) returns the zero Value.
 	var val reflect.Value = reflect.ValueOf(impl)
 	// For Func arguments, Pointer returns a uintptr that is the underlying code pointer.
@@ -380,4 +386,28 @@ func GetJoinImplNameFromCostFunc(impl costfunction_t) string {
 	split := strings.Split(funcname, ".C")
 	joinimplname := split[1] // split[0] contains package name
 	return joinimplname
+}
+
+// PowerSet Returns all subsets
+func PowerSet(S uint) []uint {
+	subsets := Subsets(S)
+	HumanPrintUIntArray("subsets", subsets)
+	if len(subsets) == 1 && subsets[0] == S {
+		return subsets
+	}
+	return append(Subsets(S), S)
+}
+
+func contains(s []uint, e uint) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// GetQueryGraph Gets a query graph with a graph type and a number of relations
+func GetQueryGraph(graphType string, numberOfRelations uint) QueryGraph {
+	return GetQueryGraphs([]string{graphType}, []uint{numberOfRelations})[0]
 }

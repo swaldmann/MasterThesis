@@ -11,4 +11,5 @@ export const QUERY_GRAPH_OPTIONS = [
     { value: "cycle", label: "Cycle" },
     //{ value: "grid", label: "Grid" },
     //{ value: "clique", label: "Clique" },
+    { value: "moerkotte", label: "Moerkotte QueryCompiler 2018" },
 ]

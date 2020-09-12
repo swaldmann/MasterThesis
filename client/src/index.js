@@ -10,7 +10,7 @@ import * as serviceWorker from './serviceWorker'
 
 export const store = createStore(
     rootReducer,
-    //applyMiddleware(thunk),
+    //applyMiddleware(thunk)//,
     // Change to this if you want to use the Redux Devtools extension in Chrome.
     compose(
         applyMiddleware(thunk),

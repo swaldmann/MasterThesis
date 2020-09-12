@@ -18,36 +18,38 @@ Currently shapes must be a subset of {chain, cycle, star, clique}
 sizes must be a subset of {2,...,10}
 */
 
-type JsonRelation struct {
-	Relation_cardinality float64
-	Relation_name        string
-	Relation_pid         uint
-	Relation_rid         uint
+// JSONRelation Represents a relation in JSON
+type JSONRelation struct {
+	RelationCardinality float64
+	RelationName        string
+	RelationPID         uint
+	RelationRID         uint
 }
 
-type JsonJoinProblem struct {
-	problem_id            uint
-	Problem_neighbors     map[uint]string
-	Problem_num_relations uint
-	Problem_relations     []JsonRelation
-	Problem_selectivities map[string]float64
+// JSONJoinProblem Represents a join problem in JSON
+type JSONJoinProblem struct {
+	ProblemID                uint
+	ProblemNeighbors         map[uint]string
+	ProblemNumberOfRelations uint
+	ProblemRelations         []JSONRelation
+	ProblemSelectivities     map[string]float64
 }
 
-func mapper(JJPs []JsonJoinProblem) []QueryGraph {
+func mapper(JJPs []JSONJoinProblem) []QueryGraph {
 	res := make([]QueryGraph, len(JJPs))
 	for idx, jjp := range JJPs {
 		var QG QueryGraph
 
-		// set relations
-		relations := make([]uint, len(jjp.Problem_relations))
-		for i := 0; i < len(jjp.Problem_relations); i++ {
-			relations[i] = uint(jjp.Problem_relations[i].Relation_cardinality)
+		// Set relations
+		relations := make([]uint, len(jjp.ProblemRelations))
+		for i := 0; i < len(jjp.ProblemRelations); i++ {
+			relations[i] = uint(jjp.ProblemRelations[i].RelationCardinality)
 		}
 		QG.R = relations
 
-		// set selectivities
+		// Set selectivities
 		QG.S = map[uint]float64{}
-		for key, sel := range jjp.Problem_selectivities {
+		for key, sel := range jjp.ProblemSelectivities {
 			var idxs []string = strings.Split(key, ",")
 			const base = 10
 			const bitsize = 64
@@ -61,12 +63,12 @@ func mapper(JJPs []JsonJoinProblem) []QueryGraph {
 			if err != nil {
 				panic("strconv.ParseUint(idxs[1], base, bitsize) failed")
 			}
-			QG.SetSel(uint(idxRel0), uint(idxRel1), sel)
+			QG.SetSelectivity(uint(idxRel0), uint(idxRel1), sel)
 		}
 
 		// Set neighbors
 		QG.N = map[uint][]uint{}
-		for rel, neighborString := range jjp.Problem_neighbors {
+		for rel, neighborString := range jjp.ProblemNeighbors {
 			var idxs []string = strings.Split(neighborString, ",")
 			const base = 10
 			const bitsize = 64
@@ -82,7 +84,7 @@ func mapper(JJPs []JsonJoinProblem) []QueryGraph {
 			QG.N[rel] = resultIdxs
 		}
 
-		// store result
+		// Store result
 		res[idx] = QG
 	}
 	return res
@@ -101,7 +103,7 @@ func getSpecificQueryGraphs(shape string, size uint) []QueryGraph {
 		panic("Error reading content of " + filename)
 	}
 
-	var JJPs []JsonJoinProblem
+	var JJPs []JSONJoinProblem
 	json.Unmarshal(content, &JJPs)
 	return mapper(JJPs)
 }
@@ -116,4 +118,35 @@ func GetQueryGraphs(shapes []string, sizes []uint) []QueryGraph {
 		}
 	}
 	return res
+}
+
+// GenerateQueryGraph Generate a query graph with a specified shape and size
+func GenerateQueryGraph(shape string, size uint) {
+	data := JSONJoinProblem{
+		ProblemID: 0,
+		ProblemNeighbors: map[uint]string{
+			0: "1,2",
+		},
+		ProblemNumberOfRelations: size,
+		ProblemRelations: []JSONRelation{
+			JSONRelation{
+				RelationCardinality: 0.0,
+				RelationName:        "<unknown>",
+				RelationPID:         0,
+				RelationRID:         0,
+			},
+		},
+		ProblemSelectivities: map[string]float64{},
+	}
+
+	sizeString := strconv.FormatUint(uint64(size), 10)
+
+	file, marshallErr := json.MarshalIndent(data, "", " ")
+	if marshallErr != nil {
+		panic("Can't marshall query graph with shape " + shape + " and size " + sizeString)
+	}
+	writeErr := ioutil.WriteFile(shape+"_"+".json", file, 0644)
+	if writeErr != nil {
+		panic("Can't write query graph with shape " + shape + " and size " + sizeString)
+	}
 }

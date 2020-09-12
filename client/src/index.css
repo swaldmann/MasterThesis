@@ -15,3 +15,7 @@ code {
 .select {
   color: #222;
 }
+
+button:disabled {
+  opacity: 0.5;
+}

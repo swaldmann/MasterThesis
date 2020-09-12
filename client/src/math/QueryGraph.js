@@ -12,7 +12,6 @@ class QueryGraph {
     }
     
     draw(type, nodeColors, ctx) {
-        console.log("Yo");
         console.log(nodeColors);
 
         nodeColors.forEach(nodeColor => {
@@ -52,6 +51,8 @@ class QueryGraph {
             case "clique":
                 this._drawCliqueQuery(numberOfNodes, ctx)
                 break
+            case "moerkotte":
+                this._drawMoerkotteQuery(ctx)
             default:
                 break
           } 
@@ -123,6 +124,35 @@ class QueryGraph {
             const y_previous = calculateY(row_previous)
             this._drawLine(x, y, x_previous, y_previous, ctx)
         }
+    }
+
+    // Hard-coded special case of a cyclic query
+    _drawMoerkotteQuery(ctx) {
+        const width = ctx.canvas.clientWidth
+        const height = ctx.canvas.clientHeight
+        const centerX = ctx.canvas.clientWidth/2
+        const centerY = ctx.canvas.clientHeight/2
+        const offset = margin + r_node
+
+        const x0 = centerX, y0 = offset
+        const x1 = offset, y1 = centerY
+        const x2 = centerX, y2 = centerY
+        const x3 = width - offset, y3 = centerY
+        const x4 = centerX, y4 = height - offset
+
+        this._drawNode(0, x0, y0, "white", ctx)
+        this._drawNode(1, x1, y1, "white", ctx)
+        this._drawNode(2, x2, y2, "white", ctx)
+        this._drawNode(3, x3, y3, "white", ctx)
+        this._drawNode(4, x4, y4, "white", ctx)
+        
+        this._drawLine(x0, y0, x1, y1, ctx)
+        this._drawLine(x0, y0, x2, y2, ctx)
+        this._drawLine(x0, y0, x3, y3, ctx)
+        this._drawLine(x1, y1, x4, y4, ctx)
+        this._drawLine(x2, y2, x3, y3, ctx)
+        this._drawLine(x2, y2, x4, y4, ctx)
+        this._drawLine(x3, y3, x4, y4, ctx)
     }
 
     _drawCyclicQuery(numberOfNodes, ctx) {

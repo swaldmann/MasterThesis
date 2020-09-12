@@ -1,12 +1,85 @@
 \section{Implementation}
 
+\subsection{API Requirements and Design Goals}
+One of the main goals of this framework is to minimize the amount of code or configuration that has to be added
+to exisiting algorithms' implementations.
+
+More formally, this means that the algorithm has to conform to the \texttt{Visualizable} type we define as follows:
+
+\begin{minted}{go}
+    type Visualizable func(QG QueryGraph)
+\end{minted}
+
+
 \subsection{Choice of Technology}
 
-For the implementation of both client and server code we want to resort to modern, but tried-and-testedness.
-The software should be built with technologies that prepare well for continued development and maintenance.
+For the implementation of both client and server code we want to maximize
 
-The user interface is built in JavaScript with React.js\footnote{https://reactjs.org}. 
-The server code and database
+\begin{enumerate}[label={(\roman*)}]
+    \item \label{itm:accessibility} \textbf{Accessibility}, a minimal amount of effort required to access the application
+    \item \label{itm:maintainability} \textbf{Maintainability}, a high degree of technological similarities with related projects 
+    \item \label{itm:testedness} \textbf{Tried-and-testedness}, a large user base and well-received reference applications
+\end{enumerate}
+
+In order to maximize \ref{itm:accessibility} we create an application that runs in a web browser and doesn't need any user-initiated installation or update procedures.
+With the 2017 released WebAssembly (WASM)\footnote{\url{https://webassembly.org}} portable byte-code standard still being in its infancy at around 90\% browser support\footnote{\url{https://caniuse.com/wasm}} and being recommended by the World Wide Web Consortium not until December 5th 2019\footnote{\url{https://www.w3.org/TR/wasm-core-1/}}, this leaves us with JavaScript as the only viable language for the client-side code. 
+
+Additionally, in order to modularize the user interface and adding the ability to import existing user interface components, we use \texttt{React.js}\footnote{\url{https://reactjs.org}}, as of writing this thesis the most popular JavaScript library for building user interfaces.
+%\footnote{Ranked by number of stars on \url{https://github.com/search?l=JavaScript&o=desc&q=language%3AJavaScript&s=stars&type=Repositories}}.
+% search?l=Go&o=desc&q=http&s=stars&type=Repositories
+
+For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin}}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub \footnote{\url{https://github.com/}}.
+
+%Thus, we resort to modern, but well-adopted languages and libraries.
+%The software should be built with technologies that prepare well for continued development and maintenance.
+
+\subsection{Utility Functions}
+In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} and \url{joinproblemparser.go} file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
+
+We add some additional helper functions:
+\begin{minted}{go}   
+    func contains(s []uint, e uint) bool {
+        for _, a := range s {
+            if a == e {
+                return true
+            }
+        }
+        return false
+    }    
+\end{minted}
+
+\subsection{Linting}
+The project uses the Go language linter\footnote{\url{https://github.com/golang/lint}} to ensure a common coding and documentation style with what is used at Google, the creators of Go.
+
+For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
+
+\subsection{Building}
+As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel cross-compiler\footnote{\url{https://babeljs.io}} to a more downwards-compatible JavaScript version when building the project.
+
+\newpage
+\subsection{Data Structures}
+All join problems can be defined using the following JSON structure:
+\begin{minted}{json}
+[
+    {
+        problemID: number,
+        problemNeighbors: {
+            string: string
+        },
+        problemNumberOfRelations: number,
+        problemRelations: [
+            relationCardinality: number,
+            relationName: string,
+            relationPID: number,
+            relationRID: number
+        ],
+        problemSelectivities: {
+            string: number
+        }
+    }
+]
+
+\end{minted}
 
 \subsection{Deployment}
 

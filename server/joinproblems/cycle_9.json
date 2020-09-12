@@ -1,7 +1,7 @@
 [
     {
-        "problem_id": 0,
-        "problem_neighbors": {
+        "problemID": 0,
+        "problemNeighbors": {
             "0": "1,8",
             "1": "0,2",
             "2": "1,3",
@@ -12,64 +12,64 @@
             "7": "6,8",
             "8": "0,7"
         },
-        "problem_num_relations": 9,
-        "problem_relations": [
+        "problemNumberOfRelations": 9,
+        "problemRelations": [
             {
-                "relation_cardinality": 188548.7114164056,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 0
+                "relationCardinality": 188548.7114164056,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 0
             },
             {
-                "relation_cardinality": 62990.742835979436,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 1
+                "relationCardinality": 62990.742835979436,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 1
             },
             {
-                "relation_cardinality": 21092.007781042135,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 2
+                "relationCardinality": 21092.007781042135,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 2
             },
             {
-                "relation_cardinality": 14467.13436269978,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 3
+                "relationCardinality": 14467.13436269978,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 3
             },
             {
-                "relation_cardinality": 6761.230546061097,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 4
+                "relationCardinality": 6761.230546061097,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 4
             },
             {
-                "relation_cardinality": 4011.368000267313,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 5
+                "relationCardinality": 4011.368000267313,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 5
             },
             {
-                "relation_cardinality": 2639.119216814652,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 6
+                "relationCardinality": 2639.119216814652,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 6
             },
             {
-                "relation_cardinality": 135.1106833796348,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 7
+                "relationCardinality": 135.1106833796348,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 7
             },
             {
-                "relation_cardinality": 7.70954008593561,
-                "relation_name": "<unknown>",
-                "relation_pid": 0,
-                "relation_rid": 8
+                "relationCardinality": 7.70954008593561,
+                "relationName": "<unknown>",
+                "relationPID": 0,
+                "relationRID": 8
             }
         ],
-        "problem_selectivities": {
+        "problemSelectivities": {
             "0,1": 1.5362497166696964e-05,
             "0,8": 0.8128544509769848,
             "1,2": 3.441319210332916e-05,
@@ -82,8 +82,8 @@
         }
     },
     {
-        "problem_id": 1,
-        "problem_neighbors": {
+        "problemID": 1,
+        "problemNeighbors": {
             "0": "1,8",
             "1": "0,2",
             "2": "1,3",
@@ -94,64 +94,64 @@
             "7": "6,8",
             "8": "0,7"
         },
-        "problem_num_relations": 9,
-        "problem_relations": [
+        "problemNumberOfRelations": 9,
+        "problemRelations": [
             {
-                "relation_cardinality": 288188.48302106344,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 0
+                "relationCardinality": 288188.48302106344,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 0
             },
             {
-                "relation_cardinality": 143947.30778749008,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 1
+                "relationCardinality": 143947.30778749008,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 1
             },
             {
-                "relation_cardinality": 57412.890435305206,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 2
+                "relationCardinality": 57412.890435305206,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 2
             },
             {
-                "relation_cardinality": 30906.972388580845,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 3
+                "relationCardinality": 30906.972388580845,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 3
             },
             {
-                "relation_cardinality": 12907.036756546484,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 4
+                "relationCardinality": 12907.036756546484,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 4
             },
             {
-                "relation_cardinality": 8589.480737907565,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 5
+                "relationCardinality": 8589.480737907565,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 5
             },
             {
-                "relation_cardinality": 4808.105111186041,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 6
+                "relationCardinality": 4808.105111186041,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 6
             },
             {
-                "relation_cardinality": 283.34758467973074,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 7
+                "relationCardinality": 283.34758467973074,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 7
             },
             {
-                "relation_cardinality": 22.568612907976878,
-                "relation_name": "<unknown>",
-                "relation_pid": 1,
-                "relation_rid": 8
+                "relationCardinality": 22.568612907976878,
+                "relationName": "<unknown>",
+                "relationPID": 1,
+                "relationRID": 8
             }
         ],
-        "problem_selectivities": {
+        "problemSelectivities": {
             "0,1": 2.932251341971226e-06,
             "0,8": 0.8227566043949511,
             "1,2": 3.0284298496324412e-06,

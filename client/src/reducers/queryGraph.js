@@ -6,7 +6,7 @@ import {
 
 const QUERY_GRAPH_DEFAULT = {
     numberOfRelations: 5,
-    graphTypeIndex: 2
+    graphTypeIndex: 4
 }
 
 export function queryGraph(state = QUERY_GRAPH_DEFAULT, action) {

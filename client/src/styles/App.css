@@ -13,6 +13,7 @@ body {
     color: #eee;
     padding: 10px 80px;
     line-height: 1.5em;
+    font-size: 16px;
 }
 
 h2 {
@@ -38,7 +39,12 @@ button {
     outline: none !important;
 }
 
-button:hover {
+button:disabled {
+    opacity: 0.5;
+}
+  
+
+button:not(:disabled):hover {
     cursor: pointer;
     opacity: 0.8;
 }
@@ -89,4 +95,19 @@ h5 {
     font-size: 20px;
     margin-top: 40px;
     margin-bottom: 30px;
+}
+
+table {
+    font-size: 18px;
+}
+
+thead {
+    border-bottom: 1px solid white;
+    font-size: 22px;
+}
+
+th, td {
+    width: 200px;
+    text-align: center;
+    padding: 10px;
 }

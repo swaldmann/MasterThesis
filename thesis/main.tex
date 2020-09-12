@@ -1,18 +1,53 @@
-\documentclass{article}
+\documentclass[a4paper,12pt,titlepage,twoside]{article}
 
 % General document formatting
-\usepackage[margin=0.7in]{geometry}
-\usepackage[parfill]{parskip}
 \usepackage[utf8]{inputenc}
-    
-% Math packages
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
 
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{pstricks}
+\usepackage{pst-node,pst-tree}
+\usepackage{auto-pst-pdf}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{latexsym}
+\usepackage{oldgerm}
+\usepackage{setspace}
+\usepackage{floatrow}
+\usepackage{tikz}
+\usepackage{tkz-graph}
+\usepackage[noline]{algorithm2e}
+\usepackage{multirow}
+\usepackage{minted} % Syntax highlighting for algorithms
+\usepackage{enumitem} % More enumeration styles, e.g. Roman numbers, http://ctan.org/pkg/enumitem
+%\usepackage[htt]{hyphenat} % Allow hyphenation, even for for \texttt{}
+\usepackage{lmodern} % Fix some unfedined font shapes http://ctan.org/pkg/lm
+%\usepackage{anyfontsize} % Fix some unavailable font sizes
+%\usepackage{libertine}
+\usepackage{inconsolata}
+
+\usetikzlibrary{plotmarks,trees,arrows}
+\usetikzlibrary{graphs,graphs.standard}
+\numberwithin{equation}{section}
+\SetArgSty{textnormal}
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}}
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+\title{Master Thesis}
 \author{Steffen Waldmann}
 
 \begin{document}
 
+\maketitle
+\clearemptydoublepage
+
 \tableofcontents
+\clearpage
+\listofalgorithms
+\listoffigures
+\listoftables
 
 \include{chapters/1-introduction}
 \include{chapters/2-basics}
@@ -20,5 +55,24 @@
 \include{chapters/4-implementation}
 \include{chapters/5-analysis}
 \include{chapters/6-conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\newpage
+
+\thispagestyle{empty}
+
+\section*{Ehrenwörtliche Erklärung}
+Ich versichere, dass ich die beiliegende Masterarbeit ohne Hilfe Dritter
+und ohne Benutzung anderer als der angegebenen Quellen und Hilfsmittel 
+angefertigt und die den benutzten Quellen wörtlich oder inhaltlich 
+entnommenen Stellen als solche kenntlich gemacht habe. Diese Arbeit 
+hat in gleicher oder ähnlicher Form noch keiner Prüfungsbehörde 
+vorgelegen.\\
+Ich bin mir bewusst, dass eine falsche Erklärung rechtliche Folgen haben
+wird.\\ \\ \\ \\
+\vspace{2cm}
+Mannheim, den \today \hspace{4cm} Unterschrift  \\
 
 \end{document}

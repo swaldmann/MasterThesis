@@ -7,44 +7,64 @@
 \subsubsection{Adaptive Radix Tree}
 
 \subsection{Server}
+
+In order for the server not having to memorize client or session information, we want to establish a stateless communications protocol.
+Thus, we're conforming to the Representational state transfer (REST) architecture as laid out in \cite{fielding2000architectural}.
+The exact API entry points are specified in \ref{sub:api-entry-points}.
+
 \subsubsection{API Entry Points}
+\label{sub:api-entry-points}
 
 \subsection{Client}
 
 \subsubsection{Query Graphs}
 
-With $n$ we define the number of nodes, $\hat{h}$ is the height of our canvas, $w$ is its width, $m$ the margin to the canvas bounds, $r$ the radius of a node.
+Visual representations of query graphs are drawn on a canvas with a top-left origin.
+With $n$ we define the number of nodes, $h$ is the height of the canvas, and $w$ its width. 
+As restricted by the user interface, we also set the condition that $n \geq 3$.
 
-\paragraph{Chain} For chain query graphs we first calculate a drawable width. This is given by 
-
-\begin{equation}\label{eqn:painting-h_hat}
-    \hat{h} = h - 2(m - r)    
-\end{equation}
+Additionally, we define $m$ as the margin to the canvas bounds, and $r$ as the radius of a node.
+Taking $m$ and $r$ into consideration, the drawable width of the canvas, i.e. a centered layout box inside the canvas with margin $m$, is given by 
 
 \begin{equation}\label{eqn:painting-w_hat}
     \hat{w} = w - 2(m - r)
 \end{equation}
 
+and analogously, the drawable height is given by
+
+\begin{equation}\label{eqn:painting-h_hat}
+    \hat{h} = h - 2(m - r)    
+\end{equation}
+
+\paragraph{Chain} For chain query graphs we draw nodes at the vertical center of the canvas and set an equal spacing in between. Thus, the canvas point ($x_i$, $y_i$) for the node with index $i$ is given by
+
+
 \begin{equation}
-    (x_i, y_i) = m + r + \frac{i\hat{w}}{n - 1}
+    (x_i, y_i) = (m + r + \frac{i\hat{w}}{n - 1}, \frac{h}{2})
 \end{equation}
 
 \paragraph{Star} 
-We start on the right side of the canvas and paint nodes in a circle around the center.
-For the current node we define
-\begin{equation}\label{eqn:painting-theta}
-    \theta = \frac{2i\pi}{n - 1}
-\end{equation}
+Star query graphs are drawn by placing the node with index $i = 0$ at the canvas' center, and all following nodes in a circle around it, starting at the rightmost vertically centered point ($\theta_0 = 0^{\circ}$).
+
+The radius of this circle is equivalent to %Cycle graph%
+and given by 
 
 \begin{equation}\label{eqn:painting-r_star}
     r_{star} = \frac{w}{2} - r - m
 \end{equation}
 
+For the current node we define the angle by
+\begin{equation}\label{eqn:painting-theta}
+    \theta_i = \frac{2i\pi}{n - 1}
+\end{equation}
+
+Thus, the point for the node at index $i$ is given by
+
 \begin{equation}
     (x_i, y_i) = 
     \begin{cases}
         (\frac{w}{2}, \frac{h}{2}),& \text{if } i = 0\\
-        (r_{star}\cos{\theta} + r_{star} + r + m, r_{star}\sin{\theta} + r_{star} + r + m), & \text{otherwise}
+        (r_{star}\cos{\theta_i} + r_{star} + r + m, r_{star}\sin{\theta_i} + r_{star} + r + m), & \text{otherwise}
     \end{cases}
 \end{equation}
 
@@ -60,7 +80,15 @@ First, we calculate the vertical position for each given node $i$.
 
 \paragraph{Cycle} 
 
-We define $\theta$ and $r_{star}$ the same way as we did in \eqref{eqn:painting-theta} and \eqref{eqn:painting-r_star} respectively.
+We define $r_{star}$ the same way as we did in \eqref{eqn:painting-r_star}.
+Similarly to \eqref{eqn:painting-theta}, $\theta_i$ is given by
+
+\begin{equation}\label{eqn:painting-theta_cycle}
+    \theta_i = \frac{2i\pi}{n}
+\end{equation}
+
+Thus, the point for a respective node is given by
+
 \begin{equation}
-    (x_i, y_i) = r\sin{\theta} + r_{star} + r + m
+    (x_i, y_i) = (r_{star}\cos{\theta_i} + r_{star} + r + m, r_{star}\sin{\theta_i} + r_{star} + r + m)
 \end{equation}

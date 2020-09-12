@@ -1,2 +1,102 @@
 \section{Basics}
+\label{sec:basics}
 
+There are certain terms and concepts the reader should be familiar with in order to understand the aim and purpose of this thesis. 
+We forego a formal mathematical introduction to relational algebra, although a familiarity of its basic concepts is highly recommended. 
+Moreover, we assume that the Landau notation is known.
+
+\subsection{Relations}
+Relations are tables in a database. 
+Its attributes are described by a database schema, which specifies the possible attribute types.
+An entry in the table is described as a \textit{tuple}. Furthermore, we call the number of tuples in a relation the \textit{cardinality} of the relation.
+
+\subsection{Join}
+A join links two or more relations by building their cross product and filtering it with the help of a \textit{join predicate}. 
+The result is a new relation which contains the joined tuples, for which the predicate is true. We denote the join operator using the symbol "$\Join$". 
+As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``''$R \Join S$''.
+
+\subsection{Selectivity}
+The selectivity of two relations is the ratio between the cardinality of their cross product and the number of elements in the join's resulting relation. 
+This way we determine the number of entries that is kept after the join.
+
+For two relations $R_i$ and $R_j$ regarding a predicate $p_{i,j}$ the selectivity is thus given by 
+\begin{equation}
+f_{i,j} = \frac{|R_i\Join_{p_{i,j}}R_j|}{|R_i \times R_j|}	
+\end{equation}
+
+Since we can assume that $|R_i\Join_{p_{i,j}}R_j| \geq 0$, $|R_i \times R_j| > 0$ and $|R_i\Join_{p_{i,j}}R_j| \leq |R_i \times R_j|$ we know that $f_{i,j} \in [0,1]$.
+
+For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two relations given. 
+\newpage
+
+\subsection{Query Types}
+The relations can be connected in many different ways.
+We visualize this connection in a graph.
+There is a number of different query types. 
+Most importantly we want to have a look at the following four query types, because they represent distinct problems:
+
+\begin{figure}[htp]
+\begin{center}
+\begin{subfigure}[c]{.3\textwidth}
+\vspace{0pt}
+\centering
+\psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+$R_1$\\
+& $R_2$\\
+& & $R_3$
+\ncline{-}{1,1}{2,2}
+\ncline{-}{2,2}{3,3}
+\endpsmatrix
+\subcaption{Chain}
+\end{subfigure}
+\hspace{2cm}
+
+
+\begin{subfigure}[c]{.3\textwidth}
+    \psmatrix[colsep=2cm,rowsep=2cm,mnode=circle]
+    $R_1$ & $R_2$\\
+    $R_3$ & $R_4$
+    \ncline{-}{1,1}{1,2}
+    \ncline{-}{2,1}{2,2}
+    \ncline{-}{1,1}{2,1}
+    \ncline{-}{1,2}{2,2}
+    \endpsmatrix
+    \subcaption{Circle}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\textwidth}
+    \vspace{0.8cm}
+    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+    $R_1$ & & $R_3$\\
+    & $R_2$\\
+    $R_4$ & & $R_5$
+    \ncline{-}{1,1}{2,2}
+    \ncline{-}{1,3}{2,2}
+    \ncline{-}{3,1}{2,2}
+    \ncline{-}{3,3}{2,2}
+    \endpsmatrix 
+    \subcaption{Star}
+    \end{subfigure}
+    \hspace{2cm}
+    \begin{subfigure}[c]{0.3\textwidth}
+    \vspace{0.5cm}
+    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+    & $R_1$\\
+    $R_2$ & & $R_3$\\
+    $R_4$ & & $R_5$
+    \ncline{-}{2,1}{1,2}
+    \ncline{-}{2,3}{1,2}
+    \ncline{-}{3,1}{1,2}
+    \ncline{-}{3,3}{1,2}
+    \ncline{-}{2,1}{2,3}
+    \ncline{-}{2,1}{3,3}
+    \ncline{-}{2,1}{3,1}
+    \ncline{-}{3,1}{3,3}
+    \ncline{-}{2,3}{3,3}
+    \ncline{-}{3,1}{2,3}
+    \endpsmatrix
+    \subcaption{Clique}
+    \end{subfigure}
+    \end{center}
+    \caption{Query Graphs}
+    \end{figure}
+    

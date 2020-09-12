@@ -1,17 +1,18 @@
-import {
-    combineReducers
-} from 'redux'
-
-import {
-    algorithmIndex
-} from './algorithm'
-import {
-    queryGraph
-} from './queryGraph'
+import { combineReducers } from 'redux'
+import { algorithmIndex } from './algorithm'
+import { queryGraph } from './queryGraph'
+import { variables } from './variables'
+import { configuration } from './configuration'
+import { steps } from './steps'
+import { step } from './step'
 
 const appReducer = combineReducers({
     queryGraph,
-    algorithmIndex
+    variables,
+    algorithmIndex,
+    steps,
+    step,
+    configuration
 })
 
 const rootReducer = (state, action) => {

@@ -1,33 +1,72 @@
 package main
 
-import "fmt"
+import (
+	"image/color"
+	"strconv"
+	"strings"
+
+	rainbow "github.com/fatih/color"
+)
+
+// visualizeDPccp Dynamic Programming connected pairs
+func visualizeDPccp(QG QueryGraph) []interface{} {
+	visualize(dpccp, QG)
+	defer resetChanges()
+	return changes
+}
+
+func visualizeEnumerateCsgRec(QG QueryGraph, i uint, S uint, X uint, N uint, emits VariableTable) {
+	n := uint(len(QG.R))
+
+	NIndexes := IdxsOfSetBits(N)
+	SIndexes := IdxsOfSetBits(S)
+	XIndexes := IdxsOfSetBits(X)
+
+	nodeColors := []NodeColor{}
+
+	// Color each node explicitly, not just changes
+	for j := n - 1; int(j-1) >= -1; j-- {
+		var nodeColor color.RGBA
+		if contains(NIndexes, j) {
+			nodeColor = greenColor
+		} else if contains(SIndexes, j) {
+			nodeColor = blueColor
+		} else if contains(XIndexes, j) {
+			nodeColor = whiteColor
+		} else {
+			nodeColor = grayColor
+		}
+		nodeConfiguration := NodeColor{NodeIndex: j, Color: nodeColor}
+		nodeColors = append(nodeColors, nodeConfiguration)
+	}
+	changeGraphState := &GraphState{NodeColors: nodeColors}
+	change := map[string]interface{}{}
+	change["graphState"] = changeGraphState
+	change["variables"] = emits
+	changes = append(changes, change)
+}
+
+// MARK: -
+// Algorithms
+
+func dpccp(QG QueryGraph) {
+	EnumerateCsg(QG)
+}
 
 // EnumerateCsg Enumerate Csg pairs
-func EnumerateCsg(QG QueryGraph) []uint {
-	emits := []uint{}
+func EnumerateCsg(QG QueryGraph) [][]uint {
 	n := uint(len(QG.R))
 	𝔅 := uint(1<<n - 1)
 
-	//fmt.Println("=============")
-	//fmt.Println("𝔅")
-	//fmt.Printf("%08b", 𝔅)
-	//fmt.Println("")
+	emits := [][]uint{}
 
 	for i := n - 1; i < n; i-- {
-		//fmt.Println("v")
 		v := uint(1 << i)
-		//fmt.Printf("%08b", v)
-		emits = append(emits, v)
-		//fmt.Println("")
-		//fmt.Println(len(emits))
-		//fmt.Println(emits)
-		//fmt.Println("Yo")
-		//fmt.Println(i)
+		emits = append(emits, IdxsOfSetBits(v))
 		EnumerateCsgRec(QG, v, 𝔅)
-		fmt.Println("_______________")
 		𝔅 = SetMinus(𝔅, v, n)
+		rainbow.Yellow("--------------")
 	}
-	fmt.Println("=======================")
 	return emits
 }
 
@@ -44,61 +83,56 @@ func ℕ(QG QueryGraph, S uint) uint {
 }
 
 // EnumerateCsgRec Enumerate Csg-pairs
-func EnumerateCsgRec(QG QueryGraph, S uint, X uint) uint {
+func EnumerateCsgRec(QG QueryGraph, S uint, X uint) {
+	rainbow.Green("EnumerateCsgRec")
 	n := uint(len(QG.R))
-	//fmt.Println(QG.N)
 	ℕ := ℕ(QG, S)
 	N := SetMinus(ℕ, X, n)
-	emit := uint(0)
-	//fmt.Println("______")
-	// fmt.Println("S, X, N")
-	// fmt.Printf("%08b", S)
-	// fmt.Print(", ")
-	// fmt.Printf("%08b", X)
-	// fmt.Print(", ")
-	// fmt.Printf("%08b", N)
-	// fmt.Println("")
+	HumanPrint("S", S)
+	HumanPrint("X", X)
+	HumanPrint("N", N)
+	HumanPrint("ℕ", ℕ)
 
-	if N == 0 {
-		//fmt.Print("Emit 1, ")
-		//fmt.Printf("%08b", emit)
-		//fmt.Println("")
-		return emit
-	}
+	variableState := VariableTable{}
+	variableState["S"] = IdxsOfSetBits(S)
+	variableState["X"] = IdxsOfSetBits(X)
+	variableState["N"] = IdxsOfSetBits(N)
+	visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState)
 
-	for _, SPrime := range Subsets(N) {
+	HumanPrintUIntArray("S'", PowerSet(N))
+	for _, SPrime := range PowerSet(N) {
 		if SPrime == 0 {
-			//fmt.Print("Emit 2, ")
-			//fmt.Printf("%08b", emit)
-			//fmt.Println("")
-			return emit
+			//us(emit, S, n))
+			//rainbow.Red("Emit 2")
+			//emit = SetMinus(emit, S, n)
+			continue
 		}
 		SuSPrime := S | SPrime
-		//fmt.Println("SuSPrime")
-		fmt.Printf("%08b", SuSPrime)
-		fmt.Print(" ")
-		fmt.Print(IdxsOfSetBits(SuSPrime))
-		fmt.Println("")
-		// fmt.Println("Length")
-		// fmt.Println(len(N))
-		emit = emit | SuSPrime
+		HumanPrint("SuSPrime1", SuSPrime)
+		//emit = emit | SuSPrime
+
+		variableState := VariableTable{}
+		variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
+		visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState)
 	}
-	for _, SPrime := range Subsets(N) {
+	for _, SPrime := range PowerSet(N) {
 		if SPrime == 0 {
-			//fmt.Print("Emit 3, ")
-			//fmt.Printf("%08b", emit)
-			//fmt.Println("")
-			return emit
+			//HumanPrint("Emit/S", SetMinus(emit, S, n))
+			//rainbow.Red("Emit 3")
+			//variableState := VariableTable{}
+			//variableState["emit/S"] = IdxsOfSetBits(SetMinus(emit, S, n))
+			//visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState)
+			continue
 		}
+		HumanPrint("SPrime", SPrime)
+		HumanPrint("S", S)
 		SuSPrime := S | SPrime
+		HumanPrint("SuSPrime2", SuSPrime)
 		XuN := X | N
-		fmt.Println("-->")
+		HumanPrint("XuN", XuN)
+		rainbow.Red("-->")
 		EnumerateCsgRec(QG, SuSPrime, XuN)
 	}
-	//fmt.Print("Emit 4, ")
-	//fmt.Printf("%08b", emit)
-	//fmt.Println("")
-	return emit
 }
 
 // EnumerateCmp Enumerate Cmp-pairs
@@ -112,4 +146,26 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []uint {
 		EnumerateCsgRec(QG, v, X|(S1&N))
 	}
 	return emit
+}
+
+// HumanPrint Prints uint variable in a human-readable format
+func HumanPrint(variableName string, variable uint) {
+	setBits := IdxsOfSetBits(variable)
+	setBitsStringArray := make([]string, len(setBits))
+	for i, value := range setBits {
+		setBitsStringArray[i] = strconv.FormatUint(uint64(value), 10)
+	}
+	setBitsString := strings.Join(setBitsStringArray[:], ", ")
+	binary := strconv.FormatUint(uint64(variable), 2)
+	rainbow.Blue(variableName + ": [" + setBitsString + "] B: " + binary)
+}
+
+// HumanPrintUIntArray Print uint array in human-readable format
+func HumanPrintUIntArray(variableName string, array []uint) {
+	setBitsStringArray := make([]string, len(array))
+	for i, value := range array {
+		setBitsStringArray[i] = strconv.FormatUint(uint64(value), 2)
+	}
+	setBitsString := strings.Join(setBitsStringArray[:], ", ")
+	rainbow.Cyan(variableName + ": [" + setBitsString + "]")
 }
