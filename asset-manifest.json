@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/dbs-visualization/static/css/main.22c87a32.chunk.css",
+    "main.js": "/dbs-visualization/static/js/main.5cb1ce5b.chunk.js",
+    "main.js.map": "/dbs-visualization/static/js/main.5cb1ce5b.chunk.js.map",
+    "runtime-main.js": "/dbs-visualization/static/js/runtime-main.9783475f.js",
+    "runtime-main.js.map": "/dbs-visualization/static/js/runtime-main.9783475f.js.map",
+    "static/css/2.ed590494.chunk.css": "/dbs-visualization/static/css/2.ed590494.chunk.css",
+    "static/js/2.1be9c672.chunk.js": "/dbs-visualization/static/js/2.1be9c672.chunk.js",
+    "static/js/2.1be9c672.chunk.js.map": "/dbs-visualization/static/js/2.1be9c672.chunk.js.map",
+    "index.html": "/dbs-visualization/index.html",
+    "precache-manifest.facf301c9546e4e6778789b376320f2f.js": "/dbs-visualization/precache-manifest.facf301c9546e4e6778789b376320f2f.js",
+    "service-worker.js": "/dbs-visualization/service-worker.js",
+    "static/css/2.ed590494.chunk.css.map": "/dbs-visualization/static/css/2.ed590494.chunk.css.map",
+    "static/css/main.22c87a32.chunk.css.map": "/dbs-visualization/static/css/main.22c87a32.chunk.css.map",
+    "static/js/2.1be9c672.chunk.js.LICENSE.txt": "/dbs-visualization/static/js/2.1be9c672.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.9783475f.js",
+    "static/css/2.ed590494.chunk.css",
+    "static/js/2.1be9c672.chunk.js",
+    "static/css/main.22c87a32.chunk.css",
+    "static/js/main.5cb1ce5b.chunk.js"
+  ]
+}
