@@ -7,6 +7,14 @@ func main() {
 		fmt.Println(csgs)
 	}*/
 	//HumanPrintUIntArray("", PowerSet(uint(16)))
+
+	graphType := "moerkotte"
+	QG := GetQueryGraph(graphType, uint(5))
+	Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
+	JTC := JoinTreeCreator{false, false, Costfunctions}
+	visualizeDPccp(QG, JTC)
 	//startServer()
-	GenerateTreeQueryGraph(2, 10)
+	/*for i := uint(2); i <= 10; i++ {
+		GenerateTreeQueryGraph(2, i)
+	}*/
 }

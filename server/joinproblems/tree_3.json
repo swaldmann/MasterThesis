@@ -1,31 +1,31 @@
 {
- "ProblemID": 0,
- "ProblemNeighbors": {
+ "problemID": 0,
+ "problemNeighbors": {
   "0": "1,2"
  },
- "ProblemNumberOfRelations": 3,
- "ProblemRelations": [
+ "problemNumberOfRelations": 3,
+ "problemRelations": [
   {
-   "RelationCardinality": 6046.602879796195,
-   "RelationName": "\u003cunknown\u003e",
-   "RelationPID": 0,
-   "RelationRID": 0
+   "relationCardinality": 4377.141871869801,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 0
   },
   {
-   "RelationCardinality": 9405.090880450125,
-   "RelationName": "\u003cunknown\u003e",
-   "RelationPID": 0,
-   "RelationRID": 1
+   "relationCardinality": 4246.374970712657,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 1
   },
   {
-   "RelationCardinality": 6645.600532184904,
-   "RelationName": "\u003cunknown\u003e",
-   "RelationPID": 0,
-   "RelationRID": 2
+   "relationCardinality": 6868.230728671094,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 2
   }
  ],
- "ProblemSelectivities": {
-  "0,1": 0.4377141871869802,
-  "0,2": 0.4246374970712657
+ "problemSelectivities": {
+  "0,1": 0.06563701921747622,
+  "0,2": 0.15651925473279124
  }
 }

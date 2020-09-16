@@ -62,7 +62,9 @@ func startServer() {
 				observedVariables := []string{"S", "X", "N", "emit/S"}
 				configuration := &Configuration{ObserverdVariables: observedVariables}
 
-				changes := visualizeDPccp(QG)
+				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
+				JTC := JoinTreeCreator{false, false, Costfunctions}
+				changes := visualizeDPccp(QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
 					"begin": gin.H{

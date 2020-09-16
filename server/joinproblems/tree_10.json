@@ -1,84 +1,84 @@
 {
- "ProblemID": 0,
- "ProblemNeighbors": {
+ "problemID": 0,
+ "problemNeighbors": {
   "0": "1,2",
   "1": "3,4",
   "2": "5,6",
   "3": "7,8",
   "4": "9"
  },
- "ProblemNumberOfRelations": 10,
- "ProblemRelations": [
+ "problemNumberOfRelations": 10,
+ "problemRelations": [
   {
-   "RelationCardinality": 6046.602879796195,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 0
+   "relationCardinality": 7558.235074915978,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 0
   },
   {
-   "RelationCardinality": 9405.090880450125,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 1
+   "relationCardinality": 4038.0328579570037,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 1
   },
   {
-   "RelationCardinality": 6645.600532184904,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 2
+   "relationCardinality": 1306.5111702897218,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 2
   },
   {
-   "RelationCardinality": 4377.141871869801,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 3
+   "relationCardinality": 9859.647293402468,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 3
   },
   {
-   "RelationCardinality": 4246.374970712657,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 4
+   "relationCardinality": 8963.417453962162,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 4
   },
   {
-   "RelationCardinality": 6868.230728671094,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 5
+   "relationCardinality": 3220.839705208817,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 5
   },
   {
-   "RelationCardinality": 656.3701921747622,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 6
+   "relationCardinality": 7211.477651926741,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 6
   },
   {
-   "RelationCardinality": 1565.1925473279125,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 7
+   "relationCardinality": 6445.397825093294,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 7
   },
   {
-   "RelationCardinality": 969.6951891448456,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 8
+   "relationCardinality": 855.2050754191123,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 8
   },
   {
-   "RelationCardinality": 3009.1186058528706,
-   "RelationName": "unknown",
-   "RelationPID": 0,
-   "RelationRID": 9
+   "relationCardinality": 6695.7529769977455,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 9
   }
  ],
- "ProblemSelectivities": {
-  "0,1": 0.5152126285020654,
-  "0,2": 0.8136399609900968,
-  "1,3": 0.21426387258237492,
-  "1,4": 0.380657189299686,
-  "2,5": 0.31805817433032985,
-  "2,6": 0.4688898449024232,
-  "3,7": 0.28303415118044517,
-  "3,8": 0.29310185733681576,
-  "4,9": 0.6790846759202163
+ "problemSelectivities": {
+  "0,1": 0.3696928436398219,
+  "0,2": 0.2368225468054852,
+  "1,3": 0.5352818906344061,
+  "1,4": 0.18724610140105305,
+  "2,5": 0.2388407028053186,
+  "2,6": 0.6280981712183633,
+  "3,7": 0.1267529293726013,
+  "3,8": 0.28133029380535923,
+  "4,9": 0.6227283173637045
  }
 }

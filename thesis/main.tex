@@ -24,7 +24,17 @@
 \usepackage{lmodern} % Fix some unfedined font shapes http://ctan.org/pkg/lm
 %\usepackage{anyfontsize} % Fix some unavailable font sizes
 %\usepackage{libertine}
-\usepackage{inconsolata}
+\usepackage{inconsolata} % Better monospace font
+\usepackage[]{algorithm2e} % Algorithms
+
+
+%\usepackage[
+%backend=biber,
+%style=alphabetic,
+%citestyle=authoryear
+%]{biblatex}
+
+%\addbibresource{references.bib} %Imports bibliography file
 
 \usetikzlibrary{plotmarks,trees,arrows}
 \usetikzlibrary{graphs,graphs.standard}
@@ -58,6 +68,7 @@
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
+%\printbibliography
 
 \newpage
 

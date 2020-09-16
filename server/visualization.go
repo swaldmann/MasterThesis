@@ -3,7 +3,7 @@ package main
 import "image/color"
 
 // Visualizable Protocol for visualizing query graph algorithms
-type Visualizable func(QG QueryGraph)
+type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
 
 var visualizationOn = false
 
@@ -19,10 +19,10 @@ func resetChanges() {
 	changes = []interface{}{}
 }
 
-func visualize(visualization Visualizable, QG QueryGraph) {
+func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) {
 	oldVisualizationOn := visualizationOn
 	visualizationOn = true
-	visualization(QG)
+	visualization(QG, JTC)
 	visualizationOn = oldVisualizationOn
 }
 

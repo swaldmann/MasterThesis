@@ -25,3 +25,21 @@ var tab64 = [64]int{
 	56, 45, 25, 31, 35, 16, 9, 12,
 	44, 24, 15, 8, 23, 7, 6, 5,
 }
+
+// MinUintSlice Returns the minimum element of a uint slice
+func MinUintSlice(slice []uint) uint {
+	min := slice[0]
+	for _, value := range slice {
+		if min > value {
+			min = value
+		}
+	}
+	return min
+}
+
+// MinUintSetBitIndex Returns the minimum set index of a uint
+func MinUintSetBitIndex(S uint) uint {
+	SetIndexes := IdxsOfSetBits(S)
+	MinIndex := MinUintSlice(SetIndexes)
+	return MinIndex
+}

@@ -22,18 +22,110 @@ For the implementation of both client and server code we want to maximize
 \end{enumerate}
 
 In order to maximize \ref{itm:accessibility} we create an application that runs in a web browser and doesn't need any user-initiated installation or update procedures.
-With the 2017 released WebAssembly (WASM)\footnote{\url{https://webassembly.org}} portable byte-code standard still being in its infancy at around 90\% browser support\footnote{\url{https://caniuse.com/wasm}} and being recommended by the World Wide Web Consortium not until December 5th 2019\footnote{\url{https://www.w3.org/TR/wasm-core-1/}}, this leaves us with JavaScript as the only viable language for the client-side code. 
+With the 2017 released WebAssembly (Wasm)\footnote{\url{https://webassembly.org}} portable byte-code standard still being in its infancy at around 90\% browser support\footnote{\url{https://caniuse.com/wasm}} and being recommended by the World Wide Web Consortium not until December 5th 2019\footnote{\url{https://www.w3.org/TR/wasm-core-1/}}, this leaves us with JavaScript as the only viable language for the client-side code. 
 
 Additionally, in order to modularize the user interface and adding the ability to import existing user interface components, we use \texttt{React.js}\footnote{\url{https://reactjs.org}}, as of writing this thesis the most popular JavaScript library for building user interfaces.
 %\footnote{Ranked by number of stars on \url{https://github.com/search?l=JavaScript&o=desc&q=language%3AJavaScript&s=stars&type=Repositories}}.
 % search?l=Go&o=desc&q=http&s=stars&type=Repositories
 
-For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin}}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub \footnote{\url{https://github.com/}}.
+For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin}}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub\footnote{\url{https://github.com/}}.
 
 %Thus, we resort to modern, but well-adopted languages and libraries.
 %The software should be built with technologies that prepare well for continued development and maintenance.
 
-\subsection{Utility Functions}
+\subsection{Tooling}
+
+\subsubsection{Join Problem Generator}
+We represent the join problems in a JSON format as defined in section \ref{subsub:join-problem-data-structure}. 
+Some JSON files are taken from the supplementary material to the ``IE 630 Query Optimization'' course exercises at the University of Mannheim\footnote{\url{https://www.wim.uni-mannheim.de/moerkotte/teaching/courses/query-optimization/}}
+, which contains examples for join problems with a query type $QT \in $ \{Chain, Clique, Cycle, Star\} and a number of relations $n \in [2,10]$.
+
+Additionally, we create a join problem generator for complete binary trees with a degree $k$ and a number of relations $n$.
+
+\paragraph{Complete Binary Tree}
+\subparagraph{Neighbors}
+First, we get the number of vertices which have children, i.e. for which neighbor entries exist.
+In the case of (binary) trees, when enumerating the relations in a breadth-first manner, this is given by 
+\begin{equation}
+    n_{withNeighbors} = \lceil\frac{n}{k}\rceil
+\end{equation}
+Accordingly, we specify the list of neighbors starting with index 0 as
+\begin{equation}
+   V := \{v_i\}_{i=0}^{n_{withNeighbors}-1}
+\end{equation} 
+
+In order to define each element we first need to determine the level $l(v_i)$ of each node $v_i$ in the tree. This is given by
+\begin{equation}
+    l(v_i) = log_2(i+1)
+\end{equation}
+
+We then calculate the count of number of nodes in the levels below $l(v_i)$:
+\begin{equation}
+     pre_i = \vert \{v_j \in V \vert l(v_j) < l(v_i)\} \vert = 2^{l(v_i) + 1} - 1
+\end{equation}
+
+This allows us to calculate the number of children for each level $l(v_i)$.
+\begin{equation}
+    levelchildren_i = \min(2^{l(v_i) + 1}, n - pre_i)
+\end{equation}
+
+Furthermore, we calculate the ``column'' $c_i$ of $v_i$, given by
+\begin{equation}
+    c_i = i - 2^{l(v_i)} + 1
+\end{equation}
+
+This lets us calculate the number of children $nodechildren_i$ for a node at index $i$:
+\begin{equation}
+    n_{children_i} = \min(k, levelchildren_i - c_i * k)
+\end{equation}
+
+Now we can define the neighbors of $v_i$ as
+\begin{equation}
+    nb_i = \{ x_{i, j} \}_{j=0}^{n_{children_i} - 1} 
+\end{equation}
+
+We also calculate the lowest index of the node's neighbors. (TODO: Math).
+\begin{equation}
+    neighborLowestI = ik + 1
+\end{equation}
+
+For each element $x_{i, j} \in nb_i$ we then calculate the offset for its $j$ index.
+\begin{equation}
+    neighborOffset_j = j \mod{k}
+\end{equation}
+
+The index of the neighbor is thus given by
+\begin{equation}
+    neighborI_j = neighborLowestI + neighborOffset_j
+\end{equation}
+
+Finally, we can define $x_{i, j} \in nb_i$ as
+\begin{equation}
+    x_{i, j} = neighborI_j
+\end{equation}
+
+In the implementation, we can then join all neighbors together and add the result to the generated JSON file.
+\begin{equation}
+    %X_i = {x}
+\end{equation}
+
+% We then join all $$
+% Joining x_{i, j} into array for each i
+\subparagraph{Relations}
+Specifying the relations $R$ is trivial. 
+
+\begin{equation}
+R := \{r_i\}_{i=0}^{n-1}
+\end{equation}
+where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable following uniform distribution over the set $\mathbb{R} \cap [0,10000]$.
+
+\subparagraph{Selectivities}
+
+
+
+\subsubsection{Utility Functions}
+
+
 In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} and \url{joinproblemparser.go} file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
 
 We add some additional helper functions:
@@ -50,6 +142,7 @@ We add some additional helper functions:
 
 \subsection{Linting}
 The project uses the Go language linter\footnote{\url{https://github.com/golang/lint}} to ensure a common coding and documentation style with what is used at Google, the creators of Go.
+All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go} have been modified to satisfy all linter requirements. (TODO: Which ones)
 
 For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
 
@@ -58,7 +151,12 @@ As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.
 
 \newpage
 \subsection{Data Structures}
-All join problems can be defined using the following JSON structure:
+\label{sub:data-structures}
+
+\subsubsection{Join Problem}
+\label{subsub:join-problem-data-structure}
+
+All join problems can be defined using the following JSON structure. ``JSON'' refers to the JavaScript Object Notation Data Interchange Format as specified in RFC 7159\footnote{\url{https://tools.ietf.org/html/rfc7159}}.
 \begin{minted}{json}
 [
     {
@@ -78,10 +176,41 @@ All join problems can be defined using the following JSON structure:
         }
     }
 ]
-
 \end{minted}
+The names of the keys correspond to the explicitly defined keys for the \texttt{JSONJoinProblem} type in the \texttt{joinProblemParser.go} file.
+
+\subsection{Installation and Development}
+
+\subsubsection{Prerequisites}
+In order to run the project locally some prerequisites have to be fulfilled:
+\begin{itemize}
+    \item The Go programming language has to be installed according to the official installation guidelines\footnote{\url{https://golang.org/doc/install}}
+    \item The Node Package Manager (npm) has to be installed along with the Node.js runtime\footnote{\url{https://www.npmjs.com/get-npm}}
+\end{itemize}
+
+\subsubsection{Dependencies}
+\label{subsub:dependencies}
+
+\paragraph{Client}
+Client dependencies are maintained in the \texttt{package.json} file of the project's \texttt{client} directory.
+\paragraph{Server}
+The server-side code doesn't require any dependencies other than the Go standard libary packages as listed on \url{https://golang.org/pkg/#stdlib}.
+
+\subsubsection{Local Development}
+Once dependencies are installed as specified in section \ref{subsub:dependencies}, the project can be run locally by navigating to the project directory in a Unix shell (macOS and Linux) or PowerShell (Windows) and running
+
+\begin{minted}{shell-session}
+    $ cd client && npm install && npm start
+\end{minted}
+and, in another shell instance,
+\begin{minted}{shell-session}
+    $ cd server && go install && go run main.go
+\end{minted}
+
+This will start two locally running web servers that can be accessed via \url{https://localhost:3000/} (Client) and \url{https://localhost:8080/} (Server).
+
 
 \subsection{Deployment}
 
 a web application–the user does not have to update the application himself. 
-The duty of updating the application is on the host's side.
+The duty of updating the application is on the host's side and happens by deploying either a new version of the server code or the client code to a web server.

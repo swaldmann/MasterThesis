@@ -19,19 +19,25 @@ type costfunctionT func(*Tree, *Tree, QueryGraph) float64
 
 // Tree Data structure representing a join tree
 type Tree struct {
-	Card     float64
-	Rels     uint
-	Left     *Tree
-	Right    *Tree
-	Cost     float64
-	Costfunc costfunctionT
+	Cardinality  float64
+	Relations    uint
+	Left         *Tree
+	Right        *Tree
+	Cost         float64
+	Costfunction costfunctionT
+}
+
+// CsgCmpPair Type representing a csg-cmp-pair
+type CsgCmpPair struct {
+	Subgraph1 uint
+	Subgraph2 uint
 }
 
 // ToString string of a tree
 func (T *Tree) ToString() string {
-	var isBaseRel bool = (T.Rels&(T.Rels-1) == 0) // is base relation if is power of two (exactly one bit set)
+	var isBaseRel bool = (T.Relations&(T.Relations-1) == 0) // is base relation if is power of two (exactly one bit set)
 	if isBaseRel {
-		return fmt.Sprint(bits.TrailingZeros(T.Rels))
+		return fmt.Sprint(bits.TrailingZeros(T.Relations))
 	}
 	res := "("
 	if T.Left != nil {
@@ -39,10 +45,10 @@ func (T *Tree) ToString() string {
 	}
 
 	res += " "
-	if T.Costfunc == nil {
+	if T.Costfunction == nil {
 		res += "x"
 	} else {
-		res += GetJoinImplNameFromCostFunc(T.Costfunc)
+		res += GetJoinImplNameFromCostFunc(T.Costfunction)
 	}
 
 	res += " "
@@ -55,12 +61,12 @@ func (T *Tree) ToString() string {
 
 func mergeTrees(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunctionT) *Tree {
 	var parent Tree
-	parent.Card = T1.Card * T2.Card * QG.GetUnionSelTwoSets(T1.Rels, T2.Rels)
-	parent.Rels = T1.Rels | T2.Rels
+	parent.Cardinality = T1.Cardinality * T2.Cardinality * QG.GetUnionSelTwoSets(T1.Relations, T2.Relations)
+	parent.Relations = T1.Relations | T2.Relations
 	parent.Left = T1
 	parent.Right = T2
 	parent.Cost = costfunc(T1, T2, QG)
-	parent.Costfunc = costfunc
+	parent.Costfunction = costfunc
 	return &parent
 }
 
@@ -185,7 +191,7 @@ func (QG *QueryGraph) SubsetsSizeK(k uint) []uint {
 
 // ToString Gives description of a query graph.
 func (QG *QueryGraph) ToString() string {
-	res := "Rels: " + fmt.Sprint(QG.R) + "\n"
+	res := "Relations: " + fmt.Sprint(QG.R) + "\n"
 	res += "Sels:" + "\n"
 	for rels, sel := range QG.S {
 		res += fmt.Sprintf("%0"+fmt.Sprint(len(QG.R))+"b", rels) + " : " + fmt.Sprintf("%.5f", sel) + "\n"
@@ -230,9 +236,11 @@ func SetMinus(S1 uint, S2 uint, length uint) uint {
 	fmt.Println("Result")
 	fmt.Printf("%08b", res)
 	fmt.Println("")*/
+
+	// This should be equivalent:
 	mask := uint((1 << length) - 1)
-	//fmt.Printf("%08b", mask)
 	res := S1 & ^S2
+	//fmt.Printf("%08b", mask)
 	//fmt.Println("Result")
 	//fmt.Println(res)
 	//fmt.Printf("%08b", res)
@@ -281,7 +289,7 @@ func ValuesOfUnsetBits(S uint, length uint) []uint {
 	return Res
 }
 
-// JoinTreeCreator Struct to create join trees with.
+// JoinTreeCreator Struct to create join trees with
 type JoinTreeCreator struct {
 	RightDeepOnly bool
 	LeftDeepOnly  bool
@@ -290,7 +298,7 @@ type JoinTreeCreator struct {
 
 // CreateJoinTree This implementation avoids cross products if possible
 func (JTC JoinTreeCreator) CreateJoinTree(T1 *Tree, T2 *Tree, QG QueryGraph) *Tree {
-	if QG.Connected(T1.Rels, T2.Rels) { // are the relations of T1 and T2 connected in QG?
+	if QG.Connected(T1.Relations, T2.Relations) { // are the relations of T1 and T2 connected in QG?
 		mincost := math.Inf(1) // positive infinity
 		var costfuncidx costfunctionT
 		var left bool // join(T1, T2)  or  join(T2, T1)
@@ -312,17 +320,17 @@ func (JTC JoinTreeCreator) CreateJoinTree(T1 *Tree, T2 *Tree, QG QueryGraph) *Tr
 				}
 			}
 		}
-		card := T1.Card * T2.Card * QG.GetUnionSelTwoSets(T1.Rels, T2.Rels)
-		rels := T1.Rels | T2.Rels
+		card := T1.Cardinality * T2.Cardinality * QG.GetUnionSelTwoSets(T1.Relations, T2.Relations)
+		rels := T1.Relations | T2.Relations
 		if left {
 			return &Tree{card, rels, T1, T2, mincost, costfuncidx}
 		}
 		return &Tree{card, rels, T2, T1, mincost, costfuncidx}
 	}
 	// Cross product
-	card := T1.Card * T2.Card
-	rels := T1.Rels | T2.Rels
-	cost := T1.Card*T2.Card + T1.Cost + T2.Cost
+	card := T1.Cardinality * T2.Cardinality
+	rels := T1.Relations | T2.Relations
+	cost := T1.Cardinality*T2.Cardinality + T1.Cost + T2.Cost
 	return &Tree{card, rels, T1, T2, cost, Ccross}
 }
 
@@ -330,14 +338,14 @@ func (JTC JoinTreeCreator) CreateJoinTree(T1 *Tree, T2 *Tree, QG QueryGraph) *Tr
 
 // Cout C_out cost function
 func Cout(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
-	joincost := T1.Card * T2.Card * QG.GetUnionSelTwoSets(T1.Rels, T2.Rels)
+	joincost := T1.Cardinality * T2.Cardinality * QG.GetUnionSelTwoSets(T1.Relations, T2.Relations)
 	childrencost := T1.Cost + T2.Cost
 	return joincost + childrencost
 }
 
 // Cnlj C_nlj cost function
 func Cnlj(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
-	joincost := T1.Card * T2.Card
+	joincost := T1.Cardinality * T2.Cardinality
 	childrencost := T1.Cost + T2.Cost
 	return joincost + childrencost
 }
@@ -345,21 +353,21 @@ func Cnlj(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
 // Chj C_hj cost function
 func Chj(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
 	h := 1.2
-	joincost := h * T1.Card
+	joincost := h * T1.Cardinality
 	childrencost := T1.Cost + T2.Cost
 	return joincost + childrencost
 }
 
 // Csmj C_cmj cost function
 func Csmj(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
-	joincost := T1.Card*math.Log2(T1.Card) + T2.Card*math.Log2(T2.Card)
+	joincost := T1.Cardinality*math.Log2(T1.Cardinality) + T2.Cardinality*math.Log2(T2.Cardinality)
 	childrencost := T1.Cost + T2.Cost
 	return joincost + childrencost
 }
 
 // Ccross C_cross cost function
 func Ccross(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
-	joincost := T1.Card * T2.Card
+	joincost := T1.Cardinality * T2.Cardinality
 	childrencost := T1.Cost + T2.Cost
 	return joincost + childrencost
 }
@@ -391,7 +399,6 @@ func GetJoinImplNameFromCostFunc(impl costfunctionT) string {
 // PowerSet Returns all subsets
 func PowerSet(S uint) []uint {
 	subsets := Subsets(S)
-	HumanPrintUIntArray("subsets", subsets)
 	if len(subsets) == 1 && subsets[0] == S {
 		return subsets
 	}

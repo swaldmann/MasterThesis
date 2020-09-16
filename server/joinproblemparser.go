@@ -20,19 +20,19 @@ sizes must be a subset of {2,...,10}
 
 // JSONRelation Represents a relation in JSON
 type JSONRelation struct {
-	RelationCardinality float64
-	RelationName        string
-	RelationPID         uint
-	RelationRID         uint
+	RelationCardinality float64 `json:"relationCardinality"`
+	RelationName        string  `json:"relationName"`
+	RelationPID         uint    `json:"relationPID"`
+	RelationRID         uint    `json:"relationRID"`
 }
 
 // JSONJoinProblem Represents a join problem in JSON
 type JSONJoinProblem struct {
-	ProblemID                uint
-	ProblemNeighbors         map[uint]string
-	ProblemNumberOfRelations uint
-	ProblemRelations         []JSONRelation
-	ProblemSelectivities     map[string]float64
+	ProblemID                uint               `json:"problemID"`
+	ProblemNeighbors         map[uint]string    `json:"problemNeighbors"`
+	ProblemNumberOfRelations uint               `json:"problemNumberOfRelations"`
+	ProblemRelations         []JSONRelation     `json:"problemRelations"`
+	ProblemSelectivities     map[string]float64 `json:"problemSelectivities"`
 }
 
 func mapper(JJPs []JSONJoinProblem) []QueryGraph {
@@ -118,35 +118,4 @@ func GetQueryGraphs(shapes []string, sizes []uint) []QueryGraph {
 		}
 	}
 	return res
-}
-
-// GenerateQueryGraph Generate a query graph with a specified shape and size
-func GenerateQueryGraph(shape string, size uint) {
-	data := JSONJoinProblem{
-		ProblemID: 0,
-		ProblemNeighbors: map[uint]string{
-			0: "1,2",
-		},
-		ProblemNumberOfRelations: size,
-		ProblemRelations: []JSONRelation{
-			JSONRelation{
-				RelationCardinality: 0.0,
-				RelationName:        "<unknown>",
-				RelationPID:         0,
-				RelationRID:         0,
-			},
-		},
-		ProblemSelectivities: map[string]float64{},
-	}
-
-	sizeString := strconv.FormatUint(uint64(size), 10)
-
-	file, marshallErr := json.MarshalIndent(data, "", " ")
-	if marshallErr != nil {
-		panic("Can't marshall query graph with shape " + shape + " and size " + sizeString)
-	}
-	writeErr := ioutil.WriteFile(shape+"_"+".json", file, 0644)
-	if writeErr != nil {
-		panic("Can't write query graph with shape " + shape + " and size " + sizeString)
-	}
 }

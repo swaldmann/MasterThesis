@@ -15,13 +15,13 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 	neighborEntry := func(i uint, size uint) string {
 		level := uint(log2_64(uint64(i + 1)))
 		numberOfPredecessorNodes := uint(1<<(level+1) - 1)
-		columnIndex := i - 1<<(level) + 1
 		numberOfChildrenOnLevel := min(1<<(level+1), size-numberOfPredecessorNodes)
-		numberOfChildren := min(degree, numberOfChildrenOnLevel-columnIndex*2)
+		columnIndex := i - 1<<(level) + 1
+		numberOfChildren := min(degree, numberOfChildrenOnLevel-columnIndex*degree)
 
 		neighbors := make([]string, numberOfChildren)
+		lowestNeighborIndex := i*degree + 1
 		for j := range neighbors {
-			lowestNeighborIndex := i*degree + 1
 			neighborIndexOffset := uint(j) % degree
 			neighborIndex := lowestNeighborIndex + neighborIndexOffset
 			neighbors[j] = strconv.FormatUint(uint64(neighborIndex), 10)
@@ -31,7 +31,7 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 
 	neighbors := func(degree uint, size uint) map[uint]string {
 		dict := map[uint]string{}
-		for i := uint(0); float64(i) < math.Floor(float64(size)/2); i++ {
+		for i := uint(0); float64(i) < math.Floor(float64(size)/float64(degree)); i++ {
 			dict[i] = neighborEntry(i, size)
 		}
 		return dict

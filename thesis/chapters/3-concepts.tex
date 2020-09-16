@@ -1,10 +1,90 @@
 \section{Concepts}
 
-\subsection{Domain-Specific Algorithms}
+\subsection{Algorithms}
 
-\subsubsection{DPCPP}
+\subsubsection{DPccp}
+One of the algorithms visualized is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neunmann in 2006 \cite{moerkotte2006analysis}.
+The algorithm is specified as follows:
 
-\subsubsection{Adaptive Radix Tree}
+\vspace{0.5cm}
+\texttt{DPccp}($R = \{R_1, \ldots, R_n\}$)
+\begin{algorithm}
+\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+\Input{A connected query graph with relations $R = \{R_0,\ldots,R_{n-1}\}$}
+\Output{An optimal bushy join tree}
+\BlankLine
+\ForEach{$R_i \in R$}{
+    BestPlan($\{R_i\}) = R_i$;
+}
+\ForEach{csg-cmp-pairs $(S_1, S_2), S = S_1 \cup S_2$}{
+    ++InnerCounter;\\
+    ++OnoLohmanCounter;\\
+    $p_1$ = BestPlan($S_1$);\\
+    $p_2$ = BestPlan($S_2$);\\
+    CurrPlan = CreateJoinTree($p_1$, $p_2$);\\
+    \If{cost(BestPlan($S$)) $>$ cost(CurrPlan)}{
+        BestPlan(S) = CurrPlan;\\
+    }
+    CurrPlan = CreateJoinTree($p2$, $p1$);\\
+    \If{cost(BestPlan($S$)) $>$ cost(CurrPlan)}{
+        BestPlan(S) = CurrPlan;\\
+    }
+}
+CsgCmpPairCounter = 2 * OnoLohmanCounter;\\
+\Return{BestPlan(\{$R_0,\ldots ,R_{n-1}\}$)}
+\vspace{0.5cm}
+\caption{DPccp}
+\end{algorithm}
+
+\vspace{0.5cm}
+\texttt{EnumerateCsg}
+\begin{algorithm}
+\SetKwInOut{Input}{Input}
+\SetKwInput{kwPrecondition}{Precondition}
+\SetKwInOut{Output}{Output}
+\Input{A connected query graph $G = (V,E)$}
+\kwPrecondition {Nodes in $V$ are numbered according to a breadth-first search}
+\Output{Emits all subsets of $V$ including a connected subgraph of $G$}
+\BlankLine
+\ForEach{$i \in [n-1,\ldots,0]$ descending}{
+    \textbf{emit} \{$v_i$\};\\
+    EnumerateCsgRec($G, \{v_i\}, \mathcal{B}_i$);\\
+}
+\vspace{0.5cm}
+\caption{EnumerateCsg}
+\end{algorithm}
+
+\texttt{EnumerateCsgRec}
+\begin{algorithm}
+    \BlankLine
+    $N = \mathcal{N}(S) \setminus X$;\\
+    \ForEach{$S' \subseteq N, S' \neq \emptyset$, enumerate subsets first}{
+        \textbf{emit} ($S \cup S'$);\\
+    }
+    \ForEach{$S' \subseteq N, S' \neq \emptyset$, enumerate subsets first}{
+        EnumerateCsgRec($G, (S \cup S'), (X \cup N)$);\\
+    }
+\vspace{0.5cm}
+\caption{EnumerateCsgRec}
+\end{algorithm}
+
+\begin{algorithm}
+    \SetKwInOut{Input}{Input}
+    \SetKwInput{kwPrecondition}{Precondition}
+    \SetKwInOut{Output}{Output}
+    \Input{A connected query graph $G = (V,E)$, a connected subset $S_1$}
+    \kwPrecondition{Nodes in $V$ are numbered according to a breadth-first search}
+    \Output{Emits all complements $S_2$ for $S_1$ such that ($S_1$, $S_2$ is a csg-cmp-pair)}
+    \BlankLine
+    $X = \mathcal{B}_{min(S_1) \cup S_1}$;\\
+    $N = \mathcal{N}(S_1)\setminus X$;\\
+    \ForEach{$v_i \in N$ by descending $i$}{
+        \textbf{emit} \{$v_i$\};\\
+        EnumerateCsgRec($G, \{v_i\}, X \cup \mathcal{B}_i(N)$);\\
+    }
+    \vspace{0.5cm}
+    \caption{EnumerateCmp}    
+\end{algorithm}
 
 \subsection{Server}
 
@@ -12,7 +92,7 @@ In order for the server not having to memorize client or session information, we
 Thus, we're conforming to the Representational state transfer (REST) architecture as laid out in \cite{fielding2000architectural}.
 The exact API entry points are specified in \ref{sub:api-entry-points}.
 
-\subsubsection{API Entry Points}
+\subsubsection{API Specification}
 \label{sub:api-entry-points}
 
 \subsection{Client}

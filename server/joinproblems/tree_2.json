@@ -1,24 +1,24 @@
 {
- "ProblemID": 0,
- "ProblemNeighbors": {
+ "problemID": 0,
+ "problemNeighbors": {
   "0": "1"
  },
- "ProblemNumberOfRelations": 2,
- "ProblemRelations": [
+ "problemNumberOfRelations": 2,
+ "problemRelations": [
   {
-   "RelationCardinality": 6046.602879796195,
-   "RelationName": "\u003cunknown\u003e",
-   "RelationPID": 0,
-   "RelationRID": 0
+   "relationCardinality": 6046.602879796195,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 0
   },
   {
-   "RelationCardinality": 9405.090880450125,
-   "RelationName": "\u003cunknown\u003e",
-   "RelationPID": 0,
-   "RelationRID": 1
+   "relationCardinality": 9405.090880450125,
+   "relationName": "unknown",
+   "relationPID": 0,
+   "relationRID": 1
   }
  ],
- "ProblemSelectivities": {
+ "problemSelectivities": {
   "0,1": 0.6645600532184904
  }
 }
