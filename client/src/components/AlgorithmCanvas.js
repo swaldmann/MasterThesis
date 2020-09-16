@@ -3,7 +3,7 @@ import Select from "react-select"
 import QueryGraph from "../math/QueryGraph"
 import { ALGORITHMS, QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
 
-const ENDPOINT = "http://localhost:8080/api"
+const ENDPOINT = "https://dbs-visualization.ew.r.appspot.com/api"
 
 class AlgorithmCanvas extends React.Component {
     state = {
