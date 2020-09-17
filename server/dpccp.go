@@ -15,10 +15,13 @@ import (
 func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	n := uint(len(QG.R))
 	BestTree := make([]*Tree, 1<<n)
+	BestTree[1<<n-1] = &Tree{float64(QG.R[n-1]), 1 << (n - 1), nil, nil, 0, nil}
 
 	for i := uint(0); i < n; i++ {
+		fmt.Println(i)
 		BestTree[1<<i] = &Tree{float64(QG.R[i]), 1 << i, nil, nil, 0, nil}
 	}
+	//fmt.Println(BestTree)
 
 	// Calculate csg-cmp pairs
 	subgraphs := EnumerateCsg(QG)
@@ -53,6 +56,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 			BestTree[S] = CurrTree
 		}
 	}
+	fmt.Println(BestTree)
 	rainbow.Green(BestTree[(1<<n)-1].ToString())
 	return BestTree[(1<<n)-1]
 }

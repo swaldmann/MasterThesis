@@ -29,13 +29,6 @@ func startServer() {
 
 	api := router.Group("/api")
 	{
-		/*api.GET("/graph/:type", func(c *gin.Context) {
-			graphType := c.Param("type")
-			c.JSON(200, gin.H{
-				"nodePoints": "" + graphType,
-			})
-		})*/
-
 		api.GET("/algorithm/:type/relations/:numberOfRelations/graphType/:graphType", func(c *gin.Context) {
 			algorithmType := c.Param("type")
 			graphType := c.Param("graphType")
@@ -44,9 +37,11 @@ func startServer() {
 			if err != nil {
 				log.Fatal(err)
 			}
+			if graphType == "moerkotte" {
+				numberOfRelations = 5
+			}
 			QG := GetQueryGraph(graphType, uint(numberOfRelations))
 
-			/*QG := GetQueryGraph("clique", 5)*/
 			fmt.Println(QG.N[0])
 
 			// First, define the initial state.

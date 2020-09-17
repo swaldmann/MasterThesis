@@ -8,12 +8,12 @@ func main() {
 	}*/
 	//HumanPrintUIntArray("", PowerSet(uint(16)))
 
-	/*graphType := "moerkotte"
-	QG := GetQueryGraph(graphType, uint(5))
+	graphType := "chain"
+	QG := GetQueryGraph(graphType, uint(6))
 	Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 	JTC := JoinTreeCreator{false, false, Costfunctions}
-	visualizeDPccp(QG, JTC)*/
-	startServer()
+	visualizeDPccp(QG, JTC)
+	//startServer()
 	/*for i := uint(2); i <= 10; i++ {
 		GenerateTreeQueryGraph(2, i)
 	}*/

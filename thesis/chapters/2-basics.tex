@@ -1,21 +1,22 @@
 \section{Basics}
 \label{sec:basics}
 
+\subsection{Domain}
 There are certain terms and concepts the reader should be familiar with in order to understand the aim and purpose of this thesis. 
 We forego a formal mathematical introduction to relational algebra, although a familiarity of its basic concepts is highly recommended. 
 Moreover, we assume that the Landau notation is known.
 
-\subsection{Relations}
+\subsubsection{Relations}
 Relations are tables in a database. 
 Its attributes are described by a database schema, which specifies the possible attribute types.
 An entry in the table is described as a \textit{tuple}. Furthermore, we call the number of tuples in a relation the \textit{cardinality} of the relation.
 
-\subsection{Join}
+\subsubsection{Join}
 A join links two or more relations by building their cross product and filtering it with the help of a \textit{join predicate}. 
 The result is a new relation which contains the joined tuples, for which the predicate is true. We denote the join operator using the symbol "$\Join$". 
 As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``''$R \Join S$''.
 
-\subsection{Selectivity}
+\subsubsection{Selectivity}
 The selectivity of two relations is the ratio between the cardinality of their cross product and the number of elements in the join's resulting relation. 
 This way we determine the number of entries that is kept after the join.
 
@@ -29,7 +30,7 @@ Since we can assume that $|R_i\Join_{p_{i,j}}R_j| \geq 0$, $|R_i \times R_j| > 0
 For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two relations given. 
 \newpage
 
-\subsection{Query Types}
+\subsubsection{Query Types}
 The relations can be connected in many different ways.
 We visualize this connection in a graph.
 There is a number of different query types. 
@@ -98,7 +99,86 @@ $R_1$\\
     \end{subfigure}
     \end{center}
     \caption{Query Graphs}
-    \end{figure}
+\end{figure}
 
-\subsection{Dynamic Programming}
-    
+
+\subsection{Operator Trees}
+An operator tree contains operators as inner nodes and relations as leaves.
+Through this tree the order, in which the operations are executed, can be graphically visualized.
+It typically contains any operator of Codd's relational model, however in this thesis we limit those to the only relevant join operator ($\Join$), which is derived from a cross product and a subsequent selection.
+Depending on the construction of the tree it can be classified as either \textit{left-deep}, \textit{right-deep}, \textit{zigzag} or \textit{bushy}.
+This way the trees for $(R_1 \Join R_2) \Join R_3$ and $(R_1 \Join R_2) \Join (R_3 \Join R_4)$ can be graphically represented using the following trees:\\
+
+\begin{figure}[htp] 
+    \centering
+    	\begin{subfigure}[c]{0.3\textwidth}
+        \pstree[nodesep=4pt]{\TR{$\Join$}} {
+        	\pstree[]{\TR{$\Join$}} {
+				\TR{$R_1$}
+				\TR{$R_2$}
+			}
+	        \TR{$R_3$}
+	    }
+	    \subcaption{left-deep}
+	    \end{subfigure}
+    	\hskip 2cm
+    	\begin{subfigure}[c]{0.3\textwidth}
+    	\pstree[nodesep=4pt]{\TR{$\Join$}} {
+			\pstree[]{\TR{$\Join$}} {
+				\TR{$R_1$}
+				\TR{$R_2$}
+			}
+        	\pstree[]{\TR{$\Join$}} {
+				\TR{$R_3$}
+				\TR{$R_4$}
+        	}
+		}
+		\subcaption{bushy}
+	    \end{subfigure}
+    \caption{Operator trees}
+\end{figure}
+
+
+
+\subsubsection{Dynamic Programming}
+
+\subsection{Client}
+\subsubsection{React.js}
+\texttt{React.js}\footnote{\url{https://reactjs.org}} is a declarative, component-based JavaScript library for building user interfaces. 
+It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react}}, originally developed and maintained by Facebook.
+The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3}} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT}} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25}}.
+
+\subsubsection{JavaScript XML (JSX)}
+JavaScript XML (JSX) is an XML-style syntax extension to the JavaScript (ECMAScript) programming language.
+In addition to its HTML-like definition of the website's semantic structure, it allows JavaScript expressions when used in curly braces (\{\}).
+As such, it cannot be interpreted by web browsers, but has to be cross-compiled to valid JavaScript using a transpiler according to its specification\footnote{\url{https://facebook.github.io/jsx/}}.
+
+
+\begin{figure}[H]
+\begin{minted}{JavaScript}
+class App extends React.Component {
+    render() {
+        return (
+            <div>
+                <p>Paragraph 1</p>
+                <p>Paragraph {1+1}</p>
+                {[3].map(n => <p>Paragraph {n}</p>)}
+            </div>
+        );
+    }
+}
+\end{minted}
+\caption{JSX component sample rendering three paragraphs}
+\end{figure}
+
+
+\subsubsection{Redux}
+\texttt{Redux}\footnote{\url{https://redux.js.org}} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
+It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux}} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md}}.
+TODO: Short description 
+
+\subsection{Server}
+
+\subsubsection{Gin}
+\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
+It provides a router-level middleware that lets us specify API routes for our server-side code. The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.

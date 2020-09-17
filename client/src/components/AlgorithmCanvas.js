@@ -2,6 +2,7 @@ import React from "react"
 import Select from "react-select"
 import QueryGraph from "../math/QueryGraph"
 import { ALGORITHMS, QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
+import Hotkeys from 'react-hot-keys'
 
 const ENDPOINT = "https://dbs-visualization.ew.r.appspot.com/api"
 
@@ -33,10 +34,6 @@ class AlgorithmCanvas extends React.Component {
                                               + "/relations/" + numberOfRelations
                                               + "/graphType/" + graphType.value)
         const json = await response.json()
-        console.log("Res")
-        console.log(response)
-        console.log(json)
-
         actions.updateConfiguration(json.configuration)
         actions.updateSteps(json.diffs)
 
@@ -61,10 +58,6 @@ class AlgorithmCanvas extends React.Component {
         const { graphState, diffs } = this.state
         const diff = diffs[step + 1]
 
-        console.log("Next step");
-        console.log(diff);
-        console.log(this.state)
-
         const { actions } = this.props
         actions.increaseStep(1)
 
@@ -76,15 +69,7 @@ class AlgorithmCanvas extends React.Component {
     handlePreviousStep = step => {
         const { graphState, diffs } = this.state
         const diff = diffs[step - 1]
-
-        //let newGraphState
-        /*if (step === 1) {
-            newGraphState = JSON.parse(JSON.stringify(this.state.initialGraphState))
-        } else {
-            
-        }*/
         const newGraphState = Object.assign(graphState, diff.graphState)
-
         const { actions } = this.props
         actions.decreaseStep(1)
 
@@ -104,9 +89,21 @@ class AlgorithmCanvas extends React.Component {
         queryGraph.draw(graphType.value, graphState.nodeColors, ctx)
     }
 
+    onKeyDown(keyName, e, handle) {
+        const { step } = this.props
+        const { diffs } = this.state
+        if (keyName === "d" && step < diffs.length - 1) {
+            this.handleNextStep(step)
+        } else if (keyName === "a" && step > 0) {
+            this.handlePreviousStep(step)
+        }
+    }
+
     render() {
         const { algorithm, diffs } = this.state
         const { step } = this.props
+        const isFirstStep = step === 0
+        const isLastStep = step === diffs.length - 1
 
         return (
             <div>
@@ -118,10 +115,14 @@ class AlgorithmCanvas extends React.Component {
                        value={algorithm}
                     onChange={this.handleAlgorithmChange} 
                      options={ALGORITHMS} />
-                <button onClick={() => this.handlePreviousStep(step)} disabled={step === 0}>Previous Step</button>
-                <button onClick={() => this.handleNextStep(step)} disabled={step === diffs.length - 1}>Next Step</button>
-                <p>Step {step + 1} of {diffs.length}</p>
-                <canvas ref={this.algorithmCanvasRef} width="400px" height="400px" style={{width:"400px", height:"400px"}}></canvas>
+                <Hotkeys keyName="a,d" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
+                <button onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm</button>
+                <div style={{marginTop: "50px"}}>
+                    <canvas ref={this.algorithmCanvasRef} width="400px" height="400px" style={{width:"400px", height:"400px"}}></canvas>
+                    <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step (a)</button>
+                    <button onClick={() => this.handleNextStep(step)} disabled={isLastStep}>Next Step (d)</button>
+                    <p>Step {step + 1} of {diffs.length}</p>
+                </div>
             </div>
         )
     }
