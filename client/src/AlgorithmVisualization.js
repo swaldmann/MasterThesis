@@ -7,7 +7,7 @@ class AlgorithmVisualization extends React.Component {
     render() {
         return (
             <div style={{display:"flex"}}>
-                <div style={{width: "400px", flex:"0 0 400px", justifyContent:"space-between", marginRight:"80px"}}>
+                <div style={{width: "500px", flex:"0 0 500px", justifyContent:"space-between", marginRight:"80px"}}>
                     <VisibleJoinProblemSettings />
                     <VisibleAlgorithmCanvas />
                 </div>

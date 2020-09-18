@@ -78,9 +78,9 @@ func mergeTrees(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunctionT) *Tree
 
 // QueryGraph Representation of a query graph
 type QueryGraph struct {
-	R []uint
-	S map[uint]float64
-	N map[uint][]uint // Neighbors
+	R []uint           `json:"relationCardinalities"`
+	S map[uint]float64 `json:"selectivities"`
+	N map[uint][]uint  `json:"neighbors"` // Neighbors
 }
 
 /*func Bitvector(i uint, neighbors uint[]) uint {

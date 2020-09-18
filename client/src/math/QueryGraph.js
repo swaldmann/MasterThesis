@@ -6,14 +6,13 @@ class QueryGraph {
     _nodeColors = []
     _numberOfNodes = 0
 
-    constructor(numberOfNodes) {
+    constructor(queryGraph) {
+        const numberOfNodes = queryGraph.relationCardinalities.length
         this._numberOfNodes = numberOfNodes
         this._nodeColors = Array(numberOfNodes).fill("white")  
     }
     
     draw(type, nodeColors, ctx) {
-        console.log(nodeColors);
-
         nodeColors.forEach(nodeColor => {
             this._nodeColors[nodeColor.nodeIndex] = "rgb(" + nodeColor.color.R + "," + nodeColor.color.G + "," + nodeColor.color.B + ")"
         })
@@ -69,7 +68,7 @@ class QueryGraph {
             if (i !== 0) {
                 const x_previous = margin + r_node + (i - 1) * drawableWidth/(numberOfNodes - 1)
                 const y_previous = y
-                this._drawLine(x, y, x_previous, y_previous, ctx)
+                this._drawEdge(x, y, x_previous, y_previous, ctx)
             }
         }
     }
@@ -87,7 +86,7 @@ class QueryGraph {
             const r = ctx.canvas.clientWidth/2 - r_node - margin
             const x = r * Math.cos(θ) + r + r_node + margin
             const y = r * Math.sin(θ) + r + r_node + margin
-            this._drawLine(x, y, x_center, y_center, ctx)
+            this._drawEdge(x, y, x_center, y_center, ctx)
             this._drawNode(i, x, y, "white", ctx)
         }
     }
@@ -122,7 +121,7 @@ class QueryGraph {
             const column_previous = calculateColumn(parentIndex, row_previous)
             const x_previous = calculateX(column_previous, numberOfColumns_previous)
             const y_previous = calculateY(row_previous)
-            this._drawLine(x, y, x_previous, y_previous, ctx)
+            this._drawEdge(x, y, x_previous, y_previous, ctx)
         }
     }
 
@@ -146,13 +145,13 @@ class QueryGraph {
         this._drawNode(3, x3, y3, "white", ctx)
         this._drawNode(4, x4, y4, "white", ctx)
         
-        this._drawLine(x0, y0, x1, y1, ctx)
-        this._drawLine(x0, y0, x2, y2, ctx)
-        this._drawLine(x0, y0, x3, y3, ctx)
-        this._drawLine(x1, y1, x4, y4, ctx)
-        this._drawLine(x2, y2, x3, y3, ctx)
-        this._drawLine(x2, y2, x4, y4, ctx)
-        this._drawLine(x3, y3, x4, y4, ctx)
+        this._drawEdge(x0, y0, x1, y1, ctx, 1)
+        this._drawEdge(x0, y0, x2, y2, ctx, 2.042)
+        this._drawEdge(x0, y0, x3, y3, ctx, 3)
+        this._drawEdge(x1, y1, x4, y4, ctx, 4)
+        this._drawEdge(x2, y2, x3, y3, ctx, 5)
+        this._drawEdge(x2, y2, x4, y4, ctx, 6)
+        this._drawEdge(x3, y3, x4, y4, ctx, 7)
     }
 
     _drawCyclicQuery(numberOfNodes, ctx) {
@@ -171,7 +170,7 @@ class QueryGraph {
             const θ_previous = 2 * π/numberOfNodes * (i - 1)
             const x_previous = r * Math.cos(θ_previous) + r + r_node + margin
             const y_previous = r * Math.sin(θ_previous) + r + r_node + margin
-            this._drawLine(x, y, x_previous, y_previous, ctx)
+            this._drawEdge(x, y, x_previous, y_previous, ctx)
         }
     }
 
@@ -196,7 +195,7 @@ class QueryGraph {
         ctx.fillText("R" + i, x, y)
     }
 
-    _drawLine(x_source, y_source, x_dest, y_dest, ctx) {
+    _drawEdge(x_source, y_source, x_dest, y_dest, ctx, weight = null) {
         const compositeOperationBefore = ctx.globalCompositeOperation
         ctx.globalCompositeOperation = 'destination-over'
         ctx.beginPath()
@@ -204,6 +203,27 @@ class QueryGraph {
         ctx.lineTo(x_dest, y_dest)
         ctx.stroke()
         ctx.globalCompositeOperation = compositeOperationBefore
+        if (weight) {
+            const weightLabelCenterX = Math.min(x_dest, x_source) + Math.abs(x_dest - x_source)/2
+            const weightLabelCenterY = Math.min(y_dest, y_source) + Math.abs(y_dest - y_source)/2
+            const oldFillStyle = ctx.fillStyle
+
+            const labelText = [...weight.toString()].slice(0,4).join("") // Limit to a maximum of 4 characters
+            const labelWidth = ctx.measureText(labelText).width + 10
+            const labelHeight = 18
+
+            ctx.fillStyle = "white"
+            ctx.fillRect(weightLabelCenterX - labelWidth/2, weightLabelCenterY - labelHeight/2, labelWidth, labelHeight)
+            ctx.fillStyle = oldFillStyle
+
+            ctx.font = "14px sans-serif"
+            ctx.fillText(labelText, weightLabelCenterX, weightLabelCenterY)
+            ctx.moveTo(weightLabelCenterX, weightLabelCenterY)
+        }
+    }
+
+    _drawEdgeLabel(ctx) {
+
     }
 }
 

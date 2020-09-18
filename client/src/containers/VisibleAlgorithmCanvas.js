@@ -8,8 +8,10 @@ import * as Actions from '../actions'
 const mapStateToProps = state => {
     return {
         algorithm: ALGORITHMS[state.algorithmIndex],
-        numberOfRelations: state.queryGraph.numberOfRelations,
-        graphTypeIndex: state.queryGraph.graphTypeIndex,
+        settingNumberOfRelations: state.settingNumberOfRelations,
+        settingGraphTypeValue: state.settingGraphTypeValue,
+
+        queryGraph: state.queryGraph,
         step: state.step
     }
 }

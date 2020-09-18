@@ -55,8 +55,8 @@ canvas {
 }
 
 canvas.queryGraph {
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
 }
 
 .info {
@@ -69,7 +69,7 @@ canvas.queryGraph {
 .select {
     width: 100%;
     min-width: 250px;
-    max-width: 400px;
+    max-width: 500px;
     color: black;
     text-align: center;
 }
@@ -110,4 +110,9 @@ th, td {
     width: 200px;
     text-align: center;
     padding: 10px;
+}
+
+button.emphasized {
+    background: rgba(0,130,0,0.8);
+    width: 100%;
 }

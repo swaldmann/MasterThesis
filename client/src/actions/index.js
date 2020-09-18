@@ -2,7 +2,8 @@ import * as types from '../constants/ActionTypes'
 
 // Query Graph
 export const changeQueryNumberOfRelations = numberOfRelations => ({ type: types.CHANGE_QUERY_NUMBER_RELATIONS, numberOfRelations })
-export const changeQueryGraphType = graphTypeIndex => ({ type: types.CHANGE_QUERY_GRAPH_TYPE, graphTypeIndex })
+export const changeQueryGraphTypeOption = graphTypeOptionValue => ({ type: types.CHANGE_QUERY_GRAPH_TYPE, graphTypeOptionValue })
+export const changeQueryGraph = queryGraph => ({ type: types.CHANGE_QUERY_GRAPH, queryGraph })
 
 // Algorithm
 export const changeAlgorithm = algorithmIndex => ({ type: types.CHANGE_ALGORITHM, algorithmIndex })
@@ -11,12 +12,11 @@ export const changeAlgorithm = algorithmIndex => ({ type: types.CHANGE_ALGORITHM
 export const addVariableRow = variableRow => ({ type: types.ADD_VARIABLE_ROW, variableRow })
 export const popVariableRow = () => ({ type: types.POP_VARIABLE_ROW })
 
-// Steps
-export const updateSteps = steps => ({ type: types.UPDATE_STEPS, steps })
-
-// Update Configuration
+// Configuration
 export const updateConfiguration = configuration => ({ type: types.UPDATE_CONFIGURATION, configuration })
 
-// Step
+// Steps
 export const increaseStep = increase => ({ type: types.INCREASE_STEP, increase })
 export const decreaseStep = decrease => ({ type: types.DECREASE_STEP, decrease })
+export const resetSteps = () => ({ type: types.RESET_STEPS })
+export const updateSteps = steps => ({ type: types.UPDATE_STEPS, steps })

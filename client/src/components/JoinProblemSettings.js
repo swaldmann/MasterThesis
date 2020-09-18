@@ -24,22 +24,27 @@ const marksStatic = {
 }
 
 class JoinProblemSettings extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            selectedQueryGraphIndex: 4
+        }
+    }
     
     handleNumberOfRelationsChange = numberOfRelations => {
         const actions = this.props.actions
         actions.changeQueryNumberOfRelations(numberOfRelations)
     }
 
-    handleGraphTypeChange = graphType => {
+    handleGraphTypeOptionChange = graphTypeOption => {
         const actions = this.props.actions
-        const graphTypeIndex = QUERY_GRAPH_OPTIONS.findIndex(type => type.value === graphType.value)
-        actions.changeQueryGraphType(graphTypeIndex)
+        actions.changeQueryGraphTypeOption(graphTypeOption.value)
     }
 
     render() {
-        const { graphTypeIndex } = this.props
-        const graphType = QUERY_GRAPH_OPTIONS[graphTypeIndex]
-        
+        const { graphTypeOptionValue } = this.props
+        const graphTypeOption = QUERY_GRAPH_OPTIONS.find(o => o.value === graphTypeOptionValue)
+
         return (
             <div>
                 <h3>Graph</h3>
@@ -63,10 +68,10 @@ class JoinProblemSettings extends React.Component {
                                 style={{width:"100%"}}
                          defaultValue={QUERY_GRAPH_OPTIONS[4]} 
                           placeholder="Query Graph" 
-                                value={graphType} 
-                             onChange={this.handleGraphTypeChange} 
+                                value={graphTypeOption} 
+                             onChange={this.handleGraphTypeOptionChange} 
                               options={QUERY_GRAPH_OPTIONS} />
-                    {graphType.value === "tree" && <div className="info">Only complete binary trees are supported.</div>}
+                    {graphTypeOption.value === "tree" && <div className="info">Only complete binary trees are supported.</div>}
                 </div>
             </div>
         )

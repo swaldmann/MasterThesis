@@ -5,9 +5,12 @@ import JoinProblemSettings from '../components/JoinProblemSettings'
 import * as Actions from '../actions'
 
 const mapStateToProps = state => {
-    return {
-        numberOfRelations: state.queryGraph.numberOfRelations,
-        graphTypeIndex: state.queryGraph.graphTypeIndex
+    return {        
+        // Required to keep track of the currently selected 
+        // settings without immedeately triggering a server
+        // request
+        numberOfRelations: state.settingNumberOfRelations,
+        graphTypeOptionValue: state.settingGraphTypeValue
     }
 }
 

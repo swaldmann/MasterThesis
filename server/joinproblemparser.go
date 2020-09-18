@@ -119,3 +119,21 @@ func GetQueryGraphs(shapes []string, sizes []uint) []QueryGraph {
 	}
 	return res
 }
+
+func GetQueryGraphJSON(shape string, size uint) []JSONJoinProblem {
+	filename := "joinproblems/" + shape + "_" + fmt.Sprint(size) + ".json"
+	file, err := os.Open(filename)
+	if err != nil {
+		panic("Cannot open " + filename)
+	}
+	defer file.Close() // execute this command at the end of current function
+
+	content, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic("Error reading content of " + filename)
+	}
+
+	var JJPs []JSONJoinProblem
+	json.Unmarshal(content, &JJPs)
+	return JJPs
+}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image/color"
 	"log"
 	"net/http"
@@ -29,6 +28,22 @@ func startServer() {
 
 	api := router.Group("/api")
 	{
+		api.GET("/queryGraph/:graphType/relations/:numberOfRelations", func(c *gin.Context) {
+			graphType := c.Param("graphType")
+
+			numberOfRelations, err := strconv.ParseUint(c.Param("numberOfRelations"), 10, 64)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if graphType == "moerkotte" {
+				numberOfRelations = 5
+			}
+			QG := GetQueryGraph(graphType, uint(numberOfRelations))
+			c.JSON(http.StatusOK, gin.H{
+				"queryGraph": QG,
+			})
+		})
+
 		api.GET("/algorithm/:type/relations/:numberOfRelations/graphType/:graphType", func(c *gin.Context) {
 			algorithmType := c.Param("type")
 			graphType := c.Param("graphType")
@@ -42,18 +57,11 @@ func startServer() {
 			}
 			QG := GetQueryGraph(graphType, uint(numberOfRelations))
 
-			fmt.Println(QG.N[0])
-
 			// First, define the initial state.
-			// Second, generate all the diffs from the algorithm implementation.
+			// Second, generate all the steps from the algorithm implementation.
 
 			switch algorithmType {
 			case "dpccp":
-				color := color.RGBA{85, 165, 34, 1}
-				nodeColor := NodeColor{NodeIndex: 0, Color: color}
-				graphState := &GraphState{NodeColors: []NodeColor{nodeColor}}
-				counter := &AlgorithmCounter{Name: "LohmannCounter", Value: 0}
-
 				observedVariables := []string{"S", "X", "N", "emit/S"}
 				configuration := &Configuration{ObserverdVariables: observedVariables}
 
@@ -62,11 +70,9 @@ func startServer() {
 				changes := visualizeDPccp(QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
-					"begin": gin.H{
-						"counter":    counter,
-						"graphState": graphState},
-					"diffs":         changes,
+					"steps":         changes,
 					"configuration": configuration,
+					"queryGraph":    QG,
 				})
 			case "adaptiveRadixTree":
 				color := color.RGBA{85, 165, 34, 1}
@@ -77,6 +83,7 @@ func startServer() {
 				c.JSON(http.StatusOK, gin.H{
 					"counters":   counter,
 					"graphState": graphState,
+					"queryGraph": QG,
 				})
 			}
 		})
