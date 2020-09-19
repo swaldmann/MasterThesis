@@ -115,7 +115,7 @@ class AlgorithmCanvas extends React.Component {
                     onChange={this.handleAlgorithmChange} 
                      options={ALGORITHMS} />
                 <Hotkeys keyName="a,d,r" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
-                <button class="emphasized" onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm (r)</button>
+                <button className="emphasized" onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm (r)</button>
                 <div style={{marginTop: "50px"}}>
                     <canvas ref={this.algorithmCanvasRef} width="500px" height="500px" style={{width:"500px", height:"500px"}}></canvas>
                     <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step (a)</button>
