@@ -10,6 +10,16 @@ More formally, this means that the algorithm has to conform to the \texttt{Visua
     type Visualizable func(QG QueryGraph)
 \end{minted}
 
+An important goal is to separate the complex algorithm and user interface/visualization logic.
+Thus, we organize their architecture in a client-server relationship, whereby the client specifies the join problem parameters and configuration and the server can generate a client-interpretable output to work with.
+
+The advantages of this approach are multifold:
+\begin{itemize}
+    \item The server part and UI part respectively can be updated or even completely exchanged without changing the other
+    \item More complex join ordering algorithms can be performed on a (more powerful) server
+    \item The above allow us to run the application within a web application without sacrificing the performance by limiting ourselves with a slow, interpreting JavaScript engine, but being able to run compiled and thus more optimized code
+    \item (Allos us to formally specify interfaces between client and server) (Abbildung malen)
+\end{itemize}
 
 \subsection{Choice of Technology}
 
