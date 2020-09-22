@@ -64,16 +64,15 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 // EnumerateCsg Enumerate Csg pairs
 func EnumerateCsg(QG QueryGraph) []uint {
 	n := uint(len(QG.R))
-	𝔅 := uint(1<<n - 1)
 
 	subgraphs := []uint{}
 
 	for i := n - 1; i < n; i-- {
 		v := uint(1 << i)
 		subgraphs = append(subgraphs, v)
+		𝔅 := uint(1<<i - 1)
 		recursiveSubgraphs := EnumerateCsgRec(QG, v, 𝔅)
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
-		𝔅 = SetMinus(𝔅, v, n)
 	}
 	return subgraphs
 }
@@ -189,7 +188,8 @@ func ℕ(QG QueryGraph, S uint) uint {
 			result = result | (1 << neighbor)
 		}
 	}
-	return result
+	n := uint(len(QG.R))
+	return SetMinus(result, S, n)
 }
 
 // HumanPrint Prints uint variable in a human-readable format
