@@ -402,7 +402,7 @@ func PowerSet(S uint) []uint {
 	if len(subsets) == 1 && subsets[0] == S {
 		return subsets
 	}
-	return append(Subsets(S), S)
+	return append(subsets, S)
 }
 
 func contains(s []uint, e uint) bool {
