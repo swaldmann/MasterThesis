@@ -28,6 +28,9 @@ var tab64 = [64]int{
 
 // MinUintSlice Returns the minimum element of a uint slice
 func MinUintSlice(slice []uint) uint {
+	if len(slice) == 0 {
+		return uint(0)
+	}
 	min := slice[0]
 	for _, value := range slice {
 		if min > value {
@@ -39,7 +42,7 @@ func MinUintSlice(slice []uint) uint {
 
 // MinUintSetBitIndex Returns the minimum set index of a uint
 func MinUintSetBitIndex(S uint) uint {
-	SetIndexes := IdxsOfSetBits(S)
-	MinIndex := MinUintSlice(SetIndexes)
-	return MinIndex
+	setIndexes := IdxsOfSetBits(S)
+	minIndex := MinUintSlice(setIndexes)
+	return minIndex
 }

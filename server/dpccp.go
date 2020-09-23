@@ -213,9 +213,8 @@ func HumanPrintCsgCmpPair(pair CsgCmpPair) {
 
 // HumanPrintCsgCmpPairArray Print csg-cmp-pair array in human-readable format
 func HumanPrintCsgCmpPairArray(name string, pairs []CsgCmpPair) {
-	fmt.Println(name)
+	fmt.Printf(name + ": ")
 	for _, pair := range pairs {
 		HumanPrintCsgCmpPair(pair)
-		rainbow.Yellow("------------")
 	}
 }

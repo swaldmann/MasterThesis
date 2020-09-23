@@ -1,7 +1,6 @@
 package main
 
-import "fmt"
-
+/*
 // innerLoop Implementation of DPsize's inner loop
 func innerLoop(S1 uint, S2 uint, s uint, QG *QueryGraph, JTC *JoinTreeCreator, innerCounter *uint, csgCmpPairCounter *uint, PlansSizeK [][]uint, BestTree []*Tree) {
 	*innerCounter++
@@ -65,3 +64,4 @@ func DPsize(QG QueryGraph, JTC JoinTreeCreator, counterTrace bool, optimized boo
 	}
 	return BestTree[(1<<n)-1]
 }
+*/

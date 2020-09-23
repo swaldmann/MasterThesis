@@ -120,7 +120,7 @@ func GetQueryGraphs(shapes []string, sizes []uint) []QueryGraph {
 	return res
 }
 
-func GetQueryGraphJSON(shape string, size uint) []JSONJoinProblem {
+func getQueryGraphJSON(shape string, size uint) []JSONJoinProblem {
 	filename := "joinproblems/" + shape + "_" + fmt.Sprint(size) + ".json"
 	file, err := os.Open(filename)
 	if err != nil {
