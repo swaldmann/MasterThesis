@@ -42,7 +42,7 @@ class JoinProblemSettings extends React.Component {
     }
 
     render() {
-        const { graphTypeOptionValue } = this.props
+        const { graphTypeOptionValue, numberOfRelations } = this.props
         const graphTypeOption = QUERY_GRAPH_OPTIONS.find(o => o.value === graphTypeOptionValue)
 
         return (
@@ -60,7 +60,7 @@ class JoinProblemSettings extends React.Component {
                                  dots={true}
                              onChange={this.handleNumberOfRelationsChange}
                                   min={3}
-                         defaultValue={5}
+                         defaultValue={numberOfRelations}
                                   max={10} />
                     <h5>Graph Type</h5>
                     <Select className="select" 

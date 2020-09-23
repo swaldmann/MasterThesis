@@ -246,7 +246,7 @@ class QueryGraph {
             const weightLabelCenterY = Math.min(y_dest, y_source) + Math.abs(y_dest - y_source)/2
             const oldFillStyle = ctx.fillStyle
 
-            const labelText = [...weight.toString()].slice(0,5).join("") // Limit to a maximum of 5 characters
+            const labelText = [...weight.toString()].slice(0,7).join("") // Limit to a maximum of 5 characters
             const labelWidth = ctx.measureText(labelText).width + 10
             const labelHeight = 18
 
