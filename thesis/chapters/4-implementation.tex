@@ -138,16 +138,38 @@ where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable foll
 
 In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} and \url{joinproblemparser.go} file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
 
+Modifications include:
+\paragraph{Simplification of the }
+
+\paragraph{Addition of a PowerSet}
+For the implementation of \texttt{DPccp} we need an additional function that returns not just the subsets of an (\texttt{unsigned int} bit vector $S$, but its power set excluding the empty set $\mathcal P(S)\setminus\{\varnothing\}$.
+
+\begin{minted}{go}
+    func PowerSet(S uint) []uint {
+        subsets := Subsets(S)
+        if len(subsets) == 1 && subsets[0] == S {
+            return subsets
+        }
+        return append(subsets, S)
+    }
+\end{minted}
+
+\begin{itemize}
+    \item Simplification of SetMinus
+    \item Chaning join problems and class variable names for linter
+\end{itemize}
+
+
 We add some additional helper functions:
 \begin{minted}{go}   
-    func contains(s []uint, e uint) bool {
-        for _, a := range s {
-            if a == e {
-                return true
-            }
+func contains(s []uint, e uint) bool {
+    for _, a := range s {
+        if a == e {
+            return true
         }
-        return false
-    }    
+    }
+    return false
+}    
 \end{minted}
 
 \subsection{Linting}
