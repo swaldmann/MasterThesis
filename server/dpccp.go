@@ -108,7 +108,8 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		}
 		SuSPrime := S | SPrime
 		XuN := X | N
-		EnumerateCsgRec(QG, SuSPrime, XuN)
+		recursiveSubgraphs := EnumerateCsgRec(QG, SuSPrime, XuN)
+		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
 	return subgraphs
 }
