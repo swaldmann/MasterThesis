@@ -24,12 +24,12 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 	subgraphs := EnumerateCsg(QG)
 	// Begin visualization
-	sObserver := ObservedVariable{Identifier: "S", Color: greenColor}
-	xObserver := ObservedVariable{Identifier: "X", Color: grayColor}
-	nObserver := ObservedVariable{Identifier: "N", Color: redColor}
-	emitObserver := ObservedVariable{Identifier: "emit/s", Color: redColor}
-	observedVariables := []ObservedVariable{sObserver, xObserver, nObserver, emitObserver}
-	routine := VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObserverdVariables: observedVariables}
+	sObserver := ObservedRelation{Identifier: "S", Color: greenColor}
+	xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
+	nObserver := ObservedRelation{Identifier: "N", Color: redColor}
+	emitObserver := ObservedRelation{Identifier: "emit/s", Color: redColor}
+	obeservedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
+	routine := VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObeservedRelation: obeservedRelations}
 	routines = append(routines, routine)
 	//resetChanges()
 	// End visualization
@@ -39,10 +39,10 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
 		// Begin visualization
 
-		xObserver := ObservedVariable{Identifier: "X", Color: grayColor}
-		vObserver := ObservedVariable{Identifier: "v", Color: blueColor}
-		observedVariables := []ObservedVariable{xObserver, vObserver}
-		routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObserverdVariables: observedVariables}
+		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
+		vObserver := ObservedRelation{Identifier: "v", Color: blueColor}
+		obeservedRelations := []ObservedRelation{xObserver, vObserver}
+		routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObeservedRelation: obeservedRelations}
 		routines = append(routines, routine)
 		resetChanges()
 		// End visualization

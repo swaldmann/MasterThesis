@@ -62,7 +62,7 @@ func startServer() {
 
 			switch algorithmType {
 			case "dpccp":
-				//observedVariables := []string{"S", "X", "N", "emit/S"}
+				//obeservedRelations := []string{"S", "X", "N", "emit/S"}
 				configuration := &Configuration{}
 
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}

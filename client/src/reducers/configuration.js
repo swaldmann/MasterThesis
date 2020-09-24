@@ -3,7 +3,7 @@ import {
 } from '../constants/ActionTypes'
 
 const DEFAULT_CONFIGURATION = {
-    observedVariables: []
+    obeservedRelations: []
 }
 
 export function configuration(state = DEFAULT_CONFIGURATION, action) {

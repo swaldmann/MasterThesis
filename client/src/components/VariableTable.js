@@ -11,7 +11,7 @@ class VariableTable extends React.Component {
             []
         )
 
-        const keyLengths = routines.map(r => r.observedVariables.length)//configuration.observedVariables
+        const keyLengths = routines.map(r => r.obeservedRelations.length)//configuration.obeservedRelations
         const maxKeyLength = Math.max(...keyLengths)
         let routineIndex = -1
         console.log(routines)
@@ -40,13 +40,13 @@ class VariableTable extends React.Component {
                                                 </td>
                                             </tr>
                                             <tr>
-                                                {routines[newRoutineIndices.indexOf(i)].observedVariables.map(variable => variable.identifier).map(key => <th key={key}>{key}</th>)}
+                                                {routines[newRoutineIndices.indexOf(i)].obeservedRelations.map(variable => variable.identifier).map(key => <th key={key}>{key}</th>)}
                                             </tr>
                                         </>
                                     }
                                     <tr>
                                         {
-                                        routines[routineIndex].observedVariables.map((variable, j) => 
+                                        routines[routineIndex].obeservedRelations.map((variable, j) => 
                                             <td key={variable.identifier + i + j}>
                                                 {'{'}{step.variables[variable.identifier]?.join(", ")}{'}'}
                                             </td>)
