@@ -84,9 +84,9 @@ class JoinProblemSettings extends React.Component {
         const graphTypeOption = QUERY_GRAPH_OPTIONS.find(o => o.value === graphTypeOptionValue)
 
         return (
-            <header className="flexibleColumn quarter" style={{ background: "#1f2329" }}>
+            <header className="grid" style={{ background: "#1f2329" }}>
                 <div>
-                <h5>Number of relations</h5>
+                    <h5>Number of relations</h5>
                     <Slider className="slider"
                                 marks={marksStatic}
                             handleStyle={{background:"white", border: 0, height:"26px",width:"26px",marginTop:"-9px"}}
@@ -101,7 +101,7 @@ class JoinProblemSettings extends React.Component {
                                     max={10} />
                 </div>
                 <div>
-                <h5>Graph Type</h5>
+                    <h5>Graph Type</h5>
                     <Select className="select" 
                                     name="color" 
                                 style={{width:"100%"}}
@@ -113,7 +113,7 @@ class JoinProblemSettings extends React.Component {
                     {graphTypeOption.value === "tree" && <div className="info">Only complete binary trees are supported.</div>}
                 </div>
                 <div>
-                <h5>Algorithm</h5>
+                    <h5>Algorithm</h5>
                     <Select name="color" 
                         className="select" 
                     defaultValue={ALGORITHMS[0]} 
@@ -125,7 +125,7 @@ class JoinProblemSettings extends React.Component {
                 <div>
                     <h5>Calculation</h5>
                     <Hotkeys keyName="r" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
-                    <button className="emphasized" onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm (r)</button>
+                    <button className="emphasized" onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm<span className="shortcut">R</span></button>
                 </div>
             </header>
         )

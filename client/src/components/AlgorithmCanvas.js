@@ -80,8 +80,8 @@ class AlgorithmCanvas extends React.Component {
                 <Hotkeys keyName="a,d" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
                 <div className="fixed">
                     <canvas ref={this.algorithmCanvasRef} width="500px" height="500px" style={{width:"100%", height:"50vw"}}></canvas>
-                    <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step (a)</button>
-                    <button onClick={() => this.handleNextStep(step)} disabled={isLastStep}>Next Step (d)</button>
+                    <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step<span className="shortcut">A</span></button>
+                    <button onClick={() => this.handleNextStep(step)} disabled={isLastStep}>Next Step<span className="shortcut">D</span></button>
                     <p>Step {step + 1} of {steps.length}</p>
                 </div>
                 
