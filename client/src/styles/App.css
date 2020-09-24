@@ -106,6 +106,8 @@ canvas.queryGraph {
 
 table {
     font-size: 18px;
+    table-layout: fixed;
+    width: 100%;
 }
 
 thead {
@@ -113,7 +115,12 @@ thead {
     font-size: 22px;
 }
 
+tbody {
+    width: 100%;
+}
+
 th, td {
+    width: 100%;
     text-align: center;
     padding: 10px;
 }

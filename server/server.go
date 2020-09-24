@@ -62,8 +62,8 @@ func startServer() {
 
 			switch algorithmType {
 			case "dpccp":
-				observedVariables := []string{"S", "X", "N", "emit/S"}
-				configuration := &Configuration{ObserverdVariables: observedVariables}
+				//observedVariables := []string{"S", "X", "N", "emit/S"}
+				configuration := &Configuration{}
 
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 				JTC := JoinTreeCreator{false, false, Costfunctions}

@@ -66,14 +66,19 @@ type NodeColor struct {
 	Color     color.RGBA `json:"color"`
 }
 
+// ObservedVariable Represents an observed variable and its configuration.
+type ObservedVariable struct {
+	Identifier string     `json:"identifier"`
+	Color      color.RGBA `json:"color"`
+}
+
 // Configuration Specifies a visualization configuration
 type Configuration struct {
-	ObserverdVariables []string `json:"observedVariables"`
 }
 
 type VisualizationRoutine struct {
 	Name               string              `json:"name"`
-	ObserverdVariables []string            `json:"observedVariables"`
+	ObserverdVariables []ObservedVariable  `json:"observedVariables"`
 	Steps              []VisualizationStep `json:"steps"`
 }
 

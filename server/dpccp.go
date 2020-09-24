@@ -24,7 +24,11 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 	subgraphs := EnumerateCsg(QG)
 	// Begin visualization
-	observedVariables := []string{"S", "X", "N", "emit/S"}
+	sObserver := ObservedVariable{Identifier: "S", Color: greenColor}
+	xObserver := ObservedVariable{Identifier: "X", Color: grayColor}
+	nObserver := ObservedVariable{Identifier: "N", Color: redColor}
+	emitObserver := ObservedVariable{Identifier: "emit/s", Color: redColor}
+	observedVariables := []ObservedVariable{sObserver, xObserver, nObserver, emitObserver}
 	routine := VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObserverdVariables: observedVariables}
 	routines = append(routines, routine)
 	//resetChanges()
@@ -34,7 +38,10 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	for _, subgraph := range subgraphs {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
 		// Begin visualization
-		observedVariables := []string{"X", "v"}
+
+		xObserver := ObservedVariable{Identifier: "X", Color: grayColor}
+		vObserver := ObservedVariable{Identifier: "v", Color: blueColor}
+		observedVariables := []ObservedVariable{xObserver, vObserver}
 		routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObserverdVariables: observedVariables}
 		routines = append(routines, routine)
 		resetChanges()
