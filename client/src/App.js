@@ -7,9 +7,9 @@ import AlgorithmVisualization from './AlgorithmVisualization'
 function App() {
     return (
         <div className="App">
-            <header className="App-header">
+            {/*<header className="App-header">
                 <h1>Database Algorithms Visualization</h1>
-            </header>
+            </header>*/}
             <AlgorithmVisualization />
         </div>
     );

@@ -67,10 +67,10 @@ func startServer() {
 
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 				JTC := JoinTreeCreator{false, false, Costfunctions}
-				changes := visualizeDPccp(QG, JTC)
+				routines := visualizeDPccp(QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
-					"steps":         changes,
+					"routines":      routines,
 					"configuration": configuration,
 					"queryGraph":    QG,
 				})

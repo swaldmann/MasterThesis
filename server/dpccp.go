@@ -9,6 +9,8 @@ import (
 	rainbow "github.com/fatih/color"
 )
 
+var stack = []string{}
+
 /* Algorithms */
 
 // DPccp Generate best plan using DPccp
@@ -21,9 +23,22 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 
 	subgraphs := EnumerateCsg(QG)
+	// Begin visualization
+	observedVariables := []string{"X", "v"}
+	routine := VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObserverdVariables: observedVariables}
+	routines = append(routines, routine)
+	//resetChanges()
+	// End visualization
+
 	csgCmpPairs := []CsgCmpPair{}
 	for _, subgraph := range subgraphs {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
+		// Begin visualization
+		observedVariables := []string{"X", "v"}
+		routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObserverdVariables: observedVariables}
+		routines = append(routines, routine)
+		resetChanges()
+		// End visualization
 		csgCmpPairs = append(csgCmpPairs, subgraphCsgCmpPairs...)
 	}
 
@@ -61,9 +76,11 @@ func EnumerateCsg(QG QueryGraph) []uint {
 		v := uint(1 << i)
 		subgraphs = append(subgraphs, v)
 		𝔅 := uint(1<<i - 1)
+		stack = []string{}
 		recursiveSubgraphs := EnumerateCsgRec(QG, v, 𝔅)
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
+
 	return subgraphs
 }
 
@@ -77,7 +94,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	variableState["S"] = IdxsOfSetBits(S)
 	variableState["X"] = IdxsOfSetBits(X)
 	variableState["N"] = IdxsOfSetBits(N)
-	visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState)
+	visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState, stack)
 
 	subgraphs := []uint{}
 
@@ -89,8 +106,9 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		subgraphs = append(subgraphs, SuSPrime)
 
 		variableState := VariableTable{}
+		stack = append(stack, "→")
 		variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
-		visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState)
+		visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState, stack)
 	}
 	for _, SPrime := range PowerSet(N) {
 		if SPrime == 0 {
@@ -131,13 +149,14 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 /* Visualizations */
 
 // visualizeDPccp Dynamic Programming connected pairs
-func visualizeDPccp(QG QueryGraph, JTC JoinTreeCreator) []interface{} {
+func visualizeDPccp(QG QueryGraph, JTC JoinTreeCreator) []VisualizationRoutine {
 	visualize(DPccp, QG, JTC)
 	defer resetChanges()
-	return changes
+	defer resetRoutines()
+	return routines
 }
 
-func visualizeEnumerateCsgRec(QG QueryGraph, i uint, S uint, X uint, N uint, emits VariableTable) {
+func visualizeEnumerateCsgRec(QG QueryGraph, i uint, S uint, X uint, N uint, emits VariableTable, stack SubroutineStack) {
 	n := uint(len(QG.R))
 
 	NIndexes := IdxsOfSetBits(N)
@@ -161,11 +180,10 @@ func visualizeEnumerateCsgRec(QG QueryGraph, i uint, S uint, X uint, N uint, emi
 		nodeConfiguration := NodeColor{NodeIndex: j, Color: nodeColor}
 		nodeColors = append(nodeColors, nodeConfiguration)
 	}
-	changeGraphState := &GraphState{NodeColors: nodeColors}
-	change := map[string]interface{}{}
-	change["graphState"] = changeGraphState
-	change["variables"] = emits
+	graphState := GraphState{NodeColors: nodeColors}
+	change := VisualizationStep{GraphState: graphState, Variables: emits, SubroutineStack: stack}
 	changes = append(changes, change)
+
 }
 
 /* Helpers */

@@ -31,11 +31,18 @@ class AlgorithmCanvas extends React.Component {
         actions.changeQueryGraph(json.queryGraph)
         actions.updateConfiguration(json.configuration)
         actions.resetSteps()
-        actions.updateSteps(json.steps)
+        const concatSteps = (result, routine) => result.concat(routine.steps)
+        const steps = json.routines.reduce(concatSteps, [])
+        actions.updateSteps(steps)
+
+        console.log("YO")
+        console.log(json.routines);
+        actions.updateRoutines(json.routines)
 
         this.setState({
-            graphState: json.steps[0].graphState,
-            steps: json.steps,
+            graphState: steps[0].graphState,
+            steps: steps,
+            routineStepLengths: json.routines.map(r => r.steps.length),
             step: 0
         })
 

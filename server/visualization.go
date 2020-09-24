@@ -2,21 +2,28 @@ package main
 
 import "image/color"
 
-// Visualizable Protocol for visualizing query graph algorithms
+// Visualizable Type conformance for visualizing join ordering/query graph algorithms
 type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
 
 var visualizationOn = false
 
-var blueColor = color.RGBA{0, 0, 255, 1}
-var greenColor = color.RGBA{85, 165, 34, 1}
-var grayColor = color.RGBA{120, 120, 120, 1}
-var whiteColor = color.RGBA{255, 255, 255, 1}
-var redColor = color.RGBA{255, 0, 0, 1}
+var (
+	blueColor  = color.RGBA{0, 0, 255, 1}
+	greenColor = color.RGBA{85, 165, 34, 1}
+	grayColor  = color.RGBA{120, 120, 120, 1}
+	whiteColor = color.RGBA{255, 255, 255, 1}
+	redColor   = color.RGBA{255, 0, 0, 1}
+)
 
-var changes = []interface{}{}
+var routines = []VisualizationRoutine{}
+var changes = []VisualizationStep{}
 
 func resetChanges() {
-	changes = []interface{}{}
+	changes = []VisualizationStep{}
+}
+
+func resetRoutines() {
+	routines = []VisualizationRoutine{}
 }
 
 func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) {
@@ -25,6 +32,9 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) {
 	visualization(QG, JTC)
 	visualizationOn = oldVisualizationOn
 }
+
+// SubroutineStack Description of current call stack
+type SubroutineStack []string
 
 // VariableTableEntry Entry in the debug variable table
 type VariableTableEntry []uint
@@ -59,4 +69,16 @@ type NodeColor struct {
 // Configuration Specifies a visualization configuration
 type Configuration struct {
 	ObserverdVariables []string `json:"observedVariables"`
+}
+
+type VisualizationRoutine struct {
+	Name               string              `json:"name"`
+	ObserverdVariables []string            `json:"observedVariables"`
+	Steps              []VisualizationStep `json:"steps"`
+}
+
+type VisualizationStep struct {
+	GraphState      GraphState      `json:"graphState"`
+	SubroutineStack SubroutineStack `json:"subroutineStack"`
+	Variables       VariableTable   `json:"variables"`
 }

@@ -6,6 +6,7 @@ import * as Actions from '../actions'
 
 const mapStateToProps = state => {
     return {
+        routines: state.routines,
         steps: state.steps,
         step: state.step,
         configuration: state.configuration
