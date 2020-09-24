@@ -24,7 +24,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 	subgraphs := EnumerateCsg(QG)
 	// Begin visualization
-	observedVariables := []string{"X", "v"}
+	observedVariables := []string{"S", "X", "N", "emit/S"}
 	routine := VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObserverdVariables: observedVariables}
 	routines = append(routines, routine)
 	//resetChanges()
