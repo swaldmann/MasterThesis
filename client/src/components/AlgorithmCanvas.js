@@ -36,12 +36,11 @@ class AlgorithmCanvas extends React.Component {
     }
 
     handleNextStep = step => {
-        const { steps } = this.props
+        const { steps, actions } = this.props
         const nextStep = steps[step + 1]
-
-        const { actions } = this.props
         actions.increaseStep(1)
         actions.updateGraphState(nextStep.graphState)
+        window.scrollTo(0, document.body.scrollHeight);
     } 
 
     handlePreviousStep = step => {
@@ -49,6 +48,7 @@ class AlgorithmCanvas extends React.Component {
         const previousStep = steps[step - 1]
         actions.decreaseStep(1)
         actions.updateGraphState(previousStep.graphState)
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
     redrawGraph() {

@@ -53,8 +53,6 @@ class JoinProblemSettings extends React.Component {
         actions.updateSteps(steps)
         actions.updateRoutines(json.routines)
         actions.updateGraphState(steps[0].graphState)
-
-        //this.redrawGraph()
     }
     
     handleNumberOfRelationsChange = numberOfRelations => {
