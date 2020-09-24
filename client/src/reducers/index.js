@@ -6,12 +6,14 @@ import { configuration } from './configuration'
 import { routines } from './routines'
 import { steps } from './steps'
 import { step } from './step'
+import { graphState } from './graphState'
 
 const appReducer = combineReducers({
     queryGraph,
     settingGraphTypeValue,
     settingNumberOfRelations,
     variables,
+    graphState,
     algorithmIndex,
     routines,
     steps,

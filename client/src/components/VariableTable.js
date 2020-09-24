@@ -3,7 +3,7 @@ import React from "react"
 class VariableTable extends React.Component {
     
     render() {
-        const { actions, configuration, step, routines } = this.props
+        const { configuration, step, routines } = this.props
         const steps = this.props.steps.slice(0, step)
         const keys = configuration.observedVariables
 
@@ -15,7 +15,7 @@ class VariableTable extends React.Component {
         return (
             <table>
                 <thead>
-                    DPCCP
+                    <td colSpan={keys.length + 1}>{this.props.algorithm.label}</td>
                 </thead>
                 <tbody>
                     {
@@ -30,13 +30,11 @@ class VariableTable extends React.Component {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Substep</th>
                                     {routines[newRoutineIndices.indexOf(i)].observedVariables.map(key => <th key={key}>{key}</th>)}
                                 </tr>
                             </>
                         }
                         <tr>
-                            <td></td>
                             {
                             keys.map((key, j) => 
                                 <td key={key + i + j}>

@@ -11,9 +11,17 @@
 body {
     background-color: #282c34;
     color: #eee;
-    padding: 10px 80px;
     line-height: 1.5em;
     font-size: 16px;
+    margin-bottom: 100px;
+}
+
+header, main {
+    padding: 0px 80px;
+}
+
+header {
+    margin-bottom: 50px;
 }
 
 h2 {
@@ -107,12 +115,39 @@ thead {
 }
 
 th, td {
-    width: 200px;
     text-align: center;
     padding: 10px;
 }
 
 button.emphasized {
+    margin: 0;
     background: rgba(0,130,0,0.8);
     width: 100%;
+}
+
+.fixed {
+    top: 0;
+    align-self: flex-start;
+    position: sticky;
+}
+
+.flexibleColumn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: top;
+}
+
+.flexibleColumn > * {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.flexibleColumn.half > * {
+    flex-basis: 50%;
+}
+
+.flexibleColumn.quarter > * {
+    flex-basis: 25%;
 }

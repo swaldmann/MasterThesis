@@ -1,9 +1,13 @@
 import React from "react"
 import Select from "react-select"
-import Slider from 'rc-slider';
-import { QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
+import Slider from 'rc-slider'
+import Hotkeys from 'react-hot-keys'
 import '../styles/App.css'
 import "rc-slider/assets/index.css";
+import { ALGORITHMS, QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
+
+//const ENDPOINT = "https://dbs-visualization.ew.r.appspot.com/api"
+const ENDPOINT = "http://localhost:8080/api"
 
 // Create an array with values from 3 to 8 and store them in an object
 // For some reason this doesn't work, despite giving the same result as ``marksStatic``
@@ -31,6 +35,28 @@ class JoinProblemSettings extends React.Component {
         }
     }
     
+    componentDidMount() {
+        this.updateAlgorithm()
+    }
+
+    async updateAlgorithm() {
+        const { actions, settingNumberOfRelations, settingGraphTypeValue } = this.props
+        const response = await fetch(ENDPOINT + "/algorithm/" + this.props.algorithm.value
+                                              + "/relations/" + settingNumberOfRelations
+                                              + "/graphType/" + settingGraphTypeValue)
+        const json = await response.json()
+        actions.changeQueryGraph(json.queryGraph)
+        actions.updateConfiguration(json.configuration)
+        actions.resetSteps()
+        const concatSteps = (result, routine) => result.concat(routine.steps)
+        const steps = json.routines.reduce(concatSteps, [])
+        actions.updateSteps(steps)
+        actions.updateRoutines(json.routines)
+        actions.updateGraphState(steps[0].graphState)
+
+        //this.redrawGraph()
+    }
+    
     handleNumberOfRelationsChange = numberOfRelations => {
         const actions = this.props.actions
         actions.changeQueryNumberOfRelations(numberOfRelations)
@@ -41,39 +67,69 @@ class JoinProblemSettings extends React.Component {
         actions.changeQueryGraphTypeOption(graphTypeOption.value)
     }
 
+    handleAlgorithmChange = algorithm => {
+        this.setState({ 
+            algorithm: algorithm
+        }, () => {
+            this.updateAlgorithm()
+        })     
+    }
+    
+    onKeyDown(keyName, e, handle) {
+        if (keyName === "r") {
+            this.updateAlgorithm()
+        }
+    }
+
     render() {
-        const { graphTypeOptionValue, numberOfRelations } = this.props
+        const { graphTypeOptionValue, numberOfRelations, algorithm } = this.props
         const graphTypeOption = QUERY_GRAPH_OPTIONS.find(o => o.value === graphTypeOptionValue)
 
         return (
-            <div>
-                <h3>Graph</h3>
+            <header className="flexibleColumn quarter" style={{ background: "#1f2329" }}>
                 <div>
-                    <h5>Number of relations</h5>
+                <h5>Number of relations</h5>
                     <Slider className="slider"
                                 marks={marksStatic}
-                          handleStyle={{background:"white", border: 0, height:"26px",width:"26px",marginTop:"-9px"}}
-                           trackStyle={{background:"white", height: "4px", borderRadius:"0px"}} 
+                            handleStyle={{background:"white", border: 0, height:"26px",width:"26px",marginTop:"-9px"}}
+                            trackStyle={{background:"white", height: "4px", borderRadius:"0px"}} 
                             railStyle={{background:"white", height: "4px", borderRadius:"0px"}}
-                             dotStyle={{height:"20px", transform:"translate(2px, 6px)", border:"none", borderRadius:"0px",width:"3px"}}
+                                dotStyle={{height:"20px", transform:"translate(2px, 6px)", border:"none", borderRadius:"0px",width:"3px"}}
                                 style={{width:"100%"}}    
-                                 dots={true}
-                             onChange={this.handleNumberOfRelationsChange}
-                                  min={3}
-                         defaultValue={numberOfRelations}
-                                  max={10} />
-                    <h5>Graph Type</h5>
+                                    dots={true}
+                                onChange={this.handleNumberOfRelationsChange}
+                                    min={3}
+                            defaultValue={numberOfRelations}
+                                    max={10} />
+                </div>
+                <div>
+                <h5>Graph Type</h5>
                     <Select className="select" 
-                                 name="color" 
+                                    name="color" 
                                 style={{width:"100%"}}
-                         defaultValue={QUERY_GRAPH_OPTIONS[4]} 
-                          placeholder="Query Graph" 
+                            defaultValue={QUERY_GRAPH_OPTIONS[4]} 
+                            placeholder="Query Graph" 
                                 value={graphTypeOption} 
-                             onChange={this.handleGraphTypeOptionChange} 
-                              options={QUERY_GRAPH_OPTIONS} />
+                                onChange={this.handleGraphTypeOptionChange} 
+                                options={QUERY_GRAPH_OPTIONS} />
                     {graphTypeOption.value === "tree" && <div className="info">Only complete binary trees are supported.</div>}
                 </div>
-            </div>
+                <div>
+                <h5>Algorithm</h5>
+                    <Select name="color" 
+                        className="select" 
+                    defaultValue={ALGORITHMS[0]} 
+                        placeholder="Algorithm" 
+                            value={algorithm}
+                        onChange={this.handleAlgorithmChange} 
+                            options={ALGORITHMS} />
+                </div>
+                <div>
+                    <h5>Calculation</h5>
+                    <Hotkeys keyName="r" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
+                    <button className="emphasized" onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm (r)</button>
+                </div>
+            </header>
         )
     }
 }

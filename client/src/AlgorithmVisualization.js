@@ -6,13 +6,13 @@ import VisibleVariableTable from "./containers/VisibleVariableTable"
 class AlgorithmVisualization extends React.Component {
     render() {
         return (
-            <div>
+            <>
                 <VisibleJoinProblemSettings />
-                <div style={{display: "flex"}}>
+                <main className="flexibleColumn half">
                     <VisibleAlgorithmCanvas />
                     <VisibleVariableTable />
-                </div>
-            </div>
+                </main>
+            </>
         )
     }
 }
