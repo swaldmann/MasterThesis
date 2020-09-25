@@ -1,29 +1,71 @@
+
 \section{Implementation}
 
 \subsection{API Requirements and Design Goals}
-One of the main goals of this framework is to minimize the amount of code or configuration that has to be added
-to exisiting algorithms' implementations.
+\label{subsub:api-requirements-goals}
+\paragraph{Declarativity} One of the main goals of this framework is to minimize 
+the amount of code or configuration that has to be added to exisiting algorithms' implementations in order to make use of the visualization for its intended purpose. The visualization should therefore be specified as declaratively as 
+possible, with the user specifying \textit{only} the relevant parameters–while minimizing the amount of required boilerplate code.
 
-More formally, this means that the algorithm has to conform to the \texttt{Visualizable} type we define as follows:
+This allows for many side-effects like reusability, mainta
 
+\paragraph{Orthogonality}
+Most importantly though, the property  of orthogonality 
+as defined by Eric S. Raymond in \textit{The Art of Unix
+Programming} \cite{raymond2003compactness} has to be fulfilled for the visualization code with regards to the algorithm implementation's code, i.e. it should not change its behavior or state.
+
+More pragmatically, this means that the algorithm has to 
+conform to the \texttt{Visualizable} Go type we define as 
+follows:
+
+%\begin{figure}[H]
 \begin{minted}{go}
     type Visualizable func(QG QueryGraph)
 \end{minted}
+%\caption{\texttt{Visualizable} type}
+%\centering
+%\end{figure}
 
-An important goal is to separate the complex algorithm and user interface/visualization logic.
-Thus, we organize their architecture in a client-server relationship, whereby the client specifies the join problem parameters and configuration and the server can generate a client-interpretable output to work with.
+With the separation of the complex algorithm and user interface/visualization logic in mind is to keep the amount code required to create new visualizations as minimal as possible. 
+Thus, we organize their architecture in a client-server 
+relationship, whereby the client specifies the join 
+problem parameters and configuration and the server can
+generate a client-interpretable output to work with.
 
 The advantages of this approach are multifold:
 \begin{itemize}
-    \item The server part and UI part respectively can be updated or even completely exchanged without changing the other
-    \item More complex join ordering algorithms can be performed on a (more powerful) server
-    \item The above allow us to run the application within a web application without sacrificing the performance by limiting ourselves with a slow, interpreting JavaScript engine, but being able to run compiled and thus more optimized code
-    \item (Allos us to formally specify interfaces between client and server) (Abbildung malen)
+    \item The server part and UI part respectively can be
+          updated or even completely exchanged without 
+          changing the other
+    \item More complex join ordering algorithms can be 
+          performed on a (more powerful) server
+    \item The above allow us to run the application 
+          within a web application without sacrificing 
+          the performance by limiting ourselves with a 
+          slow, interpreting JavaScript engine, but being 
+          able to run compiled and thus more optimized 
+          code
+    \item (Allows us to formally specify interfaces between
+          client and server) (Abbildung malen)
 \end{itemize}
+
+\paragraph{Flexibility}
+The visualization tools should be abstract enough that it is not catered towards a specific algorithm, but can used to visualize a wide range of algorithms, especially ones it has not been explicitly programmed for.  
+
+\paragraph{High signal-to-noise ratio} 
+In our implementation we are using code folding, enabled
+through the orthogonality property as mentioned in 
+section \ref{subsub:api-requirements-goals}. This allows
+us to completely show or hide the visualization code 
+when required. Thus, we can achieve an inobtrusive
+debugging tool that can be written alongisde an 
+algorithm's implementation code and doesn't decrease
+its signal-to-noise ratio.
 
 \subsection{Choice of Technology}
 
-For the implementation of both client and server code we want to maximize
+For the implementation of both client and server code we
+want to maximize
 
 \begin{enumerate}[label={(\roman*)}]
     \item \label{itm:accessibility} \textbf{Accessibility}, a minimal amount of effort required to access the application
@@ -142,7 +184,7 @@ Modifications include:
 \paragraph{Simplification of the }
 
 \paragraph{Addition of a PowerSet}
-For the implementation of \texttt{DPccp} we need an additional function that returns not just the subsets of an (\texttt{unsigned int} bit vector $S$, but its power set excluding the empty set $\mathcal P(S)\setminus\{\varnothing\}$.
+For the implementation of \texttt{DPccp} we need an additional function that returns not just the subsets of an (\texttt{unsigned int} bit vector $S$, but its power set excluding the empty set, $\mathcal P(S)\setminus\{\varnothing\}$.
 
 \begin{minted}{go}
     func PowerSet(S uint) []uint {

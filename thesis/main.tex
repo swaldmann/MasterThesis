@@ -1,6 +1,9 @@
 \documentclass[a4paper,12pt,titlepage,twoside]{article}
 
 % General document formatting
+ 
+\usepackage{floatrow}
+\usepackage[cache=false]{minted} % Syntax highlighting for algorithms \usepackage[outputdir=out,cache=false]{minted}
 \usepackage[utf8]{inputenc}
 
 \usepackage{subcaption}
@@ -13,12 +16,11 @@
 \usepackage{latexsym}
 \usepackage{oldgerm}
 \usepackage{setspace}
-\usepackage{floatrow}
+%\usepackage{floatrow}
 \usepackage{tikz}
 %\usepackage{tkz-graph}
 \usepackage[noline]{algorithm2e}
 \usepackage{multirow}
-\usepackage[cache=false]{minted} % Syntax highlighting for algorithms \usepackage[outputdir=out,cache=false]{minted}
 \usepackage{enumitem} % More enumeration styles, e.g. Roman numbers, http://ctan.org/pkg/enumitem
 %\usepackage[htt]{hyphenat} % Allow hyphenation, even for for \texttt{}
 \usepackage{lmodern} % Fix some unfedined font shapes http://ctan.org/pkg/lm
@@ -35,6 +37,8 @@
 %]{biblatex}
 
 %\addbibresource{references.bib} %Imports bibliography file
+
+\newtheorem{definition}{Definition}
 
 \usetikzlibrary{plotmarks,trees,arrows}
 \usetikzlibrary{graphs,graphs.standard}
