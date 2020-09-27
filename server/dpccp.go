@@ -28,6 +28,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
 		currentRoutine = VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObservedRelations: observedRelations}
 		routines = append(routines, currentRoutine)
+		resetStep()
 	}
 	// End visualization
 
@@ -37,12 +38,14 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 		// Begin visualization
 		if visualizationOn {
+			sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
 			xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
-			vObserver := ObservedRelation{Identifier: "v", Color: blueColor}
-			observedRelations := []ObservedRelation{xObserver, vObserver}
-			routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObservedRelations: observedRelations}
-			routines = append(routines, routine)
-			resetChanges()
+			nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
+			emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
+			observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
+			currentRoutine = VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObservedRelations: observedRelations}
+			routines = append(routines, currentRoutine)
+			resetStep()
 		}
 		// End visualization
 
@@ -116,7 +119,6 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 
 		if visualizationOn {
 			variableState := VariableTable{}
-			stack = append(stack, "→")
 			variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
 			visualizeRelations(QG, variableState, stack)
 		}
@@ -127,7 +129,9 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		}
 		SuSPrime := S | SPrime
 		XuN := X | N
+		//stack = append(stack, "→")
 		recursiveSubgraphs := EnumerateCsgRec(QG, SuSPrime, XuN)
+		//stack = stack[:len(stack)-1]
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
 	return subgraphs

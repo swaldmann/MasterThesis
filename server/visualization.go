@@ -21,7 +21,7 @@ var changes = []VisualizationStep{}
 var currentRoutine VisualizationRoutine
 var stack = []string{}
 
-func resetChanges() {
+func resetStep() {
 	changes = []VisualizationStep{}
 }
 
@@ -34,7 +34,7 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) [
 	visualizationOn = true
 	visualization(QG, JTC)
 	visualizationOn = oldVisualizationOn
-	defer resetChanges()
+	defer resetStep()
 	defer resetRoutines()
 	return routines
 }
