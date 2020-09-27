@@ -85,8 +85,7 @@ func EnumerateCsg(QG QueryGraph) []uint {
 	for i := n - 1; i < n; i-- {
 		v := uint(1 << i)
 		subgraphs = append(subgraphs, v)
-		𝔅 := uint(1<<i - 1)
-		stack = []string{}
+		𝔅 := uint(1<<(i+1) - 1)
 		recursiveSubgraphs := EnumerateCsgRec(QG, v, 𝔅)
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
@@ -103,7 +102,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
 		variableState := VariableTable{}
 		variableState["S"] = IdxsOfSetBits(S)
-		variableState["X"] = IdxsOfSetBits(X)
+		variableState["X"] = IdxsOfSetBits(SetMinus(X, S, n))
 		variableState["N"] = IdxsOfSetBits(N)
 		visualizeRelations(QG, variableState, stack)
 	}
