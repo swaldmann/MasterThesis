@@ -1,5 +1,3 @@
-import { queryGraph } from "../reducers/queryGraph"
-
 const π = Math.PI
 const r_node = 20
 const margin = 24
@@ -267,7 +265,5 @@ class QueryGraph {
         return reversedBitArray.reduce(concatIfOne, [])
     }
 }
-
-
 
 export default QueryGraph
