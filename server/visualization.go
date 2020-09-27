@@ -17,12 +17,13 @@ var (
 )
 
 var routines = []VisualizationRoutine{}
-var changes = []VisualizationStep{}
+var steps = []VisualizationStep{}
+var stepsMap = map[string]VisualizationStep{}
 var currentRoutine VisualizationRoutine
 var stack = []string{}
 
-func resetStep() {
-	changes = []VisualizationStep{}
+func resetSteps() {
+	steps = []VisualizationStep{}
 }
 
 func resetRoutines() {
@@ -34,7 +35,7 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) [
 	visualizationOn = true
 	visualization(QG, JTC)
 	visualizationOn = oldVisualizationOn
-	defer resetStep()
+	defer resetSteps()
 	defer resetRoutines()
 	return routines
 }
@@ -62,7 +63,7 @@ func visualizeRelations(QG QueryGraph, relations VariableTable, stack Subroutine
 	}
 	graphState := GraphState{NodeColors: nodeColors}
 	change := VisualizationStep{GraphState: graphState, Variables: relations, SubroutineStack: stack}
-	changes = append(changes, change)
+	steps = append(steps, change)
 }
 
 // SubroutineStack Description of the current (recursive) call stack.

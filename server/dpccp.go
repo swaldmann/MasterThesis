@@ -19,36 +19,9 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 	subgraphs := EnumerateCsg(QG)
 
-	// Begin visualization
-	if visualizationOn {
-		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
-		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
-		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
-		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
-		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
-		currentRoutine = VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObservedRelations: observedRelations}
-		routines = append(routines, currentRoutine)
-		resetStep()
-	}
-	// End visualization
-
 	csgCmpPairs := []CsgCmpPair{}
 	for _, subgraph := range subgraphs {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
-
-		// Begin visualization
-		if visualizationOn {
-			sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
-			xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
-			nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
-			emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
-			observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
-			currentRoutine = VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObservedRelations: observedRelations}
-			routines = append(routines, currentRoutine)
-			resetStep()
-		}
-		// End visualization
-
 		csgCmpPairs = append(csgCmpPairs, subgraphCsgCmpPairs...)
 	}
 
@@ -73,12 +46,13 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 			BestTree[S] = CurrTree
 		}
 	}
-	rainbow.Green(BestTree[(1<<n)-1].ToString())
+	rainbow.Green(BestTree[(1<<n)-1].ToString()) // Print best tree
 	return BestTree[(1<<n)-1]
 }
 
 // EnumerateCsg Enumerate connected subgraphs.
 func EnumerateCsg(QG QueryGraph) []uint {
+
 	n := uint(len(QG.R))
 	subgraphs := []uint{}
 
@@ -89,6 +63,19 @@ func EnumerateCsg(QG QueryGraph) []uint {
 		recursiveSubgraphs := EnumerateCsgRec(QG, v, 𝔅)
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
+
+	// Begin visualization
+	if visualizationOn {
+		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
+		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
+		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
+		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
+		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
+		currentRoutine = VisualizationRoutine{Name: "EnumerateCsg", Steps: steps, ObservedRelations: observedRelations}
+		routines = append(routines, currentRoutine)
+		defer resetSteps()
+	}
+	// End visualization
 
 	return subgraphs
 }
@@ -157,6 +144,20 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 			subgraphs = append(subgraphs, pair)
 		}
 	}
+
+	// Begin visualization
+	if visualizationOn {
+		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
+		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
+		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
+		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
+		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
+		currentRoutine = VisualizationRoutine{Name: "EnumerateCmp", Steps: steps, ObservedRelations: observedRelations}
+		routines = append(routines, currentRoutine)
+		defer resetSteps()
+	}
+	// End visualization
+
 	return subgraphs
 }
 
@@ -174,6 +175,8 @@ func ℕ(QG QueryGraph, S uint) uint {
 	n := uint(len(QG.R))
 	return SetMinus(result, S, n)
 }
+
+/* Debug Helpers */
 
 // HumanPrint Prints uint variable in a human-readable format.
 func HumanPrint(variableName string, variable uint) {
