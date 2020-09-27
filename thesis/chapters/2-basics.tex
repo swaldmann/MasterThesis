@@ -25,7 +25,9 @@ For two relations $R_i$ and $R_j$ regarding a predicate $p_{i,j}$ the selectivit
 f_{i,j} = \frac{|R_i\Join_{p_{i,j}}R_j|}{|R_i \times R_j|}	
 \end{equation}
 
+\begin{commentary}
 Since we can assume that $|R_i\Join_{p_{i,j}}R_j| \geq 0$, $|R_i \times R_j| > 0$ and $|R_i\Join_{p_{i,j}}R_j| \leq |R_i \times R_j|$ we know that $f_{i,j} \in [0,1]$.
+\end{commentary}
 
 For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two relations given. 
 \newpage
@@ -33,13 +35,11 @@ For simplification purposes we only inspect joins with at most one join predicat
 \subsubsection{Query Types}
 \label{subsub:query-types}
 
-The relations can be connected in many different ways.
-We visualize this connection in a graph.
-There is a number of different query types. 
-Most importantly we want to have a look at the following four query types, because they represent distinct problems:
+Relations can be connected in many different ways. These connections can be visualized using a graph. There is a number of different query types. Most importantly we want to have a look at the following six query types, because they represent distinct problems:
 
-\begin{figure}[htp]
+\begin{figure}[H]
 \begin{center}
+
 \begin{subfigure}[c]{.3\textwidth}
 \vspace{0pt}
 \centering
@@ -52,11 +52,11 @@ $R_1$\\
 \endpsmatrix
 \subcaption{Chain}
 \end{subfigure}
-\hspace{2cm}
 
+    
 
 \begin{subfigure}[c]{.3\textwidth}
-    \psmatrix[colsep=2cm,rowsep=2cm,mnode=circle]
+    \psmatrix[colsep=1.5cm,rowsep=1.5cm,mnode=circle]
     $R_1$ & $R_2$\\
     $R_3$ & $R_4$
     \ncline{-}{1,1}{1,2}
@@ -64,7 +64,7 @@ $R_1$\\
     \ncline{-}{1,1}{2,1}
     \ncline{-}{1,2}{2,2}
     \endpsmatrix
-    \subcaption{Circle}
+    \subcaption{Cycle}
     \end{subfigure}
     \begin{subfigure}[c]{0.3\textwidth}
     \vspace{0.8cm}
@@ -78,7 +78,20 @@ $R_1$\\
     \ncline{-}{3,3}{2,2}
     \endpsmatrix 
     \subcaption{Star}
-    \end{subfigure}
+\end{subfigure}
+
+\begin{subfigure}[c]{.3\textwidth}
+    \vspace{0pt}
+    \centering
+    \psmatrix[colsep=0.3cm,rowsep=0.3cm,mnode=circle]
+    & & $R_1$ & & \\
+    & $R_2$ & & $R_3$ & \\
+    $R_4$ & $R_5$ & & $R_6$ & $R_7$
+    %\ncline{-}{1,1}{2,2}
+    \endpsmatrix
+    \subcaption{Tree}
+\end{subfigure}
+
     \hspace{2cm}
     \begin{subfigure}[c]{0.3\textwidth}
     \vspace{0.5cm}
@@ -106,12 +119,14 @@ $R_1$\\
 
 \subsection{Operator Trees}
 An operator tree contains operators as inner nodes and relations as leaves.
-Through this tree the order, in which the operations are executed, can be graphically visualized.
+Through this tree the order in which the operations are executed, can be graphically visualized.
 It typically contains any operator of Codd's relational model, however in this thesis we limit those to the only relevant join operator ($\Join$), which is derived from a cross product and a subsequent selection.
 Depending on the construction of the tree it can be classified as either \textit{left-deep}, \textit{right-deep}, \textit{zigzag} or \textit{bushy}.
-This way the trees for $(R_1 \Join R_2) \Join R_3$ and $(R_1 \Join R_2) \Join (R_3 \Join R_4)$ can be graphically represented using the following trees:\\
 
-\begin{figure}[htp] 
+\begin{example}
+The trees for $(R_1 \Join R_2) \Join R_3$, $R_1 \Join (R_2 \Join R_3)$, $(R_1 \Join (R_2 \Join R_3)) \Join R4$ and $(R_1 \Join R_2) \Join (R_3 \Join R_4)$ can respectively be graphically represented using the following visualizations:\\
+
+\begin{figure}[H] 
     \centering
     	\begin{subfigure}[c]{0.3\textwidth}
         \pstree[nodesep=4pt]{\TR{$\Join$}} {
@@ -126,26 +141,52 @@ This way the trees for $(R_1 \Join R_2) \Join R_3$ and $(R_1 \Join R_2) \Join (R
     	\hskip 2cm
     	\begin{subfigure}[c]{0.3\textwidth}
     	\pstree[nodesep=4pt]{\TR{$\Join$}} {
-			\pstree[]{\TR{$\Join$}} {
-				\TR{$R_1$}
-				\TR{$R_2$}
-			}
+            \TR{$R_1$}
         	\pstree[]{\TR{$\Join$}} {
+				\TR{$R_2$}
 				\TR{$R_3$}
-				\TR{$R_4$}
         	}
 		}
-		\subcaption{bushy}
-	    \end{subfigure}
+		\subcaption{right-deep}
+        \end{subfigure}
+        \vspace{0.6cm}
+
+        \begin{subfigure}[c]{0.3\textwidth}
+            \pstree[nodesep=4pt]{\TR{$\Join$}} {
+                \pstree[]{\TR{$\Join$}} {
+                    \TR{$R_1$}
+                    \pstree[]{\TR{$\Join$}} {
+                        \TR{$R_2$}
+                        \TR{$R_3$}
+                    }
+                }
+                \TR{$R_4$}
+            }
+            \subcaption{zigzag}
+        \end{subfigure}
+        \hskip 2cm
+    	\begin{subfigure}[c]{0.3\textwidth}
+            \pstree[nodesep=4pt]{\TR{$\Join$}} {
+                \pstree[]{\TR{$\Join$}} {
+                    \TR{$R_1$}
+                    \TR{$R_2$}
+                }
+                \pstree[]{\TR{$\Join$}} {
+                    \TR{$R_3$}
+                    \TR{$R_4$}
+                }
+            }
+            \subcaption{bushy}
+        \end{subfigure}
     \caption{Operator trees}
 \end{figure}
 
-
+\end{example}
 
 \subsubsection{Dynamic Programming}
 
 \subsubsection{Orthogonality}
-We understand the term \textit{Orthogonality} as defined in \cite{raymond2003compactness}:
+We understand the term \textit{Orthogonality} as defined in \textit{The Art of Unix Programming} by Eric S. Raymond \cite{raymond2003compactness}:
 \begin{definition}
     Orthogonality is one of the most important properties that can help make even complex designs compact. In a purely orthogonal design, operations do not have side effects; each action (whether it's an API call, a macro invocation, or a language operation) changes just one thing without affecting others.
 \end{definition}
