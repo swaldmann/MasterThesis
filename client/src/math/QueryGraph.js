@@ -173,13 +173,13 @@ class QueryGraph {
         this._drawNode(3, x3, y3, "white", ctx, this._queryGraph.relationCardinalities[3])
         this._drawNode(4, x4, y4, "white", ctx, this._queryGraph.relationCardinalities[4])
         
-        this._drawEdge(x0, y0, x1, y1, ctx, 2)
-        this._drawEdge(x0, y0, x2, y2, ctx, 2)
-        this._drawEdge(x0, y0, x3, y3, ctx, 3)
-        this._drawEdge(x1, y1, x4, y4, ctx, 4)
-        this._drawEdge(x2, y2, x3, y3, ctx, 5)
-        this._drawEdge(x2, y2, x4, y4, ctx, 6)
-        this._drawEdge(x3, y3, x4, y4, ctx, 7)
+        this._drawEdge(x0, y0, x1, y1, ctx, this._queryGraph.selectivities[1 << 0 | 1 << 1])
+        this._drawEdge(x0, y0, x2, y2, ctx, this._queryGraph.selectivities[1 << 0 | 1 << 2])
+        this._drawEdge(x0, y0, x3, y3, ctx, this._queryGraph.selectivities[1 << 0 | 1 << 3])
+        this._drawEdge(x1, y1, x4, y4, ctx, this._queryGraph.selectivities[1 << 1 | 1 << 4])
+        this._drawEdge(x2, y2, x3, y3, ctx, this._queryGraph.selectivities[1 << 2 | 1 << 3])
+        this._drawEdge(x2, y2, x4, y4, ctx, this._queryGraph.selectivities[1 << 2 | 1 << 4])
+        this._drawEdge(x3, y3, x4, y4, ctx, this._queryGraph.selectivities[1 << 3 | 1 << 4])
     }
 
     _drawCycleQuery(numberOfNodes, ctx) {
@@ -259,18 +259,6 @@ class QueryGraph {
             ctx.fillText(labelText, weightLabelCenterX, weightLabelCenterY)
             ctx.moveTo(weightLabelCenterX, weightLabelCenterY)
         }
-    }
-
-    _drawEdgeLabel(ctx) {
-
-    }
-
-    _drawNodeLabel(ctx) {
-
-    }
-
-    _getSelectivityFromBitArray() {
-
     }
 
     _indexesOfSetBits(S) {
