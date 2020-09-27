@@ -6,8 +6,8 @@ import '../styles/App.css'
 import "rc-slider/assets/index.css";
 import { ALGORITHMS, QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
 
-//const ENDPOINT = "https://dbs-visualization.ew.r.appspot.com/api"
-const ENDPOINT = "http://localhost:8080/api"
+//const ENDPOINT = "https://dbs-visualization.ew.r.appspot.com/api" // Production
+const ENDPOINT = "http://localhost:8080/api" // Local development
 
 // Create an array with values from 3 to 8 and store them in an object
 // For some reason this doesn't work, despite giving the same result as ``marksStatic``
@@ -89,43 +89,49 @@ class JoinProblemSettings extends React.Component {
                     <h5>Number of relations</h5>
                     <Slider className="slider"
                                 marks={marksStatic}
-                            handleStyle={{background:"white", border: 0, height:"26px",width:"26px",marginTop:"-9px"}}
-                            trackStyle={{background:"white", height: "4px", borderRadius:"0px"}} 
+                          handleStyle={{background:"white", border: 0, height:"26px", width:"26px", marginTop:"-9px"}}
+                           trackStyle={{background:"white", height: "4px", borderRadius:"0px"}} 
                             railStyle={{background:"white", height: "4px", borderRadius:"0px"}}
-                                dotStyle={{height:"20px", transform:"translate(2px, 6px)", border:"none", borderRadius:"0px",width:"3px"}}
+                             dotStyle={{height:"20px", transform:"translate(2px, 6px)", border:"none", borderRadius:"0px", width:"3px"}}
                                 style={{width:"100%"}}    
-                                    dots={true}
-                                onChange={this.handleNumberOfRelationsChange}
-                                    min={3}
-                            defaultValue={numberOfRelations}
-                                    max={10} />
+                                 dots={true}
+                             onChange={this.handleNumberOfRelationsChange}
+                                  min={3}
+                         defaultValue={numberOfRelations}
+                                  max={10} />
                 </div>
                 <div>
                     <h5>Graph Type</h5>
                     <Select className="select" 
-                                    name="color" 
+                                 name="color" 
                                 style={{width:"100%"}}
-                            defaultValue={QUERY_GRAPH_OPTIONS[4]} 
-                            placeholder="Query Graph" 
+                         defaultValue={QUERY_GRAPH_OPTIONS[4]} 
+                          placeholder="Query Graph" 
                                 value={graphTypeOption} 
-                                onChange={this.handleGraphTypeOptionChange} 
-                                options={QUERY_GRAPH_OPTIONS} />
-                    {graphTypeOption.value === "tree" && <div className="info">Only complete binary trees are supported.</div>}
+                             onChange={this.handleGraphTypeOptionChange} 
+                              options={QUERY_GRAPH_OPTIONS} />
+                    {
+                        graphTypeOption.value === "tree" && 
+                        <div className="info">Only complete binary trees are supported.</div>
+                    }
                 </div>
                 <div>
                     <h5>Algorithm</h5>
                     <Select name="color" 
-                        className="select" 
+                       className="select" 
                     defaultValue={ALGORITHMS[0]} 
-                        placeholder="Algorithm" 
-                            value={algorithm}
+                     placeholder="Algorithm" 
+                           value={algorithm}
                         onChange={this.handleAlgorithmChange} 
-                            options={ALGORITHMS} />
+                         options={ALGORITHMS} />
                 </div>
                 <div>
                     <h5>Calculation</h5>
                     <Hotkeys keyName="r" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
-                    <button className="emphasized" onClick={() => this.handleAlgorithmChange(algorithm)}>Recalculate Algorithm<span className="shortcut">R</span></button>
+                    <button className="emphasized" 
+                              onClick={() => this.handleAlgorithmChange(algorithm)}>
+                        Recalculate Algorithm<span className="shortcut">R</span>
+                    </button>
                 </div>
             </header>
         )

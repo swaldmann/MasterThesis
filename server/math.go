@@ -1,6 +1,6 @@
 package main
 
-// log2_64 CPU-abstract DeBruijn-like algorithm to calculate log_2(i)
+// log2_64 CPU-independent DeBruijn-like algorithm to calculate log_2(i)
 // adapted from C from https://stackoverflow.com/a/11398748
 func log2_64(value uint64) int {
 	if value == 0 {

@@ -18,6 +18,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 
 	subgraphs := EnumerateCsg(QG)
+	//fmt.Println(subgraphs)
 
 	csgCmpPairs := []CsgCmpPair{}
 	for _, subgraph := range subgraphs {
