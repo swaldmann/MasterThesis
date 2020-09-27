@@ -2,18 +2,13 @@ package main
 
 import (
 	"fmt"
-	"image/color"
 	"strconv"
 	"strings"
 
 	rainbow "github.com/fatih/color"
 )
 
-var stack = []string{}
-
-/* Algorithms */
-
-// DPccp Generate best plan using DPccp
+// DPccp Generate best plan using DPccp.
 func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	n := uint(len(QG.R))
 	BestTree := make([]*Tree, 1<<n)
@@ -23,29 +18,34 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 
 	subgraphs := EnumerateCsg(QG)
+
 	// Begin visualization
-	sObserver := ObservedRelation{Identifier: "S", Color: greenColor}
-	xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
-	nObserver := ObservedRelation{Identifier: "N", Color: redColor}
-	emitObserver := ObservedRelation{Identifier: "emit/s", Color: redColor}
-	obeservedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
-	routine := VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObeservedRelation: obeservedRelations}
-	routines = append(routines, routine)
-	//resetChanges()
+	if visualizationOn {
+		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
+		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
+		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
+		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
+		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
+		currentRoutine = VisualizationRoutine{Name: "EnumerateCsg", Steps: changes, ObservedRelations: observedRelations}
+		routines = append(routines, currentRoutine)
+	}
 	// End visualization
 
 	csgCmpPairs := []CsgCmpPair{}
 	for _, subgraph := range subgraphs {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
-		// Begin visualization
 
-		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
-		vObserver := ObservedRelation{Identifier: "v", Color: blueColor}
-		obeservedRelations := []ObservedRelation{xObserver, vObserver}
-		routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObeservedRelation: obeservedRelations}
-		routines = append(routines, routine)
-		resetChanges()
+		// Begin visualization
+		if visualizationOn {
+			xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
+			vObserver := ObservedRelation{Identifier: "v", Color: blueColor}
+			observedRelations := []ObservedRelation{xObserver, vObserver}
+			routine := VisualizationRoutine{Name: "EnumerateCmp", Steps: changes, ObservedRelations: observedRelations}
+			routines = append(routines, routine)
+			resetChanges()
+		}
 		// End visualization
+
 		csgCmpPairs = append(csgCmpPairs, subgraphCsgCmpPairs...)
 	}
 
@@ -74,7 +74,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	return BestTree[(1<<n)-1]
 }
 
-// EnumerateCsg Enumerate Csg pairs
+// EnumerateCsg Enumerate connected subgraphs.
 func EnumerateCsg(QG QueryGraph) []uint {
 	n := uint(len(QG.R))
 	subgraphs := []uint{}
@@ -91,17 +91,19 @@ func EnumerateCsg(QG QueryGraph) []uint {
 	return subgraphs
 }
 
-// EnumerateCsgRec Enumerate Csg-pairs
+// EnumerateCsgRec Enumerate connected subgraphs recursively.
 func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	n := uint(len(QG.R))
 	ℕ := ℕ(QG, S)
 	N := SetMinus(ℕ, X, n)
 
-	variableState := VariableTable{}
-	variableState["S"] = IdxsOfSetBits(S)
-	variableState["X"] = IdxsOfSetBits(X)
-	variableState["N"] = IdxsOfSetBits(N)
-	visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState, stack)
+	if visualizationOn {
+		variableState := VariableTable{}
+		variableState["S"] = IdxsOfSetBits(S)
+		variableState["X"] = IdxsOfSetBits(X)
+		variableState["N"] = IdxsOfSetBits(N)
+		visualizeRelations(QG, variableState, stack)
+	}
 
 	subgraphs := []uint{}
 
@@ -112,10 +114,12 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		SuSPrime := S | SPrime
 		subgraphs = append(subgraphs, SuSPrime)
 
-		variableState := VariableTable{}
-		stack = append(stack, "→")
-		variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
-		visualizeEnumerateCsgRec(QG, 0, S, X, N, variableState, stack)
+		if visualizationOn {
+			variableState := VariableTable{}
+			stack = append(stack, "→")
+			variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
+			visualizeRelations(QG, variableState, stack)
+		}
 	}
 	for _, SPrime := range PowerSet(N) {
 		if SPrime == 0 {
@@ -129,7 +133,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	return subgraphs
 }
 
-// EnumerateCmp Enumerate complementary subgraphs
+// EnumerateCmp Enumerate complementary subgraphs.
 func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 	minS1 := MinUintSetBitIndex(S1)
 	𝔅minS1 := uint(1<<minS1) - 1
@@ -153,46 +157,6 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 	return subgraphs
 }
 
-/* Visualizations */
-
-// visualizeDPccp Dynamic Programming connected pairs
-func visualizeDPccp(QG QueryGraph, JTC JoinTreeCreator) []VisualizationRoutine {
-	visualize(DPccp, QG, JTC)
-	defer resetChanges()
-	defer resetRoutines()
-	return routines
-}
-
-func visualizeEnumerateCsgRec(QG QueryGraph, i uint, S uint, X uint, N uint, emits VariableTable, stack SubroutineStack) {
-	n := uint(len(QG.R))
-
-	NIndexes := IdxsOfSetBits(N)
-	SIndexes := IdxsOfSetBits(S)
-	XIndexes := IdxsOfSetBits(X)
-
-	nodeColors := []NodeColor{}
-
-	// Color each node explicitly, not just changes
-	for j := n - 1; int(j-1) >= -1; j-- {
-		var nodeColor color.RGBA
-		if contains(NIndexes, j) {
-			nodeColor = greenColor
-		} else if contains(SIndexes, j) {
-			nodeColor = blueColor
-		} else if contains(XIndexes, j) {
-			nodeColor = whiteColor
-		} else {
-			nodeColor = grayColor
-		}
-		nodeConfiguration := NodeColor{NodeIndex: j, Color: nodeColor}
-		nodeColors = append(nodeColors, nodeConfiguration)
-	}
-	graphState := GraphState{NodeColors: nodeColors}
-	change := VisualizationStep{GraphState: graphState, Variables: emits, SubroutineStack: stack}
-	changes = append(changes, change)
-
-}
-
 /* Helpers */
 
 // ℕ Neighborhood of a subset S
@@ -208,7 +172,7 @@ func ℕ(QG QueryGraph, S uint) uint {
 	return SetMinus(result, S, n)
 }
 
-// HumanPrint Prints uint variable in a human-readable format
+// HumanPrint Prints uint variable in a human-readable format.
 func HumanPrint(variableName string, variable uint) {
 	setBits := IdxsOfSetBits(variable)
 	setBitsStringArray := make([]string, len(setBits))
@@ -220,7 +184,7 @@ func HumanPrint(variableName string, variable uint) {
 	rainbow.Blue(variableName + ": [" + setBitsString + "] B: " + binary)
 }
 
-// HumanPrintUIntArray Print uint array in human-readable format
+// HumanPrintUIntArray Print uint array in human-readable format.
 func HumanPrintUIntArray(variableName string, array []uint) {
 	setBitsStringArray := make([]string, len(array))
 	for i, value := range array {
@@ -230,13 +194,13 @@ func HumanPrintUIntArray(variableName string, array []uint) {
 	rainbow.Cyan(variableName + ": [" + setBitsString + "]")
 }
 
-// HumanPrintCsgCmpPair Print csg-cmp-pair in human-readable format
+// HumanPrintCsgCmpPair Print csg-cmp-pair in human-readable format.
 func HumanPrintCsgCmpPair(pair CsgCmpPair) {
 	HumanPrint("S1", pair.Subgraph1)
 	HumanPrint("S2", pair.Subgraph2)
 }
 
-// HumanPrintCsgCmpPairArray Print csg-cmp-pair array in human-readable format
+// HumanPrintCsgCmpPairArray Print csg-cmp-pair array in human-readable format.
 func HumanPrintCsgCmpPairArray(name string, pairs []CsgCmpPair) {
 	fmt.Printf(name + ": ")
 	for _, pair := range pairs {

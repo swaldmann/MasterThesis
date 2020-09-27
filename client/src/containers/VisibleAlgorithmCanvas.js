@@ -4,7 +4,6 @@ import { ALGORITHMS } from '../constants/AlgorithmConstants'
 import AlgorithmCanvas from '../components/AlgorithmCanvas'
 
 import * as Actions from '../actions'
-import { steps } from '../reducers/steps'
 
 const mapStateToProps = state => {
     return {
@@ -12,6 +11,8 @@ const mapStateToProps = state => {
         settingNumberOfRelations: state.settingNumberOfRelations,
         settingGraphTypeValue: state.settingGraphTypeValue,
 
+        routine: state.currentRoutine,
+        configuration: state.configuration,
         graphState: state.graphState,
         queryGraph: state.queryGraph,
         steps: state.steps,

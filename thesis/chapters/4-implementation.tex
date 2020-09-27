@@ -3,29 +3,19 @@
 
 \subsection{API Requirements and Design Goals}
 \label{subsub:api-requirements-goals}
-\paragraph{Declarativity} One of the main goals of this framework is to minimize 
-the amount of code or configuration that has to be added to exisiting algorithms' implementations in order to make use of the visualization for its intended purpose. The visualization should therefore be specified as declaratively as 
-possible, with the user specifying \textit{only} the relevant parameters–while minimizing the amount of required boilerplate code.
-
-This allows for many side-effects like reusability, mainta
 
 \paragraph{Orthogonality}
 Most importantly though, the property  of orthogonality 
 as defined by Eric S. Raymond in \textit{The Art of Unix
 Programming} \cite{raymond2003compactness} has to be fulfilled for the visualization code with regards to the algorithm implementation's code, i.e. it should not change its behavior or state.
 
-More pragmatically, this means that the algorithm has to 
-conform to the \texttt{Visualizable} Go type we define as 
-follows:
+\paragraph{Declarativity} One of the main goals of this framework is to minimize 
+the amount of code or configuration that has to be added to exisiting algorithms' implementations in order to make use of the visualization for its intended purpose in exploration or debugging. The visualization should therefore be specified as declaratively as 
+possible, with the user specifying \textit{only} the relevant parameters–while minimizing the amount of required boilerplate code.
 
-%\begin{figure}[H]
-\begin{minted}{go}
-    type Visualizable func(QG QueryGraph)
-\end{minted}
-%\caption{\texttt{Visualizable} type}
-%\centering
-%\end{figure}
+This allows for many side-effects like reusability, mainta
 
+\paragraph{Separation of Concerns}
 With the separation of the complex algorithm and user interface/visualization logic in mind is to keep the amount code required to create new visualizations as minimal as possible. 
 Thus, we organize their architecture in a client-server 
 relationship, whereby the client specifies the join 
@@ -43,7 +33,7 @@ The advantages of this approach are multifold:
           within a web application without sacrificing 
           the performance by limiting ourselves with a 
           slow, interpreting JavaScript engine, but being 
-          able to run compiled and thus more optimized 
+          able to run compiled and thus more optimized and therefore faster 
           code
     \item (Allows us to formally specify interfaces between
           client and server) (Abbildung malen)
@@ -51,6 +41,31 @@ The advantages of this approach are multifold:
 
 \paragraph{Flexibility}
 The visualization tools should be abstract enough that it is not catered towards a specific algorithm, but can used to visualize a wide range of algorithms, especially ones it has not been explicitly programmed for.  
+
+Since there is a large number of data structures an algorithm can use for its implementation we limit ourselves to procedures involving a query graph with information about its number of relations, the query graph type as specified in \ref{subsub:query-types}, and its cardinalities and selectivities.
+This limitation is necessary to enfore a manageable scope for creating a minimum viable product.
+
+More pragmatically, this means that the algorithm has to 
+conform to the \texttt{Visualizable} Go type we define as 
+follows:
+
+\begin{figure}[H]
+    \begin{minted}{go}
+type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
+    \end{minted}
+    \caption{\texttt{Visualizable} type conformance requirement}
+    \centering
+\end{figure}
+
+\begin{example}
+This way, a Go function \texttt{DPccp} that conforms to this type can be instructed to produce the output  log necessary for the visualization by simply calling 
+
+\begin{minted}{go}
+visualize(DPccp, QG, JTC)
+\end{minted}
+instead of the algorithm itself. The \texttt{visualize} function then automatically sets the appropriate flags to enable visualization output and can allow the algorithm to run without the visualization code and thus no memory overhead.
+
+\end{example}
 
 \paragraph{High signal-to-noise ratio} 
 In our implementation we are using code folding, enabled
@@ -94,6 +109,11 @@ Some JSON files are taken from the supplementary material to the ``IE 630 Query 
 
 Additionally, we create a join problem generator for complete binary trees with a degree $k$ and a number of relations $n$.
 
+\setlength{\belowdisplayskip}{10pt}
+\setlength{\belowdisplayshortskip}{50pt}
+\setlength{\abovedisplayskip}{10pt}
+\setlength{\abovedisplayshortskip}{10pt}
+
 \paragraph{Complete Binary Tree}
 \subparagraph{Neighbors}
 First, we get the number of vertices which have children, i.e. for which neighbor entries exist.
@@ -112,6 +132,7 @@ In order to define each element we first need to determine the level $l(v_i)$ of
 \end{equation}
 
 We then calculate the count of number of nodes in the levels below $l(v_i)$:
+
 \begin{equation}
      pre_i = \vert \{v_j \in V \vert l(v_j) < l(v_i)\} \vert = 2^{l(v_i) + 1} - 1
 \end{equation}
@@ -236,7 +257,7 @@ All join problems can be defined using the following JSON structure. ``JSON'' re
     {
         problemID: number,
         problemNeighbors: {
-            string: string
+            [relationRID]: [neighbors]
         },
         problemNumberOfRelations: number,
         problemRelations: [
@@ -246,7 +267,7 @@ All join problems can be defined using the following JSON structure. ``JSON'' re
             relationRID: number
         ],
         problemSelectivities: {
-            string: number
+            [s1,s2]: number
         }
     }
 ]
@@ -268,6 +289,7 @@ In order to run the project locally some prerequisites have to be fulfilled:
 
 \paragraph{Client}
 Client dependencies are maintained in the \texttt{package.json} file of the project's \texttt{client} directory.
+
 \paragraph{Server}
 The server-side code doesn't require any dependencies other than the Go standard libary packages as listed on \url{https://golang.org/pkg/#stdlib}.
 
@@ -289,3 +311,17 @@ This will start two locally running web servers that can be accessed via \url{ht
 
 a web application–the user does not have to update the application himself. 
 The duty of updating the application is on the host's side and happens by deploying either a new version of the server code or the client code to a web server.
+
+\paragraph{Pairing Function}
+We use the \textit{elegant pairing function} developed by Matthew Szudzik \cite{szudzik2006elegant} for two $k_1,k_2 \in \mathbb{Z}$ in order to create a unique key for repeated elements in a nested loop with depth 2.
+
+\begin{equation}
+    \begin{aligned}
+        p: \hspace{0.3cm} & \mathbb{Z} \times \mathbb{Z} \rightarrow \mathbb{N}\\
+        & (k_1,k_2) \mapsto
+        \begin{cases}
+        k_1 * k_1 + k_1 + k_2, & \text{if}\ k_1 \geq k_2 \\
+        k_2 * k_2 + k_1, & \text{otherwise}
+        \end{cases}
+    \end{aligned}
+\end{equation}

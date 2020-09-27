@@ -41,7 +41,7 @@ class AlgorithmCanvas extends React.Component {
         actions.increaseStep(1)
         actions.updateGraphState(nextStep.graphState)
         window.scrollTo(0, document.body.scrollHeight);
-    } 
+    }
 
     handlePreviousStep = step => {
         const { actions, steps } = this.props
@@ -60,7 +60,7 @@ class AlgorithmCanvas extends React.Component {
         const drawnQueryGraph = new QueryGraph(queryGraph)
         drawnQueryGraph.draw(settingGraphTypeValue, graphState.nodeColors, ctx)
     }
-    
+
     onKeyDown(keyName, e, handle) {
         const { step, steps } = this.props
         if (keyName === "d" && step < steps.length - 1) {
@@ -71,20 +71,23 @@ class AlgorithmCanvas extends React.Component {
     }
 
     render() {
-        const { step, steps } = this.props
+        const { step, steps, configuration, routine } = this.props
         const isFirstStep = step === 0
         const isLastStep = step === steps.length - 1
+
+        console.log("R");
+        console.log(routine);
 
         return (
             <>
                 <Hotkeys keyName="a,d" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
                 <div className="fixed">
-                    <canvas ref={this.algorithmCanvasRef} width="500px" height="500px" style={{width:"100%", height:"50vw"}}></canvas>
+                    <canvas ref={this.algorithmCanvasRef} width="500px" height="500px" style={{ width: "100%", height: "50vw" }}></canvas>
                     <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step<span className="shortcut">A</span></button>
                     <button onClick={() => this.handleNextStep(step)} disabled={isLastStep}>Next Step<span className="shortcut">D</span></button>
                     <p>Step {step + 1} of {steps.length}</p>
                 </div>
-                
+
             </>
         )
     }

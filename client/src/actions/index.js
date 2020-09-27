@@ -22,5 +22,6 @@ export const resetSteps = () => ({ type: types.RESET_STEPS })
 export const updateSteps = steps => ({ type: types.UPDATE_STEPS, steps })
 
 export const updateRoutines = routines => ({ type: types.UPDATE_ROUTINES, routines })
+export const updateCurrentRoutine = routine => ({ type: types.UPDATE_CURRENT_ROUTINE, routine })
 
 export const updateGraphState = graphState => ({ type: types.UPDATE_GRAPH_STATE, graphState })

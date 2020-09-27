@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	"log"
 	"net/http"
 	"strconv"
@@ -36,7 +35,7 @@ func startServer() {
 				log.Fatal(err)
 			}
 			if graphType == "moerkotte" {
-				numberOfRelations = 5
+				numberOfRelations = 5 // This is a specific example and not auto-generated
 			}
 			QG := GetQueryGraph(graphType, uint(numberOfRelations))
 			c.JSON(http.StatusOK, gin.H{
@@ -62,28 +61,28 @@ func startServer() {
 
 			switch algorithmType {
 			case "dpccp":
-				//obeservedRelations := []string{"S", "X", "N", "emit/S"}
 				configuration := &Configuration{}
 
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 				JTC := JoinTreeCreator{false, false, Costfunctions}
-				routines := visualizeDPccp(QG, JTC)
+				routines := visualize(DPccp, QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
 					"routines":      routines,
 					"configuration": configuration,
 					"queryGraph":    QG,
 				})
-			case "adaptiveRadixTree":
-				color := color.RGBA{85, 165, 34, 1}
-				nodeColor := NodeColor{NodeIndex: 0, Color: color}
-				graphState := &GraphState{NodeColors: []NodeColor{nodeColor}}
-				counter := &AlgorithmCounter{Name: "LohmannCounter", Value: 0}
+			case "dpsize":
+				configuration := &Configuration{}
+
+				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
+				JTC := JoinTreeCreator{false, false, Costfunctions}
+				routines := visualize(DPsize, QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
-					"counters":   counter,
-					"graphState": graphState,
-					"queryGraph": QG,
+					"routines":      routines,
+					"configuration": configuration,
+					"queryGraph":    QG,
 				})
 			}
 		})

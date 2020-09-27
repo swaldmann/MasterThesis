@@ -12,7 +12,7 @@
 \usepackage{pstricks}
 \usepackage{pst-node,pst-tree}
 \usepackage{auto-pst-pdf}
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,nccmath}
 \usepackage{latexsym}
 \usepackage{oldgerm}
 \usepackage{setspace}
@@ -37,8 +37,9 @@
 %]{biblatex}
 
 %\addbibresource{references.bib} %Imports bibliography file
-
+\theoremstyle{definition}
 \newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
 
 \usetikzlibrary{plotmarks,trees,arrows}
 \usetikzlibrary{graphs,graphs.standard}
@@ -49,7 +50,7 @@
 \newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}}
 \renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 
-\title{Master Thesis}
+\title{A Toolset For Visualizing Algorithms On Query Graphs}
 \author{Steffen Waldmann}
 
 \begin{document}

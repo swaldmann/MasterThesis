@@ -3,7 +3,7 @@ import { algorithmIndex } from './algorithm'
 import { queryGraph, settingGraphTypeValue, settingNumberOfRelations } from './queryGraph'
 import { variables } from './variables'
 import { configuration } from './configuration'
-import { routines } from './routines'
+import { routines, currentRoutine } from './routines'
 import { steps } from './steps'
 import { step } from './step'
 import { graphState } from './graphState'
@@ -16,6 +16,7 @@ const appReducer = combineReducers({
     graphState,
     algorithmIndex,
     routines,
+    currentRoutine,
     steps,
     step,
     configuration
