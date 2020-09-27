@@ -97,7 +97,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	ℕ := ℕ(QG, S)
 	N := SetMinus(ℕ, X, n)
 
-	if visualizationOn {
+	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
 		variableState := VariableTable{}
 		variableState["S"] = IdxsOfSetBits(S)
 		variableState["X"] = IdxsOfSetBits(X)
