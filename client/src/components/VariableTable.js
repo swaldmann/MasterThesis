@@ -55,10 +55,14 @@ class VariableTable extends React.Component {
                                         }
                                         <tr>
                                             {
-                                                routines[routineIndex].observedRelations.map((variable, j) =>
-                                                    <td key={variable.identifier + i + j}>
-                                                        {'{'}{step.variables[variable.identifier]?.join(", ")}{'}'}
-                                                    </td>)
+                                                routines[routineIndex].observedRelations.map((relation, j) => {
+                                                    const stepVariables = step.variables[relation.identifier]
+                                                    return (
+                                                        <td key={relation.identifier + i + j}>
+                                                            {stepVariables?.length > 0 ? "{" : ""}{stepVariables?.join(", ")}{stepVariables?.length > 0 ? "}" : ""}
+                                                        </td>
+                                                    )
+                                                })
                                             }
                                         </tr>
                                     </>
