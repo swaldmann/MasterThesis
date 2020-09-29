@@ -20,14 +20,15 @@ func startServer() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://github.com"
+			return origin == "https://swaldmann.github.io"
 		},
 		MaxAge: 12 * time.Hour,
 	}))
 
 	api := router.Group("/api")
 	{
-		api.GET("/queryGraph/:graphType/relations/:numberOfRelations", func(c *gin.Context) {
+		api.GET("/algorithm/:type/relations/:numberOfRelations/graphType/:graphType", func(c *gin.Context) {
+			algorithmType := c.Param("type")
 			graphType := c.Param("graphType")
 
 			numberOfRelations, err := strconv.ParseUint(c.Param("numberOfRelations"), 10, 64)
@@ -38,26 +39,6 @@ func startServer() {
 				numberOfRelations = 5 // This is a specific example and not auto-generated
 			}
 			QG := GetQueryGraph(graphType, uint(numberOfRelations))
-			c.JSON(http.StatusOK, gin.H{
-				"queryGraph": QG,
-			})
-		})
-
-		api.GET("/algorithm/:type/relations/:numberOfRelations/graphType/:graphType", func(c *gin.Context) {
-			algorithmType := c.Param("type")
-			graphType := c.Param("graphType")
-
-			numberOfRelations, err := strconv.ParseUint(c.Param("numberOfRelations"), 10, 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if graphType == "moerkotte" {
-				numberOfRelations = 5
-			}
-			QG := GetQueryGraph(graphType, uint(numberOfRelations))
-
-			// First, define the initial state.
-			// Second, generate all the steps from the algorithm implementation.
 
 			switch algorithmType {
 			case "dpccp":
