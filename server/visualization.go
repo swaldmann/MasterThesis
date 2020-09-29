@@ -24,8 +24,8 @@ var (
 )
 
 var steps = []interface{}{}
-var routines = []VisualizationRoutine{}
-var stack = []VisualizationRoutine{}
+var routines = []*VisualizationRoutine{}
+var stack = []*VisualizationRoutine{}
 
 func resetAllSteps() {
 	steps = []interface{}{}
@@ -36,14 +36,14 @@ func resetSteps(routineKey string) {
 }
 
 func resetRoutines() {
-	routines = []VisualizationRoutine{}
+	routines = []*VisualizationRoutine{}
 }
 
 func popStack() {
 	stack = stack[:len(stack)-1]
 }
 
-func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []VisualizationRoutine {
+func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine {
 	oldVisualizationOn := visualizationOn
 	visualizationOn = true
 	visualization(QG, JTC)
@@ -53,7 +53,7 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) [
 	return routines
 }
 
-func startVisualizeRoutine(routine VisualizationRoutine) {
+func startVisualizeRoutine(routine *VisualizationRoutine) {
 	stack = append(stack, routine)
 
 	if len(stack) > 1 {
@@ -67,7 +67,7 @@ func startVisualizeRoutine(routine VisualizationRoutine) {
 	}
 }
 
-func recursivelyAppendToSteps(steps *[]interface{}, step interface{}) {
+func recursivelyAppendToSteps(steps *[]*interface{}, step *interface{}) {
 	*steps = append(*steps, step)
 }
 
@@ -82,7 +82,7 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	// it's way harder to debug, both in the server and
 	// client/visualization.
 	currentStackIndex := len(stack) - 1
-	currentRoutineIndex := len(routines) - 1
+	//currentRoutineIndex := len(routines) - 1
 
 	// Create graph state
 	observedRelations := stack[currentStackIndex].ObservedRelations
@@ -99,8 +99,22 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	graphState := GraphState{NodeColors: nodeColors}
 	step := &VisualizationStep{GraphState: graphState, Variables: relations}
 
-	currentRoutine := &routines[currentRoutineIndex]
-	rainbow.Blue("BEGIN ======")
+	currentRoutine := stack[currentStackIndex]
+	var v interface{}
+	v = step
+
+	fmt.Println(&routines[0])
+	fmt.Println(&currentRoutine)
+	fmt.Println(currentRoutine)
+	fmt.Println(step)
+	//recursivelyAppendToSteps(&currentRoutine.Steps, &v)
+	currentRoutine.Steps = append(currentRoutine.Steps, &v)
+
+	fmt.Println(routines)
+	bolB, _ := json.Marshal(routines)
+	fmt.Println(string(bolB))
+	rainbow.Blue("=========")
+	/*rainbow.Blue("BEGIN ======")
 	fmt.Println(currentRoutine)
 	fmt.Println(&currentRoutine)
 	fmt.Println(relations)
@@ -160,7 +174,7 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	rainbow.Blue("END ========")
 
 	//stack[currentStackIndex].Steps = append(stack[currentStackIndex].Steps, step)
-	//routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, stack[currentStackIndex].Steps...)
+	//routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, stack[currentStackIndex].Steps...)*/
 }
 
 //

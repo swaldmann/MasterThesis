@@ -56,7 +56,7 @@ func EnumerateCsg(QG QueryGraph) []uint {
 	if visualizationOn {
 		emitObserver := ObservedRelation{Identifier: "emit", Color: orangeColor}
 		observedRelations := []ObservedRelation{emitObserver}
-		currentRoutine := VisualizationRoutine{Name: "EnumerateCsg", ObservedRelations: observedRelations}
+		currentRoutine := &VisualizationRoutine{Name: "EnumerateCsg", ObservedRelations: observedRelations}
 		startVisualizeRoutine(currentRoutine)
 		defer popStack()
 		//defer popFromRoutineStack()
@@ -91,7 +91,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
 		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
 		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
-		currentRoutine := VisualizationRoutine{Name: "EnumerateCsgRec", ObservedRelations: observedRelations}
+		currentRoutine := &VisualizationRoutine{Name: "EnumerateCsgRec", ObservedRelations: observedRelations}
 		startVisualizeRoutine(currentRoutine)
 		defer popStack()
 		//defer popFromRoutineStack()
