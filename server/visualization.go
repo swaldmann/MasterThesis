@@ -1,12 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"image/color"
-	"reflect"
-
-	rainbow "github.com/fatih/color"
 )
 
 // Visualizable Type conformance for visualizing join ordering/query graph algorithms
@@ -57,18 +53,22 @@ func startVisualizeRoutine(routine *VisualizationRoutine) {
 	stack = append(stack, routine)
 
 	if len(stack) > 1 {
-		//currentStackIndex := len(stack) - 1
-		currentRoutineIndex := len(routines) - 1
+		currentStackIndex := len(stack) - 2
+		currentRoutine := stack[currentStackIndex]
 		var v interface{}
 		v = routine
-		routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, &v)
+		fmt.Println(currentRoutine.Steps)
+		currentRoutine.Steps = append(currentRoutine.Steps, &v)
 	} else {
 		routines = append(routines, routine)
 	}
 }
 
-func recursivelyAppendToSteps(steps *[]*interface{}, step *interface{}) {
-	*steps = append(*steps, step)
+func endVisualizationRoutine(result *VisualizationRoutineResult) {
+	currentRoutineIndex := len(routines) - 1
+	var v interface{}
+	v = result
+	routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, &v)
 }
 
 func addVisualizationStep(QG QueryGraph, relations VariableTable) {
@@ -82,7 +82,6 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	// it's way harder to debug, both in the server and
 	// client/visualization.
 	currentStackIndex := len(stack) - 1
-	//currentRoutineIndex := len(routines) - 1
 
 	// Create graph state
 	observedRelations := stack[currentStackIndex].ObservedRelations
@@ -102,88 +101,7 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	currentRoutine := stack[currentStackIndex]
 	var v interface{}
 	v = step
-
-	fmt.Println(&routines[0])
-	fmt.Println(&currentRoutine)
-	fmt.Println(currentRoutine)
-	fmt.Println(step)
-	//recursivelyAppendToSteps(&currentRoutine.Steps, &v)
 	currentRoutine.Steps = append(currentRoutine.Steps, &v)
-
-	fmt.Println(routines)
-	bolB, _ := json.Marshal(routines)
-	fmt.Println(string(bolB))
-	rainbow.Blue("=========")
-	/*rainbow.Blue("BEGIN ======")
-	fmt.Println(currentRoutine)
-	fmt.Println(&currentRoutine)
-	fmt.Println(relations)
-	fmt.Println(currentRoutine.Name)
-	fmt.Println(currentStackIndex)
-	for i := 0; i < currentStackIndex+1; i++ {
-
-		stepLength := len(currentRoutine.Steps)
-		if i == currentStackIndex || stepLength == 0 {
-			rainbow.Green("Append to " + currentRoutine.Name)
-			fmt.Println(step)
-			fmt.Println(&currentRoutine)
-			rainbow.Green("Before")
-			fmt.Println(currentRoutine.Steps)
-			//recursivelyAppendToSteps(currentRoutine.Steps, *step)
-			var v interface{}
-			v = step
-			currentRoutine.Steps = append(currentRoutine.Steps, &v)
-			rainbow.Green("After")
-			fmt.Println(&currentRoutine.Steps)
-			rainbow.Yellow("All routines")
-			fmt.Println(routines)
-			bolB, _ := json.Marshal(routines)
-			fmt.Println(string(bolB))
-			break
-		}
-
-		fmt.Println("---> " + currentRoutine.Name)
-		//fmt.Println(currentRoutine)
-
-		steps := currentRoutine.Steps
-		l := *steps[stepLength-1]
-		lastStep := to_struct_ptr(*steps[stepLength-1])
-		fmt.Println(steps)
-		fmt.Println(l)
-		fmt.Println(reflect.TypeOf(l))
-		fmt.Println(&lastStep)
-		fmt.Println(lastStep)
-		fmt.Println(reflect.TypeOf(lastStep))
-		if v, ok := (lastStep).(*VisualizationRoutine); ok {
-			rainbow.Red("Before")
-			//fmt.Println(currentRoutine)
-			fmt.Println(currentRoutine)
-			//fmt.Println(*currentRoutine)
-			//fmt.Println(currentRoutine.Name)
-			currentRoutine = v
-			rainbow.Red("New")
-			//fmt.Println(v)
-			fmt.Println(&v)
-			rainbow.Red("After")
-			fmt.Println(currentRoutine)
-			fmt.Println(&currentRoutine)
-			fmt.Println(*currentRoutine)
-			//fmt.Println(currentRoutine.Name)
-		}
-	}
-	rainbow.Blue("END ========")
-
-	//stack[currentStackIndex].Steps = append(stack[currentStackIndex].Steps, step)
-	//routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, stack[currentStackIndex].Steps...)*/
-}
-
-//
-// Return a pointer to the supplied struct via interface{}
-//
-func to_struct_ptr(obj interface{}) interface{} {
-	vp := reflect.New(reflect.TypeOf(obj))
-	vp.Elem().Set(reflect.ValueOf(obj))
-	return vp.Interface()
 }
 
 // SubroutineStack Description of the current (recursive) call stack.
@@ -218,6 +136,11 @@ type ObservedRelation struct {
 	Identifier string     `json:"identifier"`
 	Color      color.RGBA `json:"color"`
 	// TODO: Description string `json:"description"`
+}
+
+// VisualizationRoutineResult A description of the visualization routine's return value
+type VisualizationRoutineResult struct {
+	Description string `json:"description"`
 }
 
 // VisualizationRoutine A top-level routine executed by the algorithm.

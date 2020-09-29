@@ -80,26 +80,33 @@ func EnumerateCsg(QG QueryGraph) []uint {
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
 
+	if visualizationOn {
+		//resultArray := IdxsOfSetBits(subgraphs)
+		//description := uintArrayToString(IdxsOfSetBits(subgraphs), 2)
+		description := "Test"
+		result := &VisualizationRoutineResult{Description: description}
+		endVisualizationRoutine(result)
+	}
 	return subgraphs
 }
 
 // EnumerateCsgRec Enumerate connected subgraphs recursively.
 func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
-	if visualizationOn {
+	n := uint(len(QG.R))
+	ℕ := ℕ(QG, S)
+	N := SetMinus(ℕ, X, n)
+
+	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
 		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
 		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
 		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
 		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
-		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
+		observedRelations := []ObservedRelation{emitObserver, sObserver, xObserver, nObserver}
 		currentRoutine := &VisualizationRoutine{Name: "EnumerateCsgRec", ObservedRelations: observedRelations}
 		startVisualizeRoutine(currentRoutine)
 		defer popStack()
 		//defer popFromRoutineStack()
 	}
-
-	n := uint(len(QG.R))
-	ℕ := ℕ(QG, S)
-	N := SetMinus(ℕ, X, n)
 
 	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
 		variableState := VariableTable{}
