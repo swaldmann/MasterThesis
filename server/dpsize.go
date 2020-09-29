@@ -26,7 +26,7 @@ func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 					variableState := VariableTable{}
 					variableState["S1"] = IdxsOfSetBits(S1)
 					variableState["S2"] = IdxsOfSetBits(S2)
-					visualizeRelations(QG, variableState, stack)
+					addVisualizationStep(QG, variableState)
 
 					if BestTree[S1uS2] == nil {
 						PlansSizeK[s] = append(PlansSizeK[s], S1uS2)

@@ -1,6 +1,13 @@
 package main
 
-import "image/color"
+import (
+	"encoding/json"
+	"fmt"
+	"image/color"
+	"reflect"
+
+	rainbow "github.com/fatih/color"
+)
 
 // Visualizable Type conformance for visualizing join ordering/query graph algorithms
 type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
@@ -16,18 +23,24 @@ var (
 	orangeColor = color.RGBA{235, 165, 50, 1}
 )
 
+var steps = []interface{}{}
 var routines = []VisualizationRoutine{}
-var steps = []VisualizationStep{}
-var stepsMap = map[string]VisualizationStep{}
-var currentRoutine VisualizationRoutine
-var stack = []string{}
+var stack = []VisualizationRoutine{}
 
-func resetSteps() {
-	steps = []VisualizationStep{}
+func resetAllSteps() {
+	steps = []interface{}{}
+}
+
+func resetSteps(routineKey string) {
+	//delete(steps, routineKey)
 }
 
 func resetRoutines() {
 	routines = []VisualizationRoutine{}
+}
+
+func popStack() {
+	stack = stack[:len(stack)-1]
 }
 
 func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []VisualizationRoutine {
@@ -35,12 +48,30 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) [
 	visualizationOn = true
 	visualization(QG, JTC)
 	visualizationOn = oldVisualizationOn
-	defer resetSteps()
+	defer resetAllSteps()
 	defer resetRoutines()
 	return routines
 }
 
-func visualizeRelations(QG QueryGraph, relations VariableTable, stack SubroutineStack) {
+func startVisualizeRoutine(routine VisualizationRoutine) {
+	stack = append(stack, routine)
+
+	if len(stack) > 1 {
+		//currentStackIndex := len(stack) - 1
+		currentRoutineIndex := len(routines) - 1
+		var v interface{}
+		v = routine
+		routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, &v)
+	} else {
+		routines = append(routines, routine)
+	}
+}
+
+func recursivelyAppendToSteps(steps *[]interface{}, step interface{}) {
+	*steps = append(*steps, step)
+}
+
+func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	n := uint(len(QG.R))
 
 	nodeColors := []NodeColor{}
@@ -50,7 +81,11 @@ func visualizeRelations(QG QueryGraph, relations VariableTable, stack Subroutine
 	// but it's not easy to achieve modularity and
 	// it's way harder to debug, both in the server and
 	// client/visualization.
-	observedRelations := currentRoutine.ObservedRelations
+	currentStackIndex := len(stack) - 1
+	currentRoutineIndex := len(routines) - 1
+
+	// Create graph state
+	observedRelations := stack[currentStackIndex].ObservedRelations
 	for j := n - 1; int(j-1) >= -1; j-- {
 		for _, relation := range observedRelations {
 			relationIndexes := relations[relation.Identifier]
@@ -62,12 +97,83 @@ func visualizeRelations(QG QueryGraph, relations VariableTable, stack Subroutine
 		}
 	}
 	graphState := GraphState{NodeColors: nodeColors}
-	change := VisualizationStep{GraphState: graphState, Variables: relations, SubroutineStack: stack}
-	steps = append(steps, change)
+	step := &VisualizationStep{GraphState: graphState, Variables: relations}
+
+	currentRoutine := &routines[currentRoutineIndex]
+	rainbow.Blue("BEGIN ======")
+	fmt.Println(currentRoutine)
+	fmt.Println(&currentRoutine)
+	fmt.Println(relations)
+	fmt.Println(currentRoutine.Name)
+	fmt.Println(currentStackIndex)
+	for i := 0; i < currentStackIndex+1; i++ {
+
+		stepLength := len(currentRoutine.Steps)
+		if i == currentStackIndex || stepLength == 0 {
+			rainbow.Green("Append to " + currentRoutine.Name)
+			fmt.Println(step)
+			fmt.Println(&currentRoutine)
+			rainbow.Green("Before")
+			fmt.Println(currentRoutine.Steps)
+			//recursivelyAppendToSteps(currentRoutine.Steps, *step)
+			var v interface{}
+			v = step
+			currentRoutine.Steps = append(currentRoutine.Steps, &v)
+			rainbow.Green("After")
+			fmt.Println(&currentRoutine.Steps)
+			rainbow.Yellow("All routines")
+			fmt.Println(routines)
+			bolB, _ := json.Marshal(routines)
+			fmt.Println(string(bolB))
+			break
+		}
+
+		fmt.Println("---> " + currentRoutine.Name)
+		//fmt.Println(currentRoutine)
+
+		steps := currentRoutine.Steps
+		l := *steps[stepLength-1]
+		lastStep := to_struct_ptr(*steps[stepLength-1])
+		fmt.Println(steps)
+		fmt.Println(l)
+		fmt.Println(reflect.TypeOf(l))
+		fmt.Println(&lastStep)
+		fmt.Println(lastStep)
+		fmt.Println(reflect.TypeOf(lastStep))
+		if v, ok := (lastStep).(*VisualizationRoutine); ok {
+			rainbow.Red("Before")
+			//fmt.Println(currentRoutine)
+			fmt.Println(currentRoutine)
+			//fmt.Println(*currentRoutine)
+			//fmt.Println(currentRoutine.Name)
+			currentRoutine = v
+			rainbow.Red("New")
+			//fmt.Println(v)
+			fmt.Println(&v)
+			rainbow.Red("After")
+			fmt.Println(currentRoutine)
+			fmt.Println(&currentRoutine)
+			fmt.Println(*currentRoutine)
+			//fmt.Println(currentRoutine.Name)
+		}
+	}
+	rainbow.Blue("END ========")
+
+	//stack[currentStackIndex].Steps = append(stack[currentStackIndex].Steps, step)
+	//routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, stack[currentStackIndex].Steps...)
+}
+
+//
+// Return a pointer to the supplied struct via interface{}
+//
+func to_struct_ptr(obj interface{}) interface{} {
+	vp := reflect.New(reflect.TypeOf(obj))
+	vp.Elem().Set(reflect.ValueOf(obj))
+	return vp.Interface()
 }
 
 // SubroutineStack Description of the current (recursive) call stack.
-type SubroutineStack []string
+//type SubroutineStack []string
 
 // VariableTableEntry Entry in the variable table.
 type VariableTableEntry []uint
@@ -102,16 +208,16 @@ type ObservedRelation struct {
 
 // VisualizationRoutine A top-level routine executed by the algorithm.
 type VisualizationRoutine struct {
-	Name              string              `json:"name"`
-	ObservedRelations []ObservedRelation  `json:"observedRelations"`
-	Steps             []VisualizationStep `json:"steps"`
+	Name              string             `json:"name"`
+	ObservedRelations []ObservedRelation `json:"observedRelations"`
+	Steps             []*interface{}     `json:"steps"`
 }
 
 // VisualizationStep An atomic visualization step that transfers the visualization to a new state.
 type VisualizationStep struct {
-	GraphState      GraphState      `json:"graphState"`
-	SubroutineStack SubroutineStack `json:"subroutineStack"`
-	Variables       VariableTable   `json:"variables"`
+	GraphState GraphState `json:"graphState"`
+	//SubroutineStack []string      `json:"subroutineStack"`
+	Variables VariableTable `json:"variables"`
 }
 
 /* ------------- */

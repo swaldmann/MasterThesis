@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	rainbow "github.com/fatih/color"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -66,6 +68,9 @@ func startServer() {
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 				JTC := JoinTreeCreator{false, false, Costfunctions}
 				routines := visualize(DPccp, QG, JTC)
+
+				rainbow.Green("Result")
+				fmt.Println(routines)
 
 				c.JSON(http.StatusOK, gin.H{
 					"routines":      routines,
