@@ -75,9 +75,6 @@ class AlgorithmCanvas extends React.Component {
         const isFirstStep = step === 0
         const isLastStep = step === steps.length - 1
 
-        console.log("R");
-        console.log(routine);
-
         return (
             <>
                 <Hotkeys keyName="a,d" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
