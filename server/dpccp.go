@@ -237,10 +237,10 @@ func HumanPrintCsgCmpPairArray(name string, pairs []CsgCmpPair) {
 	}
 }
 
-func uintArrayToString(array []uint) string {
+func uintArrayToString(array []uint, radix int) string {
 	setBitsStringArray := make([]string, len(array))
 	for i, value := range array {
-		setBitsStringArray[i] = strconv.FormatUint(uint64(value), 10)
+		setBitsStringArray[i] = strconv.FormatUint(uint64(value), radix)
 	}
 	setBitsString := strings.Join(setBitsStringArray[:], ", ")
 	return "{" + setBitsString + "}"
