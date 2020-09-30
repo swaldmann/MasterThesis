@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image/color"
 
 	"github.com/google/uuid"
@@ -59,7 +58,6 @@ func startVisualizeRoutine(routine *VisualizationRoutine) {
 		currentRoutine := stack[currentStackIndex]
 		var v interface{}
 		v = routine
-		fmt.Println(currentRoutine.Steps)
 		currentRoutine.Steps = append(currentRoutine.Steps, &v)
 	} else {
 		routines = append(routines, routine)

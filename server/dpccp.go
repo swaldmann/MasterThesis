@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -18,12 +17,14 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 
 	subgraphs := EnumerateCsg(QG)
-	fmt.Println(subgraphs)
-	/*csgCmpPairs := []CsgCmpPair{}
+
+	csgCmpPairs := []CsgCmpPair{}
 	for _, subgraph := range subgraphs {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
 		csgCmpPairs = append(csgCmpPairs, subgraphCsgCmpPairs...)
 	}
+
+	HumanPrintCsgCmpPairArray("", csgCmpPairs)
 
 	for _, csgCmpPair := range csgCmpPairs {
 		S1 := csgCmpPair.Subgraph1
@@ -47,7 +48,6 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 		}
 	}
 	rainbow.Green(BestTree[(1<<n)-1].ToString()) // Print best tree
-	return BestTree[(1<<n)-1]*/
 	return BestTree[(1)]
 }
 
@@ -145,6 +145,14 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 
 // EnumerateCmp Enumerate complementary subgraphs.
 func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
+	if visualizationOn {
+		emitObserver := ObservedRelation{Identifier: "emit", Color: orangeColor}
+		observedRelations := []ObservedRelation{emitObserver}
+		currentRoutine := &VisualizationRoutine{Name: "EnumerateCmp", ObservedRelations: observedRelations}
+		startVisualizeRoutine(currentRoutine)
+		defer popStack()
+	}
+
 	minS1 := MinUintSetBitIndex(S1)
 	𝔅minS1 := uint(1<<minS1) - 1
 
@@ -154,33 +162,24 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 	N := SetMinus(ℕ, X, n)
 
 	subgraphs := []CsgCmpPair{}
-	for _, v := range IdxsOfSetBits(N) {
+	setBits := IdxsOfSetBits(N)
+	for i := len(setBits) - 1; i >= 0; i-- { // Descending
+		v := setBits[i]
 		pair := CsgCmpPair{Subgraph1: S1, Subgraph2: 1 << v}
 		subgraphs = append(subgraphs, pair)
-		//HumanPrintCsgCmpPair(pair)
-		//rainbow.Yellow("---------")
+
+		if visualizationOn {
+			variableState := VariableTable{}
+			variableState["emit"] = IdxsOfSetBits(v)
+			addVisualizationStep(QG, variableState)
+		}
 		𝔅i := uint(1<<v - 1)
 		recursiveComplements := EnumerateCsgRec(QG, 1<<v, X|(𝔅i&N))
 		for _, S2 := range recursiveComplements {
 			pair := CsgCmpPair{Subgraph1: S1, Subgraph2: S2}
-			///HumanPrintCsgCmpPair(pair)
-			//rainbow.Yellow("---------")
 			subgraphs = append(subgraphs, pair)
 		}
 	}
-	// Begin visualization
-	/*if visualizationOn {
-		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
-		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
-		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
-		emitObserver := ObservedRelation{Identifier: "emit/S", Color: orangeColor}
-		observedRelations := []ObservedRelation{sObserver, xObserver, nObserver, emitObserver}
-		currentRoutine = VisualizationRoutine{Name: "EnumerateCmp " + uintArrayToString(IdxsOfSetBits(S1)), Steps: steps, ObservedRelations: observedRelations}
-		routines = append(routines, currentRoutine)
-		defer resetSteps()
-	}*/
-	// End visualization
-
 	return subgraphs
 }
 
@@ -210,7 +209,7 @@ func HumanPrint(variableName string, variable uint) {
 	}
 	setBitsString := strings.Join(setBitsStringArray[:], ", ")
 	binary := strconv.FormatUint(uint64(variable), 2)
-	rainbow.Blue(variableName + ": [" + setBitsString + "] B: " + binary)
+	rainbow.Blue(variableName + ": [" + setBitsString + "] Binary: " + binary)
 }
 
 // HumanPrintUIntArray Print uint array in human-readable format.
@@ -231,8 +230,9 @@ func HumanPrintCsgCmpPair(pair CsgCmpPair) {
 
 // HumanPrintCsgCmpPairArray Print csg-cmp-pair array in human-readable format.
 func HumanPrintCsgCmpPairArray(name string, pairs []CsgCmpPair) {
-	fmt.Printf(name + ": ")
+	rainbow.Yellow(name)
 	for _, pair := range pairs {
+		rainbow.Green("---------")
 		HumanPrintCsgCmpPair(pair)
 	}
 }
