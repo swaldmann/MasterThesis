@@ -10,6 +10,7 @@ const mapStateToProps = state => {
         routines: state.routines,
         steps: state.steps,
         step: state.step,
+        currentStepUUID: state.stepUUID,
         configuration: state.configuration,
         algorithm: ALGORITHMS[state.algorithmIndex]
     }

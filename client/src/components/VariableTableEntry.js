@@ -3,27 +3,27 @@ import VisibleVariableTableEntry from "../containers/VisibleVariableTableEntry"
 class VariableTableEntry extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         Object.entries(this.props).forEach(([key, val]) =>
-          prevProps[key] !== val && console.log(`Prop '${key}' changed`)
+            prevProps[key] !== val && console.log(`Prop '${key}' changed`)
         );
         if (this.state) {
-          Object.entries(this.state).forEach(([key, val]) =>
-            prevState[key] !== val && console.log(`State '${key}' changed`)
-          );
+            Object.entries(this.state).forEach(([key, val]) =>
+                prevState[key] !== val && console.log(`State '${key}' changed`)
+            );
         }
-      }
+    }
 
     render() {
-        const { parent, step, level, currentMaxStep } = this.props
+        const { parent, step, level, currentStepUUID, currentMaxStep, steps } = this.props
 
         const rBody = 40
         const gBody = 44
         const bBody = 52
-        
+
         const rParent = rBody - 8 * (level - 1)
         const gParent = gBody - 8 * (level - 1)
         const bParent = bBody - 8 * (level - 1)
         const parentStyle = { backgroundColor: "rgba(" + rParent + "," + gParent + "," + bParent + ", 1)" }
-        
+
         const r = rBody - 8 * level
         const g = gBody - 8 * level
         const b = bBody - 8 * level
@@ -69,12 +69,15 @@ class VariableTableEntry extends React.Component {
             )
         }
         else if (step.variables) {
-            window.renderedStep++
             return (
-                <tr style={parentStyle}>{parent.observedRelations.map(r =>
-                    <td key={r.identifier}>
-                        {step.variables[r.identifier] ? step.variables[r.identifier].join(",") : ""}
-                    </td>)}
+                <tr style={parentStyle} className={step.uuid === currentStepUUID ? "currentStep" : ""}>
+                    {
+                        parent.observedRelations.map(r =>
+                            <td key={r.identifier}>
+                                {step.variables[r.identifier] ? step.variables[r.identifier].join(",") : ""}
+                            </td>
+                        )
+                    }
                 </tr>
             )
         }

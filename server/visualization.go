@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"image/color"
+
+	"github.com/google/uuid"
 )
 
 // Visualizable Type conformance for visualizing join ordering/query graph algorithms
@@ -96,7 +98,8 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 		}
 	}
 	graphState := GraphState{NodeColors: nodeColors}
-	step := &VisualizationStep{GraphState: graphState, Variables: relations}
+	uuid := uuid.New().String()
+	step := &VisualizationStep{GraphState: graphState, Variables: relations, UUID: uuid}
 
 	currentRoutine := stack[currentStackIndex]
 	var v interface{}
@@ -152,9 +155,9 @@ type VisualizationRoutine struct {
 
 // VisualizationStep An atomic visualization step that transfers the visualization to a new state.
 type VisualizationStep struct {
-	GraphState GraphState `json:"graphState"`
-	//SubroutineStack []string      `json:"subroutineStack"`
-	Variables VariableTable `json:"variables"`
+	GraphState GraphState    `json:"graphState"`
+	Variables  VariableTable `json:"variables"`
+	UUID       string        `json:"uuid"`
 }
 
 /* ------------- */

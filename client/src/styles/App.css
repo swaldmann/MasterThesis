@@ -133,6 +133,10 @@ button.emphasized {
     width: 100%;
 }
 
+.currentStep {
+    background: rgb(64, 116, 206) !important;
+}
+
 .fixed {
     top: 0;
     align-self: flex-start;

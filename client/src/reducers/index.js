@@ -5,7 +5,7 @@ import { variables } from './variables'
 import { configuration } from './configuration'
 import { routines, currentRoutine } from './routines'
 import { steps } from './steps'
-import { step, renderedStep } from './step'
+import { step, stepUUID, renderedStep } from './step'
 import { graphState } from './graphState'
 
 const appReducer = combineReducers({
@@ -19,6 +19,7 @@ const appReducer = combineReducers({
     currentRoutine,
     steps,
     step,
+    stepUUID,
     renderedStep,
     configuration
 })

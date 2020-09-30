@@ -4,7 +4,8 @@ import {
     RESET_STEPS,
     INCREASE_RENDERED_STEP,
     DECREASE_RENDERED_STEP,
-    RESET_RENDERED_STEP
+    RESET_RENDERED_STEP,
+    UPDATE_STEP_UUID
 } from '../constants/ActionTypes'
 
 export function step(state = 0, action) {
@@ -15,6 +16,16 @@ export function step(state = 0, action) {
             return state - action.decrease
         case RESET_STEPS:
             return 0
+        default:
+            return state
+    }
+}
+
+export function stepUUID(state = "", action) {
+    switch(action.type) {
+        case UPDATE_STEP_UUID:
+            console.log(action)
+            return action.uuid
         default:
             return state
     }

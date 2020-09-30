@@ -20,6 +20,7 @@ export const increaseStep = increase => ({ type: types.INCREASE_STEP, increase }
 export const decreaseStep = decrease => ({ type: types.DECREASE_STEP, decrease })
 export const resetSteps = () => ({ type: types.RESET_STEPS })
 export const updateSteps = steps => ({ type: types.UPDATE_STEPS, steps })
+export const updateStepUUID = uuid => ({ type: types.UPDATE_STEP_UUID, uuid })
 
 export const increaseRenderedStep = increase => ({ type: types.INCREASE_RENDERED_STEP, increase })
 export const decreaseRenderedStep = decrease => ({ type: types.DECREASE_RENDERED_STEP, decrease })
