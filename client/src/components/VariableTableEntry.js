@@ -13,7 +13,7 @@ class VariableTableEntry extends React.Component {
     }
 
     render() {
-        const { parent, step, level, currentStepUUID, currentMaxStep, steps } = this.props
+        const { parent, step, level, currentStepUUID } = this.props
 
         const rBody = 40
         const gBody = 44
@@ -32,12 +32,6 @@ class VariableTableEntry extends React.Component {
         const borderLeft = 30 * level + "px solid #282c34"
         const marginLeft = "-" + 30 * level + "px"
         const fakeInsetStyle = { borderLeft: borderLeft, marginLeft: marginLeft }
-
-        console.log()
-        console.log(window.renderedStep)
-        /*if (window.renderedStep > currentMaxStep) {
-            return <></>
-        }*/
 
         // Routine
         if (step.name) {

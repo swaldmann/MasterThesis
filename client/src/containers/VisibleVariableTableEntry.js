@@ -5,7 +5,6 @@ import VariableTableEntry from '../components/VariableTableEntry'
 
 const mapStateToProps = state => {
     return {
-        currentMaxStep: state.step,
         currentStepUUID: state.stepUUID
     }
 }
