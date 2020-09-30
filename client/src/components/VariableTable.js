@@ -1,9 +1,10 @@
 import React from "react"
-import VariableTableEntry from './VariableTableEntry'
+import VisibleVariableTableEntry from '../containers/VisibleVariableTableEntry'
 class VariableTable extends React.Component {
 
     render() {
         const { routines } = this.props
+        window.renderedStep = 0
 
         return (
             <div>
@@ -15,8 +16,8 @@ class VariableTable extends React.Component {
                     </thead>
                     <tbody>
                         {
-                            routines.map(routine => 
-                                <VariableTableEntry step={routine} level={0} />
+                            routines.map((routine, i) => 
+                                <VisibleVariableTableEntry key={i} step={routine} level={0} />
                             )
                         }
                     </tbody>

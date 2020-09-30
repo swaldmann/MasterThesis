@@ -67,6 +67,7 @@ class QueryGraph {
                 break
             case "moerkotte":
                 this._drawMoerkotteQuery(ctx)
+                break
             default:
                 break
           } 
@@ -84,7 +85,7 @@ class QueryGraph {
             if (i !== 0) {
                 const x_previous = margin + r_node + (i - 1) * drawableWidth/(numberOfNodes - 1)
                 const y_previous = y
-                const selectivityKey = 1 << (i-1) | 1 << i
+                const selectivityKey = (1 << (i-1)) | (1 << i)
                 const selectivity = this._queryGraph.selectivities[selectivityKey]
                 this._drawEdge(x, y, x_previous, y_previous, ctx, selectivity)
             }
@@ -106,7 +107,7 @@ class QueryGraph {
             const x = r * Math.cos(θ) + r + r_node + margin
             const y = r * Math.sin(θ) + r + r_node + margin
 
-            const selectivityKey = 1 | 1 << i
+            const selectivityKey = 1 | (1 << i)
             const selectivity = this._queryGraph.selectivities[selectivityKey]
             this._drawEdge(x, y, x_center, y_center, ctx, selectivity)
             this._drawNode(i, x, y, "white", ctx, cardinality)
@@ -145,7 +146,7 @@ class QueryGraph {
             const x_previous = calculateX(column_previous, numberOfColumns_previous)
             const y_previous = calculateY(row_previous)
 
-            const selectivityKey = 1 << parentIndex | 1 << i
+            const selectivityKey = (1 << parentIndex) | (1 << i)
             const selectivity = this._queryGraph.selectivities[selectivityKey]
             this._drawEdge(x, y, x_previous, y_previous, ctx, selectivity)
         }
@@ -171,13 +172,13 @@ class QueryGraph {
         this._drawNode(3, x3, y3, "white", ctx, this._queryGraph.relationCardinalities[3])
         this._drawNode(4, x4, y4, "white", ctx, this._queryGraph.relationCardinalities[4])
         
-        this._drawEdge(x0, y0, x1, y1, ctx, this._queryGraph.selectivities[1 << 0 | 1 << 1])
-        this._drawEdge(x0, y0, x2, y2, ctx, this._queryGraph.selectivities[1 << 0 | 1 << 2])
-        this._drawEdge(x0, y0, x3, y3, ctx, this._queryGraph.selectivities[1 << 0 | 1 << 3])
-        this._drawEdge(x1, y1, x4, y4, ctx, this._queryGraph.selectivities[1 << 1 | 1 << 4])
-        this._drawEdge(x2, y2, x3, y3, ctx, this._queryGraph.selectivities[1 << 2 | 1 << 3])
-        this._drawEdge(x2, y2, x4, y4, ctx, this._queryGraph.selectivities[1 << 2 | 1 << 4])
-        this._drawEdge(x3, y3, x4, y4, ctx, this._queryGraph.selectivities[1 << 3 | 1 << 4])
+        this._drawEdge(x0, y0, x1, y1, ctx, this._queryGraph.selectivities[(1 << 0) | (1 << 1)])
+        this._drawEdge(x0, y0, x2, y2, ctx, this._queryGraph.selectivities[(1 << 0) | (1 << 2)])
+        this._drawEdge(x0, y0, x3, y3, ctx, this._queryGraph.selectivities[(1 << 0) | (1 << 3)])
+        this._drawEdge(x1, y1, x4, y4, ctx, this._queryGraph.selectivities[(1 << 1) | (1 << 4)])
+        this._drawEdge(x2, y2, x3, y3, ctx, this._queryGraph.selectivities[(1 << 2) | (1 << 3)])
+        this._drawEdge(x2, y2, x4, y4, ctx, this._queryGraph.selectivities[(1 << 2) | (1 << 4)])
+        this._drawEdge(x3, y3, x4, y4, ctx, this._queryGraph.selectivities[(1 << 3) | (1 << 4)])
     }
 
     _drawCycleQuery(numberOfNodes, ctx) {
@@ -194,7 +195,7 @@ class QueryGraph {
             const x_next = r * Math.cos(θ_next) + r + r_node + margin
             const y_next = r * Math.sin(θ_next) + r + r_node + margin
 
-            const selectivityKey = 1 << ((i+1) % numberOfNodes) | 1 << i
+            const selectivityKey = (1 << ((i+1) % numberOfNodes)) | (1 << i)
             const selectivity = this._queryGraph.selectivities[selectivityKey]
             this._drawEdge(x, y, x_next, y_next, ctx, selectivity)
         }

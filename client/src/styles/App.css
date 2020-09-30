@@ -173,3 +173,10 @@ button.emphasized {
     background:rgba(255,255,255,0.15);
     border-radius: 6px;
 }
+
+.error {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    background: red;
+}

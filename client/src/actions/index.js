@@ -21,6 +21,10 @@ export const decreaseStep = decrease => ({ type: types.DECREASE_STEP, decrease }
 export const resetSteps = () => ({ type: types.RESET_STEPS })
 export const updateSteps = steps => ({ type: types.UPDATE_STEPS, steps })
 
+export const increaseRenderedStep = increase => ({ type: types.INCREASE_RENDERED_STEP, increase })
+export const decreaseRenderedStep = decrease => ({ type: types.DECREASE_RENDERED_STEP, decrease })
+export const resetRenderedStep = () => ({ type: types.RESET_RENDERED_STEP })
+
 export const updateRoutines = routines => ({ type: types.UPDATE_ROUTINES, routines })
 export const updateCurrentRoutine = routine => ({ type: types.UPDATE_CURRENT_ROUTINE, routine })
 

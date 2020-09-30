@@ -24,6 +24,4 @@ const VisbleVariableTable = connect(
     mapDispatchToProps
 )(VariableTable)
 
-
-
 export default VisbleVariableTable

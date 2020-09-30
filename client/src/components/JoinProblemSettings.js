@@ -48,8 +48,15 @@ class JoinProblemSettings extends React.Component {
         actions.changeQueryGraph(json.queryGraph)
         actions.updateConfiguration(json.configuration)
         actions.resetSteps()
+
         const concatSteps = (result, routine) => result.concat(routine.steps)
-        const steps = json.routines.reduce(concatSteps, [])
+        const steps = json.routines.reduce(concatSteps, []).flatMap(function loop(step) {
+            if (step.steps)
+                return step.steps.flatMap(loop)
+            else
+                return [step]
+        })
+        console.log(steps);
         actions.updateSteps(steps)
         actions.updateRoutines(json.routines)
         actions.updateGraphState(steps[0].graphState)

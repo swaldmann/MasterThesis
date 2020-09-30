@@ -40,7 +40,7 @@ class AlgorithmCanvas extends React.Component {
         const nextStep = steps[step + 1]
         actions.increaseStep(1)
         actions.updateGraphState(nextStep.graphState)
-        window.scrollTo(0, document.body.scrollHeight);
+        //window.scrollTo(0, document.body.scrollHeight);
     }
 
     handlePreviousStep = step => {
@@ -48,7 +48,7 @@ class AlgorithmCanvas extends React.Component {
         const previousStep = steps[step - 1]
         actions.decreaseStep(1)
         actions.updateGraphState(previousStep.graphState)
-        window.scrollTo(0, document.body.scrollHeight);
+        //window.scrollTo(0, document.body.scrollHeight);
     }
 
     redrawGraph() {
@@ -63,7 +63,7 @@ class AlgorithmCanvas extends React.Component {
 
     onKeyDown(keyName, e, handle) {
         const { step, steps } = this.props
-        if (keyName === "d" && step < steps.length - 1) {
+        if (keyName === "d" && step < steps.length - 2) {
             this.handleNextStep(step)
         } else if (keyName === "a" && step > 0) {
             this.handlePreviousStep(step)
@@ -73,7 +73,7 @@ class AlgorithmCanvas extends React.Component {
     render() {
         const { step, steps, configuration, routine } = this.props
         const isFirstStep = step === 0
-        const isLastStep = step === steps.length - 1
+        const isLastStep = step === steps.length - 2
 
         return (
             <>
@@ -82,7 +82,7 @@ class AlgorithmCanvas extends React.Component {
                     <canvas ref={this.algorithmCanvasRef} width="500px" height="500px" style={{ width: "100%", height: "50vw" }}></canvas>
                     <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step<span className="shortcut">A</span></button>
                     <button onClick={() => this.handleNextStep(step)} disabled={isLastStep}>Next Step<span className="shortcut">D</span></button>
-                    <p>Step {step + 1} of {steps.length}</p>
+                    <p>Step {step + 1} of {steps.length - 1}</p>
                 </div>
 
             </>
