@@ -58,6 +58,7 @@ class JoinProblemSettings extends React.Component {
         })
         actions.updateSteps(steps)
         actions.updateRoutines(json.routines)
+        console.log(json.routines);
         actions.updateStepUUID(steps[0].uuid)
         actions.updateGraphState(steps[0].graphState)
     }

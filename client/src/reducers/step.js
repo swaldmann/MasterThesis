@@ -24,7 +24,6 @@ export function step(state = 0, action) {
 export function stepUUID(state = "", action) {
     switch(action.type) {
         case UPDATE_STEP_UUID:
-            console.log(action)
             return action.uuid
         default:
             return state
