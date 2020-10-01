@@ -20,7 +20,7 @@ func startServer() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://github.com"
+			return origin == "https://swaldmann.github.io"
 		},
 		MaxAge: 12 * time.Hour,
 	}))
@@ -62,12 +62,9 @@ func startServer() {
 				log.Fatal(err)
 			}
 			if graphType == "moerkotte" {
-				numberOfRelations = 5
+				numberOfRelations = 5 // This is a specific example and not auto-generated
 			}
 			QG := GetQueryGraph(graphType, uint(numberOfRelations))
-
-			// First, define the initial state.
-			// Second, generate all the steps from the algorithm implementation.
 
 			switch algorithmType {
 			case "dpccp":
