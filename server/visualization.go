@@ -41,6 +41,7 @@ func popStack() {
 }
 
 func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine {
+	resetRoutines()
 	oldVisualizationOn := visualizationOn
 	visualizationOn = true
 	visualization(QG, JTC)
@@ -104,9 +105,6 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	v = step
 	currentRoutine.Steps = append(currentRoutine.Steps, &v)
 }
-
-// SubroutineStack Description of the current (recursive) call stack.
-//type SubroutineStack []string
 
 // VariableTableEntry Entry in the variable table.
 type VariableTableEntry []uint

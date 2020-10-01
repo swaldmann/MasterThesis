@@ -91,14 +91,3 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 		panic("Can't write query graph with shape tree and size " + sizeString)
 	}
 }
-
-func min(a, b uint) uint {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func ceil(a float64) uint {
-	return uint(math.Ceil(a))
-}

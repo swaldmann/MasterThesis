@@ -70,12 +70,15 @@ class JoinProblemSettings extends React.Component {
                 return step.steps.flatMap(loop)
             else
                 return [step]
-        }).filter(step => step.hasOwnProperty("uuid"))
+        }).filter(step => step && step.hasOwnProperty("uuid"))
         console.log(steps);
         actions.updateSteps(steps)
         actions.updateRoutines(json.routines)
-        actions.updateStepUUID(steps[0].uuid)
-        actions.updateGraphState(steps[0].graphState)
+        const firstStep = steps[0]
+        if (firstStep) {
+            actions.updateStepUUID(steps[0].uuid)
+            actions.updateGraphState(steps[0].graphState)
+        }
     }
     
     handleNumberOfRelationsChange = numberOfRelations => {

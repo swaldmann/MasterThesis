@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 // log2_64 CPU-independent DeBruijn-like algorithm to calculate log_2(i)
 // adapted from C from https://stackoverflow.com/a/11398748
 func log2_64(value uint64) int {
@@ -24,6 +26,17 @@ var tab64 = [64]int{
 	50, 36, 17, 19, 29, 10, 13, 21,
 	56, 45, 25, 31, 35, 16, 9, 12,
 	44, 24, 15, 8, 23, 7, 6, 5,
+}
+
+func min(a, b uint) uint {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func ceil(a float64) uint {
+	return uint(math.Ceil(a))
 }
 
 // MinUintSlice Returns the minimum element of a uint slice
