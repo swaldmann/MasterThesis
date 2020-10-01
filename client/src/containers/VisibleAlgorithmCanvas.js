@@ -1,13 +1,12 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { ALGORITHMS } from '../constants/AlgorithmConstants'
 import AlgorithmCanvas from '../components/AlgorithmCanvas'
 
 import * as Actions from '../actions'
 
 const mapStateToProps = state => {
     return {
-        algorithm: ALGORITHMS[state.algorithmIndex],
+        algorithm: state.algorithm,
         settingNumberOfRelations: state.settingNumberOfRelations,
         settingGraphTypeValue: state.settingGraphTypeValue,
 

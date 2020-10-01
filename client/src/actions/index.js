@@ -6,7 +6,8 @@ export const changeQueryGraphTypeOption = graphTypeOptionValue => ({ type: types
 export const changeQueryGraph = queryGraph => ({ type: types.CHANGE_QUERY_GRAPH, queryGraph })
 
 // Algorithm
-export const changeAlgorithm = algorithmIndex => ({ type: types.CHANGE_ALGORITHM, algorithmIndex })
+export const changeAlgorithm = algorithm => ({ type: types.CHANGE_ALGORITHM, algorithm })
+export const updateAlgorithms = algorithms => ({ type: types.UPDATE_ALGORITHMS, algorithms })
 
 // Variables
 export const addVariableRow = variableRow => ({ type: types.ADD_VARIABLE_ROW, variableRow })

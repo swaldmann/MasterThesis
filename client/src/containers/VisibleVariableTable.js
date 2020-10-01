@@ -1,7 +1,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import VariableTable from '../components/VariableTable'
-import { ALGORITHMS } from '../constants/AlgorithmConstants'
 
 import * as Actions from '../actions'
 
@@ -12,7 +11,7 @@ const mapStateToProps = state => {
         step: state.step,
         currentStepUUID: state.stepUUID,
         configuration: state.configuration,
-        algorithm: ALGORITHMS[state.algorithmIndex]
+        algorithm: state.algorithm
     }
 }
 

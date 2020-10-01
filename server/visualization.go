@@ -116,8 +116,8 @@ type VariableTable map[string]VariableTableEntry
 
 // Algorithm Defines an algorithm.
 type Algorithm struct {
-	Label      string `json:"label"`
-	Identifier string `json:"identifier"`
+	Label string `json:"label"`
+	Value string `json:"value"`
 }
 
 // GraphState Defines the state of a graph.

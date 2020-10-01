@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { algorithmIndex } from './algorithm'
+import { algorithms, algorithm } from './algorithm'
 import { queryGraph, settingGraphTypeValue, settingNumberOfRelations } from './queryGraph'
 import { variables } from './variables'
 import { configuration } from './configuration'
@@ -14,7 +14,8 @@ const appReducer = combineReducers({
     settingNumberOfRelations,
     variables,
     graphState,
-    algorithmIndex,
+    algorithms,
+    algorithm,
     routines,
     currentRoutine,
     steps,

@@ -28,7 +28,7 @@ class VariableTableEntry extends React.Component {
             return (
                 <>
                     <tr style={style}>
-                        <td style={{ fakeInsetStyle }} colSpan="4">
+                        <td style={{ fakeInsetStyle }}>
                             {parent && parent.name === step.name && Array(level - 1).fill("→").join("") + " "}{step.name}
                         </td>
                     </tr>

@@ -44,8 +44,8 @@ func startServer() {
 		})
 
 		api.GET("/algorithms", func(c *gin.Context) {
-			dpccp := Algorithm{Label: "DPccp", Identifier: "dpccp"}
-			dpsize := Algorithm{Label: "DPsize", Identifier: "dpsize"}
+			dpccp := Algorithm{Label: "DPccp", Value: "dpccp"}
+			dpsize := Algorithm{Label: "DPsize", Value: "dpsize"}
 			algorithms := []Algorithm{dpccp, dpsize}
 
 			c.JSON(http.StatusOK, gin.H{

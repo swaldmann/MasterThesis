@@ -4,8 +4,6 @@ import JoinProblemSettings from '../components/JoinProblemSettings'
 
 import * as Actions from '../actions'
 
-import { ALGORITHMS } from "../constants/AlgorithmConstants"
-
 const mapStateToProps = state => {
     return {        
         // Required to keep track of the currently selected 
@@ -13,7 +11,8 @@ const mapStateToProps = state => {
         // request
         numberOfRelations: state.settingNumberOfRelations,
         graphTypeOptionValue: state.settingGraphTypeValue,
-        algorithm: ALGORITHMS[state.algorithmIndex],
+        algorithms: state.algorithms,
+        algorithm: state.algorithm,
 
         steps: state.steps,
         settingNumberOfRelations: state.settingNumberOfRelations,
