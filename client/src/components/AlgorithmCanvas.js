@@ -65,7 +65,7 @@ class AlgorithmCanvas extends React.Component {
 
     onKeyDown(keyName, e, handle) {
         const { step, steps } = this.props
-        if (keyName === "d" && step < steps.length - 2) {
+        if (keyName === "d" && step < steps.length - 1) {
             this.handleNextStep(step)
         } else if (keyName === "a" && step > 0) {
             this.handlePreviousStep(step)
@@ -75,7 +75,7 @@ class AlgorithmCanvas extends React.Component {
     render() {
         const { step, steps, configuration, routine } = this.props
         const isFirstStep = step === 0
-        const isLastStep = step === steps.length - 2
+        const isLastStep = step === steps.length - 1
 
         return (
             <>
@@ -84,7 +84,7 @@ class AlgorithmCanvas extends React.Component {
                     <canvas ref={this.algorithmCanvasRef} width="500px" height="500px" style={{ width: "100%", height: "50vw" }}></canvas>
                     <button onClick={() => this.handlePreviousStep(step)} disabled={isFirstStep}>Previous Step<span className="shortcut">A</span></button>
                     <button onClick={() => this.handleNextStep(step)} disabled={isLastStep}>Next Step<span className="shortcut">D</span></button>
-                    <p>Step {step + 1} of {steps.length - 1}</p>
+                    <p>Step {step + 1} of {steps.length}</p>
                 </div>
 
             </>
