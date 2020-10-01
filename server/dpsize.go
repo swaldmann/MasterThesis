@@ -2,6 +2,15 @@ package main
 
 // DPsize Generate best plan using DPsize.
 func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
+	if visualizationOn {
+		s1Observer := ObservedRelation{Identifier: "S1", Color: orangeColor}
+		s2Observer := ObservedRelation{Identifier: "S2", Color: blueColor}
+		observedRelations := []ObservedRelation{s1Observer, s2Observer}
+		currentRoutine := &VisualizationRoutine{Name: "DPsize", ObservedRelations: observedRelations}
+		startVisualizeRoutine(currentRoutine)
+		defer popStack()
+	}
+
 	n := uint(len(QG.R))
 	BestTree := make([]*Tree, 1<<n)
 	PlansSizeK := make([][]uint, n+1)
@@ -15,6 +24,14 @@ func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 			s2 := s - s1 // size of other subplan
 			for _, S1 := range PlansSizeK[s1] {
 				for _, S2 := range PlansSizeK[s2] {
+
+					if visualizationOn {
+						variableState := VariableTable{}
+						variableState["S1"] = IdxsOfSetBits(S1)
+						variableState["S2"] = IdxsOfSetBits(S2)
+						addVisualizationStep(QG, variableState)
+					}
+
 					if (S1&S2) != 0 || !(QG.Connected(S1, S2)) {
 						continue
 					}
@@ -22,11 +39,6 @@ func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 					p2 := BestTree[S2]
 					CurrTree := JTC.CreateJoinTree(p1, p2, QG)
 					S1uS2 := S1 | S2
-
-					variableState := VariableTable{}
-					variableState["S1"] = IdxsOfSetBits(S1)
-					variableState["S2"] = IdxsOfSetBits(S2)
-					visualizeRelations(QG, variableState, stack)
 
 					if BestTree[S1uS2] == nil {
 						PlansSizeK[s] = append(PlansSizeK[s], S1uS2)
@@ -40,6 +52,9 @@ func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 	return BestTree[(1<<n)-1]
 }
+
+// Tried to reduce some of the optimized DPSize's redundancy here.
+// It works, but isn't necessarily more readable...
 
 /*
 // innerLoop Implementation of DPsize's inner loop

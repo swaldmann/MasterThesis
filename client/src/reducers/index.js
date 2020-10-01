@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux'
-import { algorithmIndex } from './algorithm'
+import { algorithms, algorithm } from './algorithm'
 import { queryGraph, settingGraphTypeValue, settingNumberOfRelations } from './queryGraph'
 import { variables } from './variables'
 import { configuration } from './configuration'
 import { routines, currentRoutine } from './routines'
 import { steps } from './steps'
-import { step } from './step'
+import { step, stepUUID, renderedStep } from './step'
 import { graphState } from './graphState'
 
 const appReducer = combineReducers({
@@ -14,11 +14,14 @@ const appReducer = combineReducers({
     settingNumberOfRelations,
     variables,
     graphState,
-    algorithmIndex,
+    algorithms,
+    algorithm,
     routines,
     currentRoutine,
     steps,
     step,
+    stepUUID,
+    renderedStep,
     configuration
 })
 

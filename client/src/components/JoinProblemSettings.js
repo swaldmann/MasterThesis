@@ -4,7 +4,7 @@ import Slider from 'rc-slider'
 import Hotkeys from 'react-hot-keys'
 import '../styles/App.css'
 import "rc-slider/assets/index.css";
-import { ALGORITHMS, QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
+import { QUERY_GRAPH_OPTIONS } from "../constants/AlgorithmConstants"
 
 //const ENDPOINT = "https://dbs-visualization.ew.r.appspot.com/api" // Production
 const ENDPOINT = "http://localhost:8080/api" // Local development
@@ -35,24 +35,50 @@ class JoinProblemSettings extends React.Component {
         }
     }
     
-    componentDidMount() {
-        this.updateAlgorithm()
+    async componentWillMount() {
+        await this.fetchAvailableAlgorithms()
+        await this.updateAlgorithm()
+    }
+    
+    async fetchAvailableAlgorithms() {
+        const response = await fetch(ENDPOINT + "/algorithms")
+        const json = await response.json()
+        const { actions } = this.props
+        actions.updateAlgorithms(json.algorithms)
+        actions.changeAlgorithm(json.algorithms[0])
     }
 
     async updateAlgorithm() {
-        const { actions, settingNumberOfRelations, settingGraphTypeValue } = this.props
-        const response = await fetch(ENDPOINT + "/algorithm/" + this.props.algorithm.value
+        const { 
+            actions, 
+            settingNumberOfRelations, 
+            settingGraphTypeValue,
+            algorithms,
+            algorithm 
+        } = this.props
+        const response = await fetch(ENDPOINT + "/algorithm/" + algorithm.value
                                               + "/relations/" + settingNumberOfRelations
                                               + "/graphType/" + settingGraphTypeValue)
         const json = await response.json()
         actions.changeQueryGraph(json.queryGraph)
         actions.updateConfiguration(json.configuration)
         actions.resetSteps()
+
         const concatSteps = (result, routine) => result.concat(routine.steps)
-        const steps = json.routines.reduce(concatSteps, [])
+        const steps = json.routines.reduce(concatSteps, []).flatMap(function loop(step) {
+            if (step && step.steps && !step.uuid)
+                return step.steps.flatMap(loop)
+            else
+                return [step]
+        }).filter(step => step && step.hasOwnProperty("uuid"))
+        console.log(steps);
         actions.updateSteps(steps)
         actions.updateRoutines(json.routines)
-        actions.updateGraphState(steps[0].graphState)
+        const firstStep = steps[0]
+        if (firstStep) {
+            actions.updateStepUUID(steps[0].uuid)
+            actions.updateGraphState(steps[0].graphState)
+        }
     }
     
     handleNumberOfRelationsChange = numberOfRelations => {
@@ -66,11 +92,8 @@ class JoinProblemSettings extends React.Component {
     }
 
     handleAlgorithmChange = algorithm => {
-        this.setState({ 
-            algorithm: algorithm
-        }, () => {
-            this.updateAlgorithm()
-        })     
+        const { actions } = this.props
+        actions.changeAlgorithm(algorithm)
     }
     
     onKeyDown(keyName, e, handle) {
@@ -80,8 +103,12 @@ class JoinProblemSettings extends React.Component {
     }
 
     render() {
-        const { graphTypeOptionValue, numberOfRelations, algorithm } = this.props
+        const { graphTypeOptionValue, numberOfRelations, algorithms, algorithm } = this.props
+        if (!algorithms) { 
+            return <div />
+        }
         const graphTypeOption = QUERY_GRAPH_OPTIONS.find(o => o.value === graphTypeOptionValue)
+        console.log("Render");
 
         return (
             <header className="grid" style={{ background: "#1f2329" }}>
@@ -117,19 +144,19 @@ class JoinProblemSettings extends React.Component {
                 </div>
                 <div>
                     <h5>Algorithm</h5>
-                    <Select name="color" 
-                       className="select" 
-                    defaultValue={ALGORITHMS[0]} 
-                     placeholder="Algorithm" 
+                    {algorithm && <Select 
+                            name="color" 
+                       className="select"
+                     placeholder="Algorithm"
                            value={algorithm}
                         onChange={this.handleAlgorithmChange} 
-                         options={ALGORITHMS} />
+                         options={algorithms} />}
                 </div>
                 <div>
                     <h5>Calculation</h5>
                     <Hotkeys keyName="r" onKeyDown={this.onKeyDown.bind(this)} allowRepeat={true} />
                     <button className="emphasized" 
-                              onClick={() => this.handleAlgorithmChange(algorithm)}>
+                              onClick={() => this.updateAlgorithm()}>
                         Recalculate Algorithm<span className="shortcut">R</span>
                     </button>
                 </div>

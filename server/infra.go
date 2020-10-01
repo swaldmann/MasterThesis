@@ -83,14 +83,6 @@ type QueryGraph struct {
 	N map[uint][]uint  `json:"neighbors"` // Neighbors
 }
 
-/*func Bitvector(i uint, neighbors uint[]) uint {
-	result := uint(0)
-	for range _, neighbor {
-		result += 1<<neig
-	}
-	return result
-}*/
-
 // SetSelectivity Set a selectivity for two relations
 func (QG *QueryGraph) SetSelectivity(relA uint, relB uint, sel float64) {
 	QG.S[1<<relA|1<<relB] = sel
@@ -214,41 +206,19 @@ func Subsets(S uint) []uint {
 
 // SetMinus Difference between two sets
 func SetMinus(S1 uint, S2 uint, length uint) uint {
-	/*fmt.Println("")
-	fmt.Println("Set Minus")
-	fmt.Printf("%08b", S1)
-	fmt.Println("")
-	fmt.Printf("%08b", S2)
-	fmt.Println("")
-	mask := uint((1 << length) - 1)
-	fmt.Printf("%08b", mask)
-	fmt.Println("")
+	/*mask := uint((1 << length) - 1)
 	temp := S1 & S2
-	fmt.Printf("%08b", temp)
-	fmt.Println("")
 	temp = ^temp
-	fmt.Printf("%08b", temp)
-	fmt.Println("")
 	temp &= mask
-	fmt.Printf("%08b", temp)
-	fmt.Println("")
-	res := S1 & temp
-	fmt.Println("Result")
-	fmt.Printf("%08b", res)
-	fmt.Println("")*/
+	res := S1 & temp*/
 
-	// This should be equivalent:
+	// This should be equivalent and is more concise:
 	mask := uint((1 << length) - 1)
 	res := S1 & ^S2
-	//fmt.Printf("%08b", mask)
-	//fmt.Println("Result")
-	//fmt.Println(res)
-	//fmt.Printf("%08b", res)
-	//fmt.Println("")
 	return res & mask
 }
 
-// is S1 subset of S2?
+// Determines whether S1 is a subset of S2
 func isSubset(S1 uint, S2 uint) bool {
 	return ((S1 & S2) == S1)
 }
@@ -271,22 +241,22 @@ func IdxsOfUnsetBits(S uint, length uint) []uint {
 	return IdxsOfSetBits(Scomplement)
 }
 
-// ValuesOfSetBits Get values of bits set
+// ValuesOfSetBits Get values of set bits
 func ValuesOfSetBits(S uint) []uint {
-	Res := IdxsOfSetBits(S)
-	for idx, idxval := range Res {
-		Res[idx] = 1 << idxval
+	result := IdxsOfSetBits(S)
+	for idx, idxval := range result {
+		result[idx] = 1 << idxval
 	}
-	return Res
+	return result
 }
 
-// ValuesOfUnsetBits Get the values of the bits not set
+// ValuesOfUnsetBits Get values of the unset bits
 func ValuesOfUnsetBits(S uint, length uint) []uint {
-	Res := IdxsOfUnsetBits(S, length)
-	for idx, idxval := range Res {
-		Res[idx] = 1 << idxval
+	result := IdxsOfUnsetBits(S, length)
+	for idx, idxval := range result {
+		result[idx] = 1 << idxval
 	}
-	return Res
+	return result
 }
 
 // JoinTreeCreator Struct to create join trees with

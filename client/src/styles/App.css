@@ -1,3 +1,4 @@
+
 .App-header {
     min-height: 20vh;/*100vh;*/
     display: flex;
@@ -106,8 +107,9 @@ canvas.queryGraph {
 
 table {
     font-size: 18px;
-    table-layout: fixed;
+    /*table-layout: fixed;*/
     width: 100%;
+    border-spacing: 0;
 }
 
 thead {
@@ -129,6 +131,10 @@ button.emphasized {
     margin: 0;
     background: rgba(0,130,0,0.8);
     width: 100%;
+}
+
+.currentStep {
+    background: rgb(64, 116, 206) !important;
 }
 
 .fixed {
@@ -170,4 +176,11 @@ button.emphasized {
     padding: 3px 10px;
     background:rgba(255,255,255,0.15);
     border-radius: 6px;
+}
+
+.error {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    background: red;
 }

@@ -1,11 +1,21 @@
 import {
-    CHANGE_ALGORITHM
+    CHANGE_ALGORITHM,
+    UPDATE_ALGORITHMS
 } from '../constants/ActionTypes'
 
-export function algorithmIndex(state = 0, action) {
+export function algorithms(state = [], action) {
+    switch (action.type) {
+        case UPDATE_ALGORITHMS:
+            return action.algorithms
+        default:
+            return state
+    }
+}
+
+export function algorithm(state = {}, action) {
     switch (action.type) {
         case CHANGE_ALGORITHM:
-            return action.algorithmIndex
+            return action.algorithm
         default:
             return state
     }
