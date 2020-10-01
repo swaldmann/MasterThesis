@@ -9,6 +9,14 @@ import (
 
 // DPccp Generate best plan using DPccp.
 func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
+	if visualizationOn {
+		//emitObserver := ObservedRelation{Identifier: "emit", Color: orangeColor}
+		observedRelations := []ObservedRelation{}
+		currentRoutine := &VisualizationRoutine{Name: "DPccp", ObservedRelations: observedRelations}
+		startVisualizeRoutine(currentRoutine)
+		defer popStack()
+	}
+
 	n := uint(len(QG.R))
 	BestTree := make([]*Tree, 1<<n)
 
@@ -17,14 +25,11 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 
 	subgraphs := EnumerateCsg(QG)
-
 	csgCmpPairs := []CsgCmpPair{}
 	for _, subgraph := range subgraphs {
 		subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
 		csgCmpPairs = append(csgCmpPairs, subgraphCsgCmpPairs...)
 	}
-
-	HumanPrintCsgCmpPairArray("", csgCmpPairs)
 
 	for _, csgCmpPair := range csgCmpPairs {
 		S1 := csgCmpPair.Subgraph1
@@ -48,7 +53,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 		}
 	}
 	rainbow.Green(BestTree[(1<<n)-1].ToString()) // Print best tree
-	return BestTree[(1)]
+	return BestTree[(1<<n)-1]
 }
 
 // EnumerateCsg Enumerate connected subgraphs.
@@ -59,7 +64,6 @@ func EnumerateCsg(QG QueryGraph) []uint {
 		currentRoutine := &VisualizationRoutine{Name: "EnumerateCsg", ObservedRelations: observedRelations}
 		startVisualizeRoutine(currentRoutine)
 		defer popStack()
-		//defer popFromRoutineStack()
 	}
 
 	n := uint(len(QG.R))
@@ -81,8 +85,8 @@ func EnumerateCsg(QG QueryGraph) []uint {
 	}
 
 	if visualizationOn {
-		//resultArray := IdxsOfSetBits(subgraphs)
-		//description := uintArrayToString(IdxsOfSetBits(subgraphs), 2)
+		//resultArray := IdxsOfSetBits(subgraphs))
+		//description := uintArrayToString(IdxsOfSetBits(subgraphs), 2
 		description := "Test"
 		result := &VisualizationRoutineResult{Description: description}
 		endVisualizationRoutine(result)
@@ -105,7 +109,6 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		currentRoutine := &VisualizationRoutine{Name: "EnumerateCsgRec", ObservedRelations: observedRelations}
 		startVisualizeRoutine(currentRoutine)
 		defer popStack()
-		//defer popFromRoutineStack()
 	}
 
 	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
