@@ -65,10 +65,10 @@ func startVisualizeRoutine(routine *VisualizationRoutine) {
 }
 
 func endVisualizationRoutine(result *VisualizationRoutineResult) {
-	currentRoutineIndex := len(routines) - 1
-	var v interface{}
-	v = result
-	routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, &v)
+	//currentRoutineIndex := len(routines) - 1
+	//var v interface{}
+	//v = result
+	//routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, &v)
 }
 
 func addVisualizationStep(QG QueryGraph, relations VariableTable) {
@@ -116,9 +116,8 @@ type VariableTable map[string]VariableTableEntry
 
 // Algorithm Defines an algorithm.
 type Algorithm struct {
-	Name       string       `json:"name"`
-	GraphState []GraphState `json:"graphState"`
-	//Counters   []AlgorithmCounter `json:"counters"`
+	Label      string `json:"label"`
+	Identifier string `json:"identifier"`
 }
 
 // GraphState Defines the state of a graph.

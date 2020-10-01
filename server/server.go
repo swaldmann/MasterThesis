@@ -43,6 +43,16 @@ func startServer() {
 			})
 		})
 
+		api.GET("/algorithms", func(c *gin.Context) {
+			dpccp := Algorithm{Label: "DPccp", Identifier: "dpccp"}
+			dpsize := Algorithm{Label: "DPsize", Identifier: "dpsize"}
+			algorithms := []Algorithm{dpccp, dpsize}
+
+			c.JSON(http.StatusOK, gin.H{
+				"algorithms": algorithms,
+			})
+		})
+
 		api.GET("/algorithm/:type/relations/:numberOfRelations/graphType/:graphType", func(c *gin.Context) {
 			algorithmType := c.Param("type")
 			graphType := c.Param("graphType")
