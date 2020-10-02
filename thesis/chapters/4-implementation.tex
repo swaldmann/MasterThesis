@@ -77,6 +77,53 @@ debugging tool that can be written alongisde an
 algorithm's implementation code and doesn't decrease
 its signal-to-noise ratio.
 
+
+\subsection{Architecture}
+
+The following figure \ref{fig:sequence-diagram} illustrates a sequence diagram for the client-server architecture used for this project. At first, we retrieve all avaialable algorithms, denoted by $A$, from the server. This is used to asynchronously generate the available options in the algorithm selection picker. Retrieving the algorithms from the server has the advantage that new algorithm visualizations can be added server-side without changing, re-installing or re-deploying any client code.
+
+Next up, the user can select all the parameters for the visualization. The first parameter is the algorithm $a \in A$ to be visualized. Moreover, the query graph type $qg \in {\text{\{``chain'', ``star'', ``cycle'', ``tree'', ``moerkotte''\}}}$ can be specified. Contrary to the algorithm, the query type is not fetched from the server as the client implementation explicitly has to know the available query graphs at build time, since they are used for calculating the position of different query graph nodes as detailed in section \ref{subsub:query-graphs}. 
+
+Furthermore, the number of relations in the query graph $n$ has to be specified, whereby $n \in [3,10]$. The upper boundary for $n$ is set to 10 to prevent calculations that are too complex and might be set even lower for algorithms other than \texttt{DPccp}, where the execution time and produced output is even larger.
+
+Depending on the previously selected parameters the algorithm's steps are fetched upon clicking the ``Recalculate'' button. This will trigger another HTTP server request that transmits the algorithm (:a), number of relations (:r) and graph type (:g) as path parameters.
+
+As the server receives this request, it calls the corresponding algorithm by using the \texttt{visualize()} function specified in section TODO: ref. This produces a JSON response containing the query graph $QG$ with information about cardinalities, selectivities, and neighbors, as well as the algorithm's generated visualization steps $S$.
+
+Upon receiving this response, the client renders the query graph including labels for cardinalities and selectivities, and edges for connected query graph nodes. Moreover, the algorithm's steps are rendered in a hierarchical table.
+
+As the rendering completes, the number of total steps |S| is calculated and the user is presented with two buttons to move to either the next or the previous step. After doing so, the user interface, including the query graph and the variable table, are rerendered accordingly.
+
+\begin{figure}[H]
+    \centering
+    \begin{sequencediagram}
+        \def\unitfactor{0.9}
+        \newthread{A}{Client (GUI)}{}
+        \newinst[8]{B}{Server}{}
+        \begin{call}{A}{Render UI}{A}{}
+        \end{call}
+        \begin{call}{A}{GET /api/algorithms}{B}{available algorithms $A$}
+        \end{call}
+        \begin{call}{A}{Render algorithm picker}{A}{}
+        \end{call}
+        \begin{sdblock}{loop}{}
+            \begin{call}{A}{Choice of algorithm, query graph type, number of relations}{A}{}
+            \end{call}
+            \begin{call}{A}{GET /api/algorithm/:a/relations/:r/graphType/:g}{B}{query graph $QG$, algorithm steps $S$}
+            \end{call}
+            \begin{call}{A}{Render query graph, algorithm steps}{A}{}
+            \end{call}
+            \begin{sdblock}{loop}{}
+                \begin{call}{A}{User moves to next or previous step}{A}{Rerender UI}
+                \end{call}
+            \end{sdblock}
+        \end{sdblock}
+    \end{sequencediagram}
+    \caption{UML sequence diagram of the client-server communication}
+    \label{fig:sequence-diagram}
+\end{figure}
+
+
 \subsection{Choice of Technology}
 
 For the implementation of both client and server code we
@@ -257,7 +304,7 @@ All join problems can be defined using the following JSON structure. ``JSON'' re
     {
         problemID: number,
         problemNeighbors: {
-            [relationRID]: [neighbors]
+            number{relationRID}: [neighbors]
         },
         problemNumberOfRelations: number,
         problemRelations: [
@@ -309,8 +356,20 @@ This will start two locally running web servers that can be accessed via \url{ht
 
 \subsection{Deployment}
 
-a web application–the user does not have to update the application himself. 
-The duty of updating the application is on the host's side and happens by deploying either a new version of the server code or the client code to a web server.
+One of the major benefits of using a client-server architecture is that we can host the server part on a web server or platform-as-a-service offerings such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine}}.
+This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side.
+
+In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk}} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com}} for hosting the frontend.
+
+TODO: Move to appendix?
+\paragraph{Prerequisites}   
+    
+The Google Cloud SDK must be installed using 
+\begin{minted}{shell-session}
+    $ curl https://sdk.cloud.google.com | bash
+\end{minted}
+Follow the instructions in the terminal session to continue. 
+
 
 \paragraph{Pairing Function}
 We use the \textit{elegant pairing function} developed by Matthew Szudzik \cite{szudzik2006elegant} for two $k_1,k_2 \in \mathbb{Z}$ in order to create a unique key for repeated elements in a nested loop with depth 2.

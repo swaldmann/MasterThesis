@@ -126,60 +126,76 @@ The exact API entry points are specified in \ref{sub:api-entry-points}.
 \subsection{Client}
 
 \subsubsection{Query Graphs}
+\label{subsub:query-graphs}
 
-Visual representations of query graphs are drawn on a canvas with a top-left origin.
-With $n$ we define the number of nodes, $h$ is the height of the canvas, and $w$ its width. 
+Visual representations of query graphs are drawn on a canvas with a top-left origin. Each query graph consists of nodes drawn as a circle depicting the relations, with the relation name centered inside. In addition, we draw edges  between two relations signalling a (direct) connection. Furthermore, we want to be able to draw labels for the cardinality of a relation beneath its resepective node and show a label for the selectivity of two relations, which is drawn on the edge right between the two corresponding nodes.
+
+In order to calculate the points for each represented node on the canvas we first specify some variables.
+With $n$ we define the number of nodes, $h$ is the height of the canvas, and $w$ is the canvas width. 
 As restricted by the user interface, we also set the condition that $n \geq 3$.
 
 Additionally, we define $m$ as the margin to the canvas bounds, and $r$ as the radius of a node.
-Taking $m$ and $r$ into consideration, the drawable width of the canvas, i.e. a centered layout box inside the canvas with margin $m$, is given by 
+Taking $m$ and $r$ into consideration, the drawable width $\hat{w}$ and drawable height $\hat{h}$ of the canvas, used to form a centered layout box inside the canvas with margin $m$, is therefore given by subtracting $m$ and $r$ from either side of the canvas. Defining these variables here will simplify the devisement some of our coordinate calculation formul\ae.
 
 \begin{equation}\label{eqn:painting-w_hat}
-    \hat{w} = w - 2(m - r)
+    \hat{w} = w - 2(m + r)
 \end{equation}
 
-and analogously, the drawable height is given by
+Analogously, the drawable height is given by
 
 \begin{equation}\label{eqn:painting-h_hat}
-    \hat{h} = h - 2(m - r)    
+    \hat{h} = h - 2(m + r)    
 \end{equation}
 
-\paragraph{Chain} For chain query graphs we draw nodes at the vertical center of the canvas and set an equal spacing in between. Thus, the canvas point ($x_i$, $y_i$) for the node with index $i$ is given by
+In order to be able to interchange $\hat{w}$ and $\hat{h}$, e.g. in the radius calculation of a cyclic query, we also set the condition that $\hat{w} = \hat{h}$, i.e. our canvas is a square.
 
+One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types} is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and not within the scope of this thesis.
+
+Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formul\ae described in the following.
+
+First, we'll start with the calculation of the node coordinates. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types.
+
+\paragraph{Chain} 
+For chain query graphs we draw nodes at the vertical center of the canvas and set an equal spacing in between all nodes. Thus—when also considering the canvas margin $m$ and the node radius $r$ as defined before—the canvas point ($x_i$, $y_i$) for the node with index $i$ is given by
 
 \begin{equation}
     (x_i, y_i) = (m + r + \frac{i\hat{w}}{n - 1}, \frac{h}{2})
 \end{equation}
 
 \paragraph{Star} 
-Star query graphs are drawn by placing the node with index $i = 0$ at the canvas' center, and all following nodes in a circle around it, starting at the rightmost vertically centered point ($\theta_0 = 0^{\circ}$).
+Star query graphs are drawn by placing the node with index $i = 0$ at the canvas' center, and all following nodes with $i > 0$ in a circle around it, while starting (arbitrarily) at the rightmost vertically centered coordinate point ($\theta_0 = 0^{\circ}$).
 
-The radius of this circle is equivalent to %Cycle graph%
-and given by 
+First up, we need to specify the radius of circle for nodes with $i > 0$. In order to allow for the highest possible number of nodes we are using the entire drawable width $\hat{w}$.
 
 \begin{equation}\label{eqn:painting-r_star}
-    r_{star} = \frac{w}{2} - r - m
+    r_{star} = \frac{\hat{w}}{2}
 \end{equation}
 
-For the current node we define the angle by
+For all nodes with $i > 0$ we also define the angle for the current node by
 \begin{equation}\label{eqn:painting-theta}
-    \theta_i = \frac{2i\pi}{n - 1}
+    \theta_i = \frac{2\pi i}{n - 1}
 \end{equation}
 
-Thus, the point for the node at index $i$ is given by
+This gives us an equally spaced circle of nodes for indices $\{1,\dots,n-1\}$ since $\vert\{1,...,n-1\}\vert = n-1$ and
+\begin{equation}
+    \frac{\frac{2\pi(n-1)}{n-1}}{2\pi} = 1   
+\end{equation}
+
+Hence, starting from the canvas center $(\frac{w}{2}, \frac{h}{2})$ we can then use trigonometric functions to calculate the point of a respective node on this circle.
+The point $(x_i, y_i)$ for the node at index $i$ is therefore given by
 
 \begin{equation}
     (x_i, y_i) = 
     \begin{cases}
         (\frac{w}{2}, \frac{h}{2}),& \text{if } i = 0\\
-        (r_{star}\cos{\theta_i} + r_{star} + r + m, r_{star}\sin{\theta_i} + r_{star} + r + m), & \text{otherwise}
+        (\frac{w}{2} + r_{star}\cos{\theta_i}, \frac{h}{2} + r_{star}\sin{\theta_i}), & \text{otherwise}
     \end{cases}
 \end{equation}
 
-\paragraph{Tree}
+\paragraph{Complete $k$-ary Tree}
 
 The node position calculation for tree query graphs requires an additional parameter. 
-By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn.
+By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn. In our toolset however we assume that $k = 2$, i.e. a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
 First, we calculate the vertical position for each given node $i$.
 
 \begin{equation}
