@@ -153,16 +153,18 @@ One parameter that is not abstracted away however is the query graph type. As of
 
 Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formul\ae described in the following.
 
-First, we'll start with the calculation of the node coordinates. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types.
+\paragraph{Nodes}
 
-\paragraph{Chain} 
+First, we'll start with the calculation of the node coordinates. We make the assumption that the relations are ordered in a breadth-first search in the input array given to the tree parser algorithm. The relation $i$ corresponds to the $i$-th node $n_i$ in the query graph, and thus the notation used to refer to this node is simply using its index $i$ of the ordered set/array of nodes. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types, irrespective of implementation details. More details regarding the specific implementation are discussed in section \ref{sec:implementation}.
+
+\subparagraph{Chain} 
 For chain query graphs we draw nodes at the vertical center of the canvas and set an equal spacing in between all nodes. Thus—when also considering the canvas margin $m$ and the node radius $r$ as defined before—the canvas point ($x_i$, $y_i$) for the node with index $i$ is given by
 
 \begin{equation}
     (x_i, y_i) = (m + r + \frac{i\hat{w}}{n - 1}, \frac{h}{2})
 \end{equation}
 
-\paragraph{Star} 
+\subparagraph{Star} 
 Star query graphs are drawn by placing the node with index $i = 0$ at the canvas' center, and all following nodes with $i > 0$ in a circle around it, while starting (arbitrarily) at the rightmost vertically centered coordinate point ($\theta_0 = 0^{\circ}$).
 
 First up, we need to specify the radius of circle for nodes with $i > 0$. In order to allow for the highest possible number of nodes we are using the entire drawable width $\hat{w}$.
@@ -192,27 +194,101 @@ The point $(x_i, y_i)$ for the node at index $i$ is therefore given by
     \end{cases}
 \end{equation}
 
-\paragraph{Complete $k$-ary Tree}
+\subparagraph{Complete $\mathbf{k}$-ary Tree}
 
 The node position calculation for tree query graphs requires an additional parameter. 
-By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn. In our toolset however we assume that $k = 2$, i.e. a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
-First, we calculate the vertical position for each given node $i$.
+By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn, since drawing non-complete graphs would require us to specfiy which tree leaves are filled, e.g. by storing \texttt{null} values in the relations array. In our toolset however we assume that $k = 2$, i.e. representing a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
+
+First, we calculate the level $l_i$ for a given node at index $i$. This is given by
 
 \begin{equation}
-    (x_i, y_i) = (i - 2^{\lfloor \log_k(i+1) \rfloor}, r + m + \frac{\hat{w}}{\lfloor \log_kn \rfloor} \lfloor \log_k(i + 1) \rfloor)
+    l_i = \lfloor \log_{k}(i+1)\rfloor
 \end{equation}
 
-\paragraph{Cycle} 
+Furthermore, we calculate the number of nodes on the respective level, i.e. the width $\phi_{l_i}$ (Any better symbols for this than $\phi$?) of the tree at that level, which is given by
+\begin{equation}
+    \phi_{l_i} = 2^{l_i}
+\end{equation}
 
-We define $r_{star}$ the same way as we did in \eqref{eqn:painting-r_star}.
-Similarly to \eqref{eqn:painting-theta}, $\theta_i$ is given by
+In the next step, we calculate the current column $\rho$ (is there a better name and symbol?) for the current node. In this formula we make use of the width of the tree at $i$s level as calculated beforehand.
+
+\begin{equation}
+    \rho_{i} = i - 2^{\phi_{l_i} + 1}
+\end{equation}
+
+Now we can directly calculate the $x$-coordinate for the current node, which is given by
+\begin{equation}
+    x_i = (\rho_{i} + 0.5) * \frac{\hat{w}}{\phi_{l_i}} + r + m
+\end{equation}
+
+Moreover, for calculating the $y$-coordinate we first need to calculate the distance $d_{n,k}$ between the levels in a $k$-ary tree with $n$ relations. This is given by
+\begin{equation}
+    d_{n,k} = \frac{\hat{w}}{\lfloor \log_k{n} \rfloor}
+\end{equation}
+
+Finally, this lets us calculate the $y$-coordinate for the node at index $i$:
+\begin{equation}
+    y_i = l_i * d_{n,k} + r + m
+\end{equation}
+
+\subparagraph{Cycle} 
+
+A cycle query is essentially drawn as a star query with the node at the center missing. Hence, we define $r_{cycle}$ the same way as we defined $r_{star}$ in \eqref{eqn:painting-r_star}.
+\begin{equation}
+    r_{cycle} = \frac{\hat{w}}{2}
+\end{equation}
+
+Similarly to \eqref{eqn:painting-theta}, the angle for the current node, denoted $\theta_i$, is given by
 
 \begin{equation}\label{eqn:painting-theta_cycle}
-    \theta_i = \frac{2i\pi}{n}
+    \theta_i = \frac{2\pi(i+1)}{n}
 \end{equation}
 
-Thus, the point for a respective node is given by
+Again, we can use trigonometric functions to calculate the node coordinates. Thus, the point $(x_i, y_i)$ for a respective node is given by
 
 \begin{equation}
-    (x_i, y_i) = (r_{star}\cos{\theta_i} + r_{star} + r + m, r_{star}\sin{\theta_i} + r_{star} + r + m)
+    (x_i, y_i) = (r_{cycle}\cos{\theta_i} + r_{cycle} + r + m, r_{cycle}\sin{\theta_i} + r_{cycle} + r + m)
+\end{equation}
+
+\subparagraph{Moerkotte 2018}
+As this work serves as a supplementary material to the book ``Building Query Compilers'' by Prof. Guido Moerkotte \cite{moerkotte2009building}, we also allow to draw the query graph used as an example to explain the \texttt{EnumerateCsg} subroutine of the \texttt{DPccp} algorithm.
+
+\begin{figure}[H]
+    \centering
+    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+    & $R_0$\\
+    $R_1$ & $R_2$ & $R_3$\\
+    & $R_4$
+    \ncline{-}{1,2}{2,2}
+    \ncline{-}{1,2}{2,1}
+    \ncline{-}{1,2}{2,3}
+    \ncline{-}{2,1}{3,2}
+    \ncline{-}{3,2}{2,2}
+    \ncline{-}{3,2}{2,3}
+    \ncline{-}{2,3}{2,2}
+    \endpsmatrix 
+    \caption{Sample graph from \cite{moerkotte2009building} to illustrate \texttt{EnumerateCsg}}
+\end{figure}
+
+This query graph is distinct to the other query graphs calculated beforehand as it can be categorized as a cyclic query graph, but not a cycle one. Since there is a large number of cyclic query graphs for $n \leq 10$ and it cannot be uniquely specified by a small number of parameters, the dimensions of this query graph are hardcoded in the implementation. In order to allow a layout box of arbitrary size we however calculate the horizontal center $c_x$, vertical center $c_y$, and layout offset $o$ as follows:
+\begin{equation}
+    c_x = \frac{w}{2}
+\end{equation}
+\begin{equation}
+    c_y = \frac{h}{2}
+\end{equation}
+\begin{equation}
+    o = r + m
+\end{equation}
+
+Now, we can calculate the respective points $(x_i, y_i)$ for all relations $\{i \in \mathbb{N} \vert 0 \leq i < 5 = n$\}:
+
+\begin{equation}
+    \begin{aligned}
+        (x_0, y_0) &= (c_x,o)\\
+        (x_1, y_1) &= (o,c_y)\\
+        (x_2, y_2) &= (c_x,c_y)\\
+        (x_3, y_3) &= (w-o,c_y)\\
+        (x_4, y_4) &= (c_x,h-o)\\
+    \end{aligned}
 \end{equation}
