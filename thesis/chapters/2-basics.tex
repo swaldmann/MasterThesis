@@ -37,81 +37,103 @@ For simplification purposes we only inspect joins with at most one join predicat
 
 Relations can be connected in many different ways. These connections can be visualized using a graph. There is a number of different query types. Most importantly we want to have a look at the following six query types, because they represent distinct problems:
 
-\begin{figure}[H]
-\begin{center}
+\begin{figure}
+    \captionsetup[subfigure]{justification=centering}
 
-\begin{subfigure}[c]{.3\textwidth}
-\vspace{0pt}
-\centering
-\psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
-$R_1$\\
-& $R_2$\\
-& & $R_3$
-\ncline{-}{1,1}{2,2}
-\ncline{-}{2,2}{3,3}
-\endpsmatrix
-\subcaption{Chain}
-\end{subfigure}
-
-\begin{subfigure}[c]{.3\textwidth}
-    \psmatrix[colsep=1.5cm,rowsep=1.5cm,mnode=circle]
-    $R_1$ & $R_2$\\
-    $R_3$ & $R_4$
-    \ncline{-}{1,1}{1,2}
-    \ncline{-}{2,1}{2,2}
-    \ncline{-}{1,1}{2,1}
-    \ncline{-}{1,2}{2,2}
-    \endpsmatrix
-    \subcaption{Cycle}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+        $R_1$\\
+        & $R_2$\\
+        & & $R_3$
+        \ncline{-}{1,1}{2,2}
+        \ncline{-}{2,2}{3,3}
+        \endpsmatrix
+        \caption{Chain}
     \end{subfigure}
-    \begin{subfigure}[c]{0.3\textwidth}
-    \vspace{0.8cm}
-    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
-    $R_1$ & & $R_3$\\
-    & $R_2$\\
-    $R_4$ & & $R_5$
-    \ncline{-}{1,1}{2,2}
-    \ncline{-}{1,3}{2,2}
-    \ncline{-}{3,1}{2,2}
-    \ncline{-}{3,3}{2,2}
-    \endpsmatrix 
-    \subcaption{Star}
-\end{subfigure}
-
-\begin{subfigure}[c]{.3\textwidth}
-    \vspace{0pt}
-    \centering
-    \psmatrix[colsep=0.3cm,rowsep=0.3cm,mnode=circle]
-    & & $R_1$ & & \\
-    & $R_2$ & & $R_3$ & \\
-    $R_4$ & $R_5$ & & $R_6$ & $R_7$
-    %\ncline{-}{1,1}{2,2}
-    \endpsmatrix
-    \subcaption{Tree}
-\end{subfigure}
-
-    \hspace{2cm}
-    \begin{subfigure}[c]{0.3\textwidth}
-    \vspace{0.5cm}
-    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
-    & $R_1$\\
-    $R_2$ & & $R_3$\\
-    $R_4$ & & $R_5$
-    \ncline{-}{2,1}{1,2}
-    \ncline{-}{2,3}{1,2}
-    \ncline{-}{3,1}{1,2}
-    \ncline{-}{3,3}{1,2}
-    \ncline{-}{2,1}{2,3}
-    \ncline{-}{2,1}{3,3}
-    \ncline{-}{2,1}{3,1}
-    \ncline{-}{3,1}{3,3}
-    \ncline{-}{2,3}{3,3}
-    \ncline{-}{3,1}{2,3}
-    \endpsmatrix
-    \subcaption{Clique}
+    \hspace{0.5cm}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+        $R_1$ & & $R_3$\\
+        & $R_2$\\
+        $R_4$ & & $R_5$
+        \ncline{-}{1,1}{2,2}
+        \ncline{-}{1,3}{2,2}
+        \ncline{-}{3,1}{2,2}
+        \ncline{-}{3,3}{2,2}
+        \endpsmatrix 
+        \caption{Star}
     \end{subfigure}
-    \end{center}
-    \caption{Query Graphs}
+    \vspace{0.3cm}
+
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=1.5cm,rowsep=1.5cm,mnode=circle]
+        $R_1$ & $R_2$\\
+        $R_3$ & $R_4$
+        \ncline{-}{1,1}{1,2}
+        \ncline{-}{2,1}{2,2}
+        \ncline{-}{1,1}{2,1}
+        \ncline{-}{1,2}{2,2}
+        \endpsmatrix
+        \caption{Cycle}
+    \end{subfigure}
+    \hspace{0.5cm}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=1.5cm,mnode=circle]
+        $R_1$ & $R_2$ & $R_5$\\
+        $R_3$ & $R_4$ & $R_6$
+        \ncline{-}{1,1}{1,2}
+        \ncline{-}{2,1}{2,2}
+        \ncline{-}{1,1}{2,1}
+        \ncline{-}{1,2}{2,2}
+        \ncline{-}{2,2}{2,3}
+        \ncline{-}{1,2}{1,3}
+        \endpsmatrix
+        \caption{Cyclic}
+    \end{subfigure}
+    \vspace{0.3cm}
+
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.1cm,rowsep=0.3cm,mnode=circle]
+        & & $R_1$\\
+        & $R_2$ & & $R_3$\\
+        $R_4$ & $R_5$ & & $R_6$ & $R_7$
+        \ncline{-}{1,3}{2,2}
+        \ncline{-}{1,3}{2,4}
+        \ncline{-}{2,2}{3,1}
+        \ncline{-}{2,2}{3,2}
+        \ncline{-}{2,4}{3,4}
+        \ncline{-}{2,4}{3,5}
+        \endpsmatrix
+        \caption{Tree}
+    \end{subfigure}
+    \hspace{0.5cm}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+        & $R_1$\\
+        $R_2$ & & $R_3$\\
+        $R_4$ & & $R_5$
+        \ncline{-}{2,1}{1,2}
+        \ncline{-}{2,3}{1,2}
+        \ncline{-}{3,1}{1,2}
+        \ncline{-}{3,3}{1,2}
+        \ncline{-}{2,1}{2,3}
+        \ncline{-}{2,1}{3,3}
+        \ncline{-}{2,1}{3,1}
+        \ncline{-}{3,1}{3,3}
+        \ncline{-}{2,3}{3,3}
+        \ncline{-}{3,1}{2,3}
+        \endpsmatrix
+        \caption{Clique}
+    \end{subfigure}
+    \vspace{0.3cm}
+
+\caption{Query Graphs}
 \end{figure}
 
 
