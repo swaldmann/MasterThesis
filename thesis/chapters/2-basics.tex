@@ -205,6 +205,27 @@ The trees for $(R_1 \Join R_2) \Join R_3$, $R_1 \Join (R_2 \Join R_3)$, $(R_1 \J
 
 \subsubsection{Dynamic Programming}
 
+\subsubsection{Bitvector Representation}
+As inspired by \cite{moerkotte2009} we represent sets of relations as bitvectors in the implementation. These are implemented using \texttt{unsigned int} variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
+
+\begin{example}
+    Hence, the following bitvectors for a 3-bit integer map to the corresponding sets of relations as indicated in figure \ref{fig:bitvector}.
+    \begin{figure}[H]
+        \label{fig:bitvector}
+        \begin{tabular}{ c | r }
+            000 & \{\} \\ 
+            001 & \{$R_1$\} \\
+            010 & \{$R_2$\} \\
+            011 & \{$R_1,R_2$\} \\
+            100 & \{$R_3$\} \\
+            101 & \{$R_1,R_3$\} \\
+            110 & \{$R_2,R_3$\} \\
+            111 & \{$R_1,R_2,R_3$\} \\
+           \end{tabular}
+        \caption{Bitvector representation}
+    \end{figure}
+\end{example}
+
 \subsubsection{Orthogonality}
 We understand the term \textit{Orthogonality} as defined in \textit{The Art of Unix Programming} by Eric S. Raymond \cite{raymond2003compactness}:
 \begin{definition}
