@@ -149,10 +149,6 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
 
 In order for the server not having to memorize client or session information, we want to establish a stateless communications protocol.
 Thus, we're conforming to the Representational state transfer (REST) architecture as laid out in \cite{fielding2000architectural}.
-The exact API entry points are specified in \ref{sub:api-entry-points}.
-
-\subsubsection{API Specification}
-\label{sub:api-entry-points}
 
 \subsection{Client}
 
@@ -350,7 +346,7 @@ As this work serves as a supplementary material to the book ``Building Query Com
     \caption{Sample graph from \cite{moerkotte2009building} to illustrate \texttt{EnumerateCsg}}
 \end{figure}
 
-\subparagraph{Nodes} This query graph is distinct to the other query graphs calculated beforehand as it can be categorized as a cyclic query graph, but not a cycle one. Since there is a large number of cyclic query graphs for $n \leq 10$ and it cannot be uniquely specified by a small number of parameters, the dimensions of this query graph are hardcoded in the implementation. In order to allow a layout box of arbitrary size we however calculate the horizontal center $c_x$, vertical center $c_y$, and layout offset $o$ as follows:
+\subparagraph{Nodes} This query graph is distinct to the other query graphs calculated beforehand as it can be categorized as a cyclic query graph, but not a cycle one. Since there is a large number of cyclic query graphs even for $n \leq 10$ and it cannot be uniquely specified by a small number of parameters, the dimensions of this query graph are hardcoded in the implementation. In order to allow a layout box of arbitrary size we however calculate the horizontal center $c_x$, vertical center $c_y$, and layout offset $o$ as follows:
 \begin{equation}
     c_x = \frac{w}{2}
 \end{equation}
@@ -388,7 +384,7 @@ $
 \paragraph{Labels}
 In addition to visualizing the relations as nodes and connections as edges in the query graph we want to draw labels for the cardinality of a relation and the selectivity between two relations.
 
-\subparagraph{Cardinality} We make the assumption that the width of the text $\sigma$ and its height $\tau$ at the specified font size is known, provided by the canvas' layout engine.
+\subparagraph{Cardinality} The cardinality label is drawn right under a relation's node. We make the assumption that the width of the text $\sigma$ and its height $\tau$ at the specified font size is known by being provided by the canvas' layout engine, or can be calculated otherwise.
 // TODO: Finish
 
 \subparagraph{Selectivity}
@@ -402,7 +398,7 @@ and analogously
     l_{cy} = \min{(y_s, y_e)} + \frac{\vert y_s - y_e \vert}{2}
 \end{equation}
 
-Since the label has a height and width dimension itself this point however cannot be used as the origin of the label. Most layout engines' implementations for drawing rectangles accept parameters for their origin, width and height. Thus, we have to subtract half of its height and width respectively to get the point $(l_{ox}, l_{oy})$ specifying the label's origin. Analogously to the cardinality frame calculation we also make the assumption that the width of the text $\sigma$ and its height $\tau$ are known. Furthermore, we add a small constant $c$ to that width specifying the margin of the label's text to its enclosing box's outer bounds, giving a margin of $\frac{c}{2}$ on either side.
+Since the label has a height and width dimension itself this point however cannot be used as the origin of the label. Most layout engines' implementations for drawing rectangles accept parameters for their origin, width and height, with a top-left origin. Thus, we have to subtract half of its height and width respectively to get the point $(l_{ox}, l_{oy})$ specifying the label's origin. Analogously to the cardinality frame calculation we also make the assumption that the width of the text $\sigma$ and its height $\tau$ are known. Furthermore, we add a small constant $c$ to those size dimensions specifying the margin of the label's text to its enclosing box's outer bounds, giving an equal margin of $\frac{c}{2}$ on either side.
 \begin{equation}
     (l_{ox}, l_{oy}) = (l_{cx} - \frac{\sigma + c}{2}, l_{cy} - \frac{\tau + c}{2})
 \end{equation}
