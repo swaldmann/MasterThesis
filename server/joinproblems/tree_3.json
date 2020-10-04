@@ -1,7 +1,9 @@
-[{
+{
  "problemID": 0,
  "problemNeighbors": {
-  "0": "1,2"
+  "0": "1,2",
+  "1": "0",
+  "2": "0"
  },
  "problemNumberOfRelations": 3,
  "problemRelations": [
@@ -28,4 +30,4 @@
   "0,1": 0.06563701921747622,
   "0,2": 0.15651925473279124
  }
-}]
+}

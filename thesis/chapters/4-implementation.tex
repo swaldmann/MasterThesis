@@ -156,37 +156,66 @@ Some JSON files are taken from the supplementary material to the ``IE 630 Query 
 
 Additionally, we create a join problem generator for complete binary trees with a degree $k$ and a number of relations $n$.
 
+Since selectivities are symmetrical, they are stored once and once only in the JSON. This means, if an edge ($R_0, R_1$) in the query graph exists, we don't store ($R_1, R_0$) explicitly as well. However, we store the selectivities in a breadth-first manner starting from $R_0$, i.e. the edge always points from the relation with the smaller index to the larger one. More formally, we can say that the following implication holds:
+
+\begin{equation}
+    \forall (R_i, R_j) \in E \implies i < j
+\label{eq:bfs-implication}
+\end{equation}
+
 \setlength{\belowdisplayskip}{10pt}
 \setlength{\belowdisplayshortskip}{50pt}
 \setlength{\abovedisplayskip}{10pt}
 \setlength{\abovedisplayshortskip}{10pt}
 
 \paragraph{Complete Binary Tree}
-\subparagraph{Neighbors}
-First, we get the number of vertices which have children, i.e. for which neighbor entries exist.
-In the case of (binary) trees, when enumerating the relations in a breadth-first manner, this is given by 
+\subparagraph{Selectivities}
+Since implication \ref{eq:bfs-implication} holds, we only need to calculate selectivities for nodes which have children.
+Thus, first of all, we calculate the number of vertices with children $n_c$, i.e. the number of relation-pairs for which selectivity entries exist in the resulting JSON file.
+In the case of complete $k$-ary trees, when enumerating the relations in a breadth-first manner, this number is given by 
 \begin{equation}
-    n_{withNeighbors} = \lceil\frac{n}{k}\rceil
+    n_{c} = \#\{v \in V \vert \text{hasChildren}(v)\} = \lceil\frac{n}{k}\rceil
 \end{equation}
-Accordingly, we specify the list of neighbors starting with index 0 as
+Accordingly, we specify the set of vertices with children $V_c$, starting with index 0.
 \begin{equation}
-   V := \{v_i\}_{i=0}^{n_{withNeighbors}-1}
+   V_c := \{v_i\}_{i=0}^{n_{c}-1}
 \end{equation} 
 
-In order to define each element we first need to determine the level $l(v_i)$ of each node $v_i$ in the tree. This is given by
+\begin{note}
+Let $I$ be the index set for all relations
 \begin{equation}
-    l(v_i) = log_2(i+1)
+    I = \{0,\ldots,n-1\}
+\end{equation}
+Then, since our $k$-ary tree is complete and breadth-first, we can infer that if a node at index $i$ does not have children, any node at a larger index $j$ doesn't either. Likewise, any node with an index $i < n_c$ does have children. 
+
+\begin{equation}
+    \forall i,j \in I, i < j \colon v_i \notin V_c \implies v_j \notin V_c
+\end{equation}
+\begin{equation}
+    \forall i < n_c \colon \exists v_i \in V_c
 \end{equation}
 
-We then calculate the count of number of nodes in the levels below $l(v_i)$:
+This is why it suffices to consider nodes with index $i < n_c$ when generating selectivity entries.
+\end{note}
 
+Furthermore, we need to determine the level $l(v_i)$ of each node $v_i$ in the tree. For its respective index $i$, this is given by
 \begin{equation}
-     pre_i = \vert \{v_j \in V \vert l(v_j) < l(v_i)\} \vert = 2^{l(v_i) + 1} - 1
+    l_i = l(v_i) = log_k(i+1)
+\end{equation}
+
+Next up, we then define the set of vertices in the levels below $l_i$, denoted $V_{l_{i<j}}$, as follows:
+\begin{equation}
+    V_{l_{j<i}} := \{v_j \in V \vert l(v_j) < l(v_i) \}
+\end{equation}
+
+Now, we need the cardinality of this set, defined as $n_{j<i}$ to get the number of nodes on all level smaller than $l_i$. This can be efficiently calculated using the following equation:
+\begin{equation}
+     n_{j<i} := \vert V_{l_{j<i}}\vert = 2^{l(v_i) + 1} - 1
 \end{equation}
 
 This allows us to calculate the number of children for each level $l(v_i)$.
 \begin{equation}
-    levelchildren_i = \min(2^{l(v_i) + 1}, n - pre_i)
+    \hat{l}_i = \min(2^{l(v_i) + 1}, n - n_{j<i})
 \end{equation}
 
 Furthermore, we calculate the ``column'' $c_i$ of $v_i$, given by
@@ -194,40 +223,63 @@ Furthermore, we calculate the ``column'' $c_i$ of $v_i$, given by
     c_i = i - 2^{l(v_i)} + 1
 \end{equation}
 
-This lets us calculate the number of children $nodechildren_i$ for a node at index $i$:
+This lets us calculate the number of children $\hat{n}_i$ for a node at index $i$:
 \begin{equation}
-    n_{children_i} = \min(k, levelchildren_i - c_i * k)
+    \hat{n}_i = \min(k, \hat{l} - c_i * k)
 \end{equation}
+
+\begin{note}
+    This $\hat{n}_i$ is equal to $k$ for most internal nodes in a sufficiently large tree. However, if $log_k(n) \notin \mathbb{N}$ there could be an internal node with $\hat{n}_i < k$, i.e. not all possible leaf nodes for the last node with childrens are filled.
+\end{note}
 
 Now we can define the neighbors of $v_i$ as
 \begin{equation}
-    nb_i = \{ x_{i, j} \}_{j=0}^{n_{children_i} - 1} 
+    \mathbb{N}_i = \{ x_{i, j} \}_{j=0}^{\hat{n}_i - 1} 
 \end{equation}
 
-We also calculate the lowest index of the node's neighbors. (TODO: Math).
+We also calculate the lowest index of the node's neighbors $j_{min\mathbb{N}_i}$. (TODO: Not entirely sure about this notation).
 \begin{equation}
-    neighborLowestI = ik + 1
+    j_{min\mathbb{N}_i} = ik + 1
 \end{equation}
 
-For each element $x_{i, j} \in nb_i$ we then calculate the offset for its $j$ index.
+For each neighbor $x_{i, j} \in \mathbb{N}_i$ we then calculate the offset for its $j$ index.
 \begin{equation}
-    neighborOffset_j = j \mod{k}
+    \tau_{i,j} = j \mod{k}
 \end{equation}
 
-The index of the neighbor is thus given by
+The current index of the neighbor is thus given by
 \begin{equation}
-    neighborI_j = neighborLowestI + neighborOffset_j
+    \sigma_{i,j} = j_{min\mathbb{N}_i} + \tau_{i,j}
 \end{equation}
 
-Finally, we can define $x_{i, j} \in nb_i$ as
+Finally, we can define $x_{i, j} \in \mathbb{N}_i$ as
 \begin{equation}
-    x_{i, j} = neighborI_j
+    x_{i, j} = \sigma_{i,j}
 \end{equation}
 
 In the implementation, we can then join all neighbors together and add the result to the generated JSON file.
-\begin{equation}
-    %X_i = {x}
-\end{equation}
+
+\subparagraph{Neighbors}
+The set of neighbors does not make use of the symmetry of selectivities and thus stores all neighbors for each relation explicitly. Thus, we append the parent node $\rho_i$ to the set of neighbors $\mathbb{N}$ calculated for the selectivity generation.
+
+\begin{code}
+\begin{minted}
+for i := uint(0); i < size; i++ {
+    if i == 0 {
+        continue // The first node has no parent
+    }
+    parentIndex := (i - 1) / degree
+    parentString := strconv.FormatUint(uint64(parentIndex), 10)
+    if currentNeighborsString, ok := problemNeighbors[i]; ok {
+        joinStrings := []string{currentNeighborsString, parentString}
+        problemNeighbors[i] = strings.Join(joinStrings, ",")
+    } else {
+        problemNeighbors[i] = parentString
+    }
+}
+\end{minted}
+\caption{}
+\end{code}
 
 % We then join all $$
 % Joining x_{i, j} into array for each i
@@ -239,7 +291,6 @@ R := \{r_i\}_{i=0}^{n-1}
 \end{equation}
 where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable following uniform distribution over the set $\mathbb{R} \cap [0,10000]$.
 
-\subparagraph{Selectivities}
 
 
 

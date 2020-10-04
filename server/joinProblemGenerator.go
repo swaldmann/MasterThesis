@@ -72,12 +72,30 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 		return result
 	}
 
+	relationsResult := relations(size)
+	selectivitiesResult := selectivities(degree, size)
+
+	// Append parents to neighbors
+	for i := uint(0); i < size; i++ {
+		if i == 0 {
+			continue // The first node has no parent
+		}
+		parentIndex := (i - 1) / degree
+		parentString := strconv.FormatUint(uint64(parentIndex), 10)
+		if currentNeighborsString, ok := problemNeighbors[i]; ok {
+			joinStrings := []string{currentNeighborsString, parentString}
+			problemNeighbors[i] = strings.Join(joinStrings, ",")
+		} else {
+			problemNeighbors[i] = parentString
+		}
+	}
+
 	data := JSONJoinProblem{
 		ProblemID:                0,
 		ProblemNeighbors:         problemNeighbors,
 		ProblemNumberOfRelations: size,
-		ProblemRelations:         relations(size),
-		ProblemSelectivities:     selectivities(degree, size),
+		ProblemRelations:         relationsResult,
+		ProblemSelectivities:     selectivitiesResult,
 	}
 
 	sizeString := strconv.FormatUint(uint64(size), 10)
