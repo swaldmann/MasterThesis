@@ -34,11 +34,23 @@ BestTree = NULL;\\
 \caption{CreateJoinTree}
 \end{algorithm}
 
+We make the assumption that all nodes of the query graph are indirectly or directly connected.
+
+
 \paragraph{Csg-cmp-pairs}
-Csg-cmp-pairs describe
+For a set of relation $S$ we use the term \textit{csg-cmp-pair} as defined in \cite{moerkotte2006analysis}.
+\begin{definition}
+    Let $S_1$ and $S_2$ be subsets of the nodes of a query graph. We say $(S1, S2)$ is a \textit{csg-cmp-pair} if and only if
+    \begin{enumerate}
+        \item $S_1$ induces a connected subgraph of the query graph,
+        \item $S_2$ induces a connected subgraph of the query graph,
+        \item $S_1 and S_2$ are disjoint, and
+        \item there exists at least one edge connecting a node in $S_1$ to a node in $S_2$.
+    \end{enumerate}
+\end{definition}
 
 \paragraph{DPccp}
-One of the algorithms visualized is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neunmann in 2006 \cite{moerkotte2006analysis}. This algorithm is a join ordering algorithm that limits the search space of possible joins to a theoretical lower boundary \cite{moerkotte2009building}. 
+The algorithm visualized is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neunmann in 2006 \cite{moerkotte2006analysis}. This algorithm is a join ordering algorithm that limits the search space of possible joins to a theoretical lower boundary \cite{moerkotte2009building}. 
 The algorithm is specified as follows:
 
 \vspace{0.5cm}

@@ -206,16 +206,16 @@ func Subsets(S uint) []uint {
 
 // SetMinus Difference between two sets
 func SetMinus(S1 uint, S2 uint, length uint) uint {
-	/*mask := uint((1 << length) - 1)
-	temp := S1 & S2
-	temp = ^temp
-	temp &= mask
-	res := S1 & temp*/
+	// mask := uint((1 << length) - 1)
+	// temp := S1 & S2
+	// temp = ^temp
+	// temp &= mask
+	// res := S1 & temp
+	// return res & mask
 
 	// This should be equivalent and is more concise:
 	mask := uint((1 << length) - 1)
-	res := S1 & ^S2
-	return res & mask
+	return S1 & ^S2 & mask
 }
 
 // Determines whether S1 is a subset of S2

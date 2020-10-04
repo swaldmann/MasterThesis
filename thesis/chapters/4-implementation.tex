@@ -249,26 +249,32 @@ where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable foll
 In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} and \url{joinproblemparser.go} file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
 
 Modifications include:
-\paragraph{Simplification of the }
-
-\paragraph{Addition of a PowerSet}
-For the implementation of \texttt{DPccp} we need an additional function that returns not just the subsets of an (\texttt{unsigned int} bit vector $S$, but its power set excluding the empty set, $\mathcal P(S)\setminus\{\varnothing\}$.
+\paragraph{Simplification of \texttt{SetMinus}}
+We simplify the implementation for the \texttt{SetMinus} operation by omitting the use of a temporary helper variable for the result calculation. This is equivalent as it produces exactly the same assembly output as the old, commented-out code\footnote{amd64 gc 1.15 compiler, compiled on \url{https://godbolt.org}}.
 
 \begin{minted}{go}
-    func PowerSet(S uint) []uint {
-        subsets := Subsets(S)
-        if len(subsets) == 1 && subsets[0] == S {
-            return subsets
-        }
-        return append(subsets, S)
-    }
+func SetMinus(S1 uint, S2 uint, length uint) uint {
+    mask := uint((1 << length) - 1)
+    // temp := S1 & S2
+    // temp = ^temp
+    // temp &= mask
+    // return S1 & temp
+    return S1 & ^S2 & mask
+}
 \end{minted}
 
-\begin{itemize}
-    \item Simplification of SetMinus
-    \item Chaning join problems and class variable names for linter
-\end{itemize}
+\paragraph{Addition of \texttt{PowerSet}}
+For the implementation of \texttt{DPccp} we need an additional function that returns not just the subsets of an (\texttt{unsigned int}) bit vector $S$ as does \texttt{Subsets}, but its power set excluding the empty set, $\mathcal P(S)\setminus\{\varnothing\}$.
 
+\begin{minted}{go}
+func PowerSet(S uint) []uint {
+    subsets := Subsets(S)
+    if len(subsets) == 1 && subsets[0] == S {
+        return subsets
+    }
+    return append(subsets, S)
+}
+\end{minted}
 
 We add some additional helper functions:
 \begin{minted}{go}   
@@ -282,9 +288,185 @@ func contains(s []uint, e uint) bool {
 }    
 \end{minted}
 
+\subsection{Data Structures}
+
+\subsubsection{Domain-specific}
+In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinproblemparser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
+
+TODO: Remove "Relation" prefix here and in code
+\begin{code}
+\begin{minted}{go}
+type JSONRelation struct {
+    RelationCardinality float64 `json:"relationCardinality"`
+    RelationName        string  `json:"relationName"`
+    RelationPID         uint    `json:"relationPID"`
+    RelationRID         uint    `json:"relationRID"`
+}
+\end{minted}
+\caption{\texttt{JSONRelation} type}
+\end{code}
+
+TODO: Remove "Problem" prefix here and in code
+\begin{code}
+\begin{minted}{go}
+type JSONJoinProblem struct {
+    ProblemID                uint               `json:"problemID"`
+    ProblemNeighbors         map[uint]string    `json:"problemNeighbors"`
+    ProblemNumberOfRelations uint               `json:"problemNumberOfRelations"`
+    ProblemRelations         []JSONRelation     `json:"problemRelations"`
+    ProblemSelectivities     map[string]float64 `json:"problemSelectivities"`
+}
+\end{minted}
+\caption{\texttt{JSONJoinProblem} type}
+\end{code}
+
+We'll take the \texttt{QueryGraph} \texttt{struct} from \texttt{infra.go} and add a \texttt{map} to a \texttt{uint} slice of neighbors for each relation, which itself is represented as a \texttt{uint} bitvector and used as the map's key.
+
+\begin{code}
+\begin{minted}{go}
+type QueryGraph struct {
+	R []uint           `json:"relationCardinalities"`
+	S map[uint]float64 `json:"selectivities"`
+	N map[uint][]uint  `json:"neighbors"` // Added neighbor map
+}
+\end{minted}
+\caption{\texttt{QueryGraph} type}
+\end{code}
+
+\subsubsection{Visualization}
+
+For the visualization we define some data structures used to declaratively specify algorithms, their visualization routines and their atomic components, such as visualization steps and the subroutine's configured observed relations. 
+
+\paragraph{Algorithm}
+
+First, we specify an \texttt{Algorithm} type that can be returned to the client when requesting the list of algorithms which can be visualized. Each algorithm contains a \texttt{Label} string describing the algorithm, e.g. ``DPccp'' as well as a \texttt{Value} string giving the algorithm's identifier for server requests. This \texttt{Value} string is by convention a camel-cased name of the algorithm starting with a lower-case character, whereas the \texttt{Label} can also contain special or whitespace characters. This differentiation is made to allow human-readable algorithm names as well as URL-encodable identifiers for the API's path parameter.
+
+\begin{code}
+\begin{minted}{go}   
+type Algorithm struct {
+    Label string `json:"label"`
+    Value string `json:"value"`
+}
+\end{minted}
+\caption{\texttt{Algorithm} type}
+\end{code}
+
+\paragraph{Variable Table}
+
+We want to keep track of a set of user-defined relation variables to aid understanding the algorithm's state's history. For this purpose, we first introduce the \texttt{ObservedRelation} type that can be used to specify which sets of relations should be observed. It contains an \texttt{Identifier} string that corresponds to the variable's name, as well as a \texttt{Color} field, which allows to visually distinguish different variables. This is specified using a \texttt{color.RGBA} struct from the \texttt{image/color} package, which can be found in Go's standard library.
+
+\begin{code}
+\begin{minted}{go}
+type ObservedRelation struct {
+    Identifier string     `json:"identifier"`
+    Color      color.RGBA `json:"color"`
+}
+\end{minted}
+\caption{\texttt{ObservedRelation} type}
+\end{code}
+
+Furthermore, we introduce a \texttt{VariableTableEntry} type that can be specified individually for each observed relation, in each atomic visualization step. In our application, this entry is a \texttt{uint} slice depicting the current variable's set of relations in bitvector representation.
+
+\begin{code}
+\begin{minted}{go}
+type VariableTableEntry []uint
+\end{minted}
+\caption{\texttt{VariableTableEntry} type}
+\end{code}
+
+TODO: Rename in code
+These variable table entries are stored in a \texttt{VariableTableRow} map. A string identifying the relation that corresponds to the \texttt{Identifier} in the \texttt{ObservedRelation} as the key of the map.
+
+\begin{code}
+\begin{minted}{go}
+type VariableTableRow map[string]VariableTableEntry
+\end{minted}
+\caption{\texttt{VariableTableRow} type}
+\end{code}
+
+\paragraph{GraphState}
+
+The state of the query graph drawn in the user interface must be represented in order to unambigiously specify its configuration. We want to be able to give each node in the graph a color that corresponds to the \texttt{Color} field of the \texttt{ObservedRelation}. Hence, we first define a \texttt{NodeColor} type storing the \texttt{Index} of the relation, as well as the respective \texttt{Color}.
+
+\begin{code}
+\begin{minted}{go}
+type NodeColor struct {
+    NodeIndex uint       `json:"nodeIndex"`
+    Color     color.RGBA `json:"color"`
+}
+\end{minted}
+\caption{\texttt{NodeColor} type}
+\end{code}
+
+The graph state is thus a slice containing all node colors. Since we explicitly assign a color to each node in every visualization step, the length of the slice is therefore equal to the number of relations $n$ in the graph.
+
+\begin{code}
+\begin{minted}{go}
+type GraphState struct {
+    NodeColors []NodeColor `json:"nodeColors"`
+}
+\end{minted}
+\caption{\texttt{GraphState} type}
+\end{code}
+
+\paragraph{Steps and Routines}
+
+Finally, the data structures defined beforehand can be used to construct higher-level constructs such as the \textit{atomic} visualization step, represented as a \texttt{VisualizationStep} type. This type contains the \texttt{GraphState} for the current step, as well as the variables stored as a \texttt{VariableTableRow}. In order to identify a step in equivalence checks, we also assign a \texttt{UUID}, which is generated using Google's own \texttt{github.com/google/uuid}\footnote{\url{https://github.com/google/uuid}} package. This UUID is a 128 bit UUID based on RFC4122\footnote{\url{https://tools.ietf.org/html/rfc4122}}, which can be easily converted to a \texttt{string} using the \texttt{uuid.New().String()} function. This \texttt{UUID} is necessary as the reference to the exact instance of a struct is lost when marshalling it into JSON.
+
+\begin{code}
+\begin{minted}{go}
+type VisualizationStep struct {
+    GraphState GraphState       `json:"graphState"`
+    Variables  VariableTableRow `json:"variables"`
+    UUID       string           `json:"uuid"`
+}
+\end{minted}
+\caption{\texttt{VisualizationStep} type}
+\end{code}
+
+Finally, we have defined all the types necessary to define a high-level \texttt{VisualizationRoutine}. This routine contains a \texttt{Name} field to describe its corresponding algorithm, e.g. ``EnumerateCsg'', as well as fields to store an \texttt{ObservedRelation} slice to specify the sets of relations that should be kept track of for this routine. Furthermore, we store a slice of all the routines steps. This \texttt{Steps} slice is genericly implemented using a pointer to Go's \texttt{interface{}} type, as it can be filled with either an atomic \texttt{VisualizationStep} or another \texttt{VisualizationRoutine}. This allows for subroutines or even recursive calls of other subroutines and creates a hierarchical structure of all steps in the visualization's JSON description. 
+
+\begin{code}
+\begin{minted}{go}
+type VisualizationRoutine struct {
+    Name              string             `json:"name"`
+    ObservedRelations []ObservedRelation `json:"observedRelations"`
+    Steps             []*interface{}     `json:"steps"`
+}
+\end{minted}
+\caption{\texttt{VisualizationRoutine} type}
+\end{code}
+
+This \texttt{VisualizationRoutine} 
+
+\subsubsection{Bla}
+Furthermore, we'll add a method to retrieve the neighborhood for a subset of relations $S$.
+
+\begin{minted}{go}
+func Neighbors(QG QueryGraph, S uint) uint {
+    indexes := IdxsOfSetBits(S)
+    result := uint(0)
+    for _, index := range indexes {
+        for _, neighbor := range QG.N[index] {
+            result = result | (1 << neighbor)
+        }
+    }
+    n := uint(len(QG.R))
+    return SetMinus(result, S, n)
+}
+\end{minted}
+
+Also, we introduce a struct for representing csg-cmp-pairs.
+\begin{minted}{go}
+type CsgCmpPair struct {
+    S1 uint
+    S2 uint
+}
+\end{minted}
+
 \subsection{Linting}
 The project uses the Go language linter\footnote{\url{https://github.com/golang/lint}} to ensure a common coding and documentation style with what is used at Google, the creators of Go.
-All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go} have been modified to satisfy all linter requirements. (TODO: Which ones)
+All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go} have been modified to satisfy all linter requirements by doing some miscellaneous changes to remove warnings generated from static analysis by using the official Go linter\footnote{\url{https://github.com/golang/lint}}, e.g. by converting variable and function names from \texttt{snake\_case} to \texttt{camelCase}, or adding descriptive comments to exported functions. As these changes are mostly trivial we omit further details here.
 
 For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
 

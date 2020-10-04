@@ -3,7 +3,7 @@
 % General document formatting
  
 \usepackage{floatrow}
-\usepackage[cache=false]{minted} % Syntax highlighting for algorithms \usepackage[outputdir=out,cache=false]{minted}
+\usepackage[cache=false,newfloat=true]{minted} % Syntax highlighting for algorithms \usepackage[outputdir=out,cache=false]{minted}
 \usepackage[utf8]{inputenc}
 
 \usepackage{subcaption}
@@ -29,6 +29,11 @@
 \usepackage{inconsolata} % Nicer monospace font
 \usepackage[]{algorithm2e} % Algorithms
 \usepackage{pgf-umlsd} % UML sequence diagrams
+\usepackage[nameinlink]{cleveref} % Change listing names
+
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Data Structure}
+\crefname{listing}{Program code}{Program codes}
 
 %\usepackage[
 %backend=biber,
