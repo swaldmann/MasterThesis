@@ -218,6 +218,10 @@ This allows us to calculate the number of children for each level $l(v_i)$.
     \hat{l}_i = \min(2^{l(v_i) + 1}, n - n_{j<i})
 \end{equation}
 
+\begin{note}
+Note that $l(v_i)$ is not necessarily equal to the width of the level in a full $k$-ary tree, which is given by $2^{l(v_i) + 1}$, since some leaf nodes could be missing in the bottom level of the tree.
+\end{note}
+
 Furthermore, we calculate the ``column'' $c_i$ of $v_i$, given by
 \begin{equation}
     c_i = i - 2^{l(v_i)} + 1
@@ -244,7 +248,7 @@ We also calculate the lowest index of the node's neighbors $j_{min\mathbb{N}_i}$
 
 For each neighbor $x_{i, j} \in \mathbb{N}_i$ we then calculate the offset for its $j$ index.
 \begin{equation}
-    \tau_{i,j} = j \mod{k}
+    \tau_{i,j} = j\mod{k}
 \end{equation}
 
 The current index of the neighbor is thus given by
@@ -252,34 +256,61 @@ The current index of the neighbor is thus given by
     \sigma_{i,j} = j_{min\mathbb{N}_i} + \tau_{i,j}
 \end{equation}
 
-Finally, we can define $x_{i, j} \in \mathbb{N}_i$ as
+Finally, we can set all $x_{i, j} \in \mathbb{N}_i$ as $\sigma{i,j}$
 \begin{equation}
     x_{i, j} = \sigma_{i,j}
 \end{equation}
 
-In the implementation, we can then join all neighbors together and add the result to the generated JSON file.
+Let us now define the set of all neighbors $\mathbb{N}$ for all indices $i < n$:
+\begin{equation}
+    \mathbb{N} = \{\mathbb{N}_i\}_{i=0}^{n-1}
+\end{equation}
+
+We can now set a selectivity for each $(x_i,j) \in \mathbb{N}_i \in \mathbb{N}$, where the selectivity $s_{i,j}$ is a random varialbe following a uniform distribution over the set $\mathbb{R} \cap [0,1]$.
+
+A Go implementation example of the symmetrical neighbor calculation is illustrated in algorithm \ref{alg:symNeighbors}. The assignment of selectivities to these entries is trivial and thus not illustrated here, but can be found in the supplementary code.
+
+\begin{note}
+The variable names in algorithm \ref{alg:symNeighbors} correspond to the names used in the previously used mathematical definitions. In the supplementary code to this thesis longer, more descriptive variable names are used.
+\end{note}
+
+%TODO: Replace \texttt{log2_{64}} with \texttt{math.Log}
+
+\begin{algorithm}
+\begin{minted}{go}
+symNeighborEntry := func(i uint, n_c uint) string {
+    l_i := uint(log2_64(uint64(i + 1)))
+    n_j_leq_i := uint(1<<(l_i+1) - 1)
+    l_hat_i := min(1<<(l_i+1), n-n_j_leq_i)
+    c_i := i - 1<<(l_i) + 1
+    n_hat_i := min(k, l_hat_i-c_i*k)
+
+    N := make([]string, n_c)
+    j_minN_i := i*k + 1
+    for j := range N {
+        tau_ij := uint(j) % k
+        sigma_ij := j_minN_i + tau_ij
+        s := strconv.FormatUint(uint64(sigma_ij), 10)
+        N[j] = s
+    }
+    return strings.Join(N, ",")
+}
+symNeighbors := func() map[uint]string {
+    dict := map[uint]string{}
+    n_c := math.Floor(float64(n) / float64(k))
+    for i := uint(0); float64(i) < n_c; i++ {
+        dict[i] = symNeighborEntry(i, n)
+    }
+    return dict
+}
+problemNeighbors := symNeighbors()
+\end{minted}
+\caption{Go implementation to calculate symmetrical neighbors. \texttt{k} is the degree of the tree and \texttt{n} the number of relations. Both must be set before using them in the above lambda expressions (Go function literals).}
+\label{alg:symNeighbors}
+\end{algorithm}
 
 \subparagraph{Neighbors}
-The set of neighbors does not make use of the symmetry of selectivities and thus stores all neighbors for each relation explicitly. Thus, we append the parent node $\rho_i$ to the set of neighbors $\mathbb{N}$ calculated for the selectivity generation.
-
-\begin{code}
-\begin{minted}
-for i := uint(0); i < size; i++ {
-    if i == 0 {
-        continue // The first node has no parent
-    }
-    parentIndex := (i - 1) / degree
-    parentString := strconv.FormatUint(uint64(parentIndex), 10)
-    if currentNeighborsString, ok := problemNeighbors[i]; ok {
-        joinStrings := []string{currentNeighborsString, parentString}
-        problemNeighbors[i] = strings.Join(joinStrings, ",")
-    } else {
-        problemNeighbors[i] = parentString
-    }
-}
-\end{minted}
-\caption{}
-\end{code}
+The set of neighbors does not make use of the symmetry of selectivities and thus stores all neighbors for each relation explicitly. Thus, we append the parent node $\rho_i$ to the set of neighbors $\mathbb{N}$ calculated for the selectivity generation. This assignment is trivial and thus the algorithm is not provided here.
 
 % We then join all $$
 % Joining x_{i, j} into array for each i
@@ -291,12 +322,11 @@ R := \{r_i\}_{i=0}^{n-1}
 \end{equation}
 where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable following uniform distribution over the set $\mathbb{R} \cap [0,10000]$.
 
-
-
+Likewise, the creation of the \texttt{relations} slice is trivial and therefore we don't illustrate the algorithm here.
 
 \subsection{Data Structures}
 
-\subsubsection{Domain-specific}
+\subsubsection{Join Ordering}
 In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinproblemparser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
 
 TODO: Remove "Relation" prefix here and in code
