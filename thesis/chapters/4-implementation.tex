@@ -566,11 +566,148 @@ func Neighbors(QG QueryGraph, S uint) uint {
 \caption{\texttt{Neighbors} function for a set of relations}
 \end{algorithm}
 
-\subsubsection{DPccp}
-
 \subsubsection{Visualization}
 
-\subsubsection{Usage}
+
+\paragraph{Usage}
+
+The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{DPccp} algorithm.
+
+\subsubsection{DPccp}
+\label{subsub:implementation-dpccp}
+
+Blabla
+
+\begin{algorithm}
+\begin{minted}{go}
+func EnumerateCsg(QG QueryGraph) []uint {
+    n := uint(len(QG.R))
+    subgraphs := []uint{}
+    for i := n - 1; i < n; i-- {
+        v := uint(1 << i)
+        subgraphs = append(subgraphs, v)
+        B := uint(1<<(i+1) - 1)
+        recursiveSubgraphs := EnumerateCsgRec(QG, v, B)
+        subgraphs = append(subgraphs, recursiveSubgraphs...)
+    }
+    return subgraphs
+}
+\end{minted}
+\caption{Go implementation of \texttt{EnumerateCsg}}
+\label{alg:enumeratecsg}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{minted}{go}
+func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
+    n := uint(len(QG.R))
+    Neighbors := Neighbors(QG, S)
+    N := SetMinus(Neighbors, X, n)
+
+    subgraphs := []uint{}
+
+    for _, SPrime := range PowerSet(N) {
+        if SPrime == 0 {
+            continue
+        }
+        SuSPrime := S | SPrime
+        subgraphs = append(subgraphs, SuSPrime)
+    }
+    for _, SPrime := range PowerSet(N) {
+        if SPrime == 0 {
+            continue
+        }
+        SuSPrime := S | SPrime
+        XuN := X | N
+        recursiveSubgraphs := EnumerateCsgRec(QG, SuSPrime, XuN)
+        subgraphs = append(subgraphs, recursiveSubgraphs...)
+    }
+    return subgraphs
+}
+\end{minted}
+\caption{Go implementation of \texttt{EnumerateCsgRec}}
+\label{alg:enumeratecsgrec}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{minted}{go}
+func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
+    minS1 := MinUintSetBitIndex(S1)
+    BminS1 := uint(1<<minS1) - 1
+
+    X := BminS1 | S1
+    n := uint(len(QG.R))
+    neighbors := Neighbors(QG, S1)
+    N := SetMinus(neighbors, X, n)
+
+    subgraphs := []CsgCmpPair{}
+    setBits := IdxsOfSetBits(N)
+    for i := len(setBits) - 1; i >= 0; i-- { // Descending
+        v := setBits[i]
+        pair := CsgCmpPair{Subgraph1: S1, Subgraph2: 1 << v}
+        subgraphs = append(subgraphs, pair)
+
+        Bi := uint(1<<v - 1)
+        recursiveComplements := EnumerateCsgRec(QG, 1<<v, X|(Bi&N))
+        for _, S2 := range recursiveComplements {
+            pair := CsgCmpPair{Subgraph1: S1, Subgraph2: S2}
+            subgraphs = append(subgraphs, pair)
+        }
+    }
+    return subgraphs
+}
+\end{minted}
+\caption{Go implementation of \texttt{EnumerateCmp}}
+\label{alg:enumeratecmp}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{minted}{go}
+func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
+    n := uint(len(QG.R))
+    bestTree := make([]*Tree, 1<<n)
+    for i := uint(0); i < n; i++ {
+        card := float64(QG.R[i])
+        tree := &Tree{card, 1 << i, nil, nil, 0, nil}
+        bestTree[1<<i] = tree
+    }
+    subgraphs := EnumerateCsg(QG)
+    csgCmpPairs := []CsgCmpPair{}
+    for _, subgraph := range subgraphs {
+        subgraphCsgCmpPairs := EnumerateCmp(QG, subgraph)
+        csgCmpPairs = append(csgCmpPairs, subgraphCsgCmpPairs...)
+    }
+    for _, csgCmpPair := range csgCmpPairs {
+        S1 := csgCmpPair.Subgraph1
+        S2 := csgCmpPair.Subgraph2
+        S := S1 | S2
+
+        p1 := bestTree[S1]
+        p2 := bestTree[S2]
+
+        currentTree := JTC.CreateJoinTree(p1, p2, QG)
+        if bestTree[S] == nil {
+            bestTree[S] = currentTree
+        } else if bestTree[S].Cost > currentTree.Cost {
+            bestTree[S] = currentTree
+        }
+        currentTree = JTC.CreateJoinTree(p2, p1, QG)
+        if bestTree[S] == nil {
+            bestTree[S] = currentTree
+        } else if bestTree[S].Cost > currentTree.Cost {
+            bestTree[S] = currentTree
+        }
+    }
+    return bestTree[(1<<n)-1]
+}
+\end{minted}
+\caption{Go implementation of \texttt{DPccp}}
+\label{alg:dpccp}
+\end{algorithm}
+
+
+
+
 
 \subsubsection{Building}
 
