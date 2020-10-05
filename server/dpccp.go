@@ -18,10 +18,12 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 	}
 
 	n := uint(len(QG.R))
-	BestTree := make([]*Tree, 1<<n)
+	bestTree := make([]*Tree, 1<<n)
 
 	for i := uint(0); i < n; i++ {
-		BestTree[1<<i] = &Tree{float64(QG.R[i]), 1 << i, nil, nil, 0, nil}
+		card := float64(QG.R[i])
+		tree := &Tree{card, 1 << i, nil, nil, 0, nil}
+		bestTree[1<<i] = tree
 	}
 
 	subgraphs := EnumerateCsg(QG)
@@ -36,24 +38,24 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 		S2 := csgCmpPair.Subgraph2
 		S := S1 | S2
 
-		p1 := BestTree[S1]
-		p2 := BestTree[S2]
+		p1 := bestTree[S1]
+		p2 := bestTree[S2]
 
-		CurrTree := JTC.CreateJoinTree(p1, p2, QG)
-		if BestTree[S] == nil {
-			BestTree[S] = CurrTree
-		} else if BestTree[S].Cost > CurrTree.Cost {
-			BestTree[S] = CurrTree
+		currentTree := JTC.CreateJoinTree(p1, p2, QG)
+		if bestTree[S] == nil {
+			bestTree[S] = currentTree
+		} else if bestTree[S].Cost > currentTree.Cost {
+			bestTree[S] = currentTree
 		}
-		CurrTree = JTC.CreateJoinTree(p2, p1, QG)
-		if BestTree[S] == nil {
-			BestTree[S] = CurrTree
-		} else if BestTree[S].Cost > CurrTree.Cost {
-			BestTree[S] = CurrTree
+		currentTree = JTC.CreateJoinTree(p2, p1, QG)
+		if bestTree[S] == nil {
+			bestTree[S] = currentTree
+		} else if bestTree[S].Cost > currentTree.Cost {
+			bestTree[S] = currentTree
 		}
 	}
 	rainbow.Green(BestTree[(1<<n)-1].ToString()) // Print best tree
-	return BestTree[(1<<n)-1]
+	return bestTree[(1<<n)-1]
 }
 
 // EnumerateCsg Enumerate connected subgraphs.
