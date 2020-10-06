@@ -1,11 +1,11 @@
 \section{Basics}
 \label{sec:basics}
 
-\subsection{Domain}
 There are certain terms and concepts the reader should be familiar with in order to understand the aim and purpose of this thesis. 
-We forego a formal mathematical introduction to relational algebra, although a familiarity of its basic concepts is highly recommended. 
-Moreover, we assume that the Landau notation is known.
+We forego a formal mathematical introduction to relational algebra, although a familiarity with its basic concepts is highly recommended. 
+Moreover, we assume that the Landau notation is known. A basic understanding of mathematical set theory, first-order logic, and trigonometry is also strongly recommended. Further, the user should be familiar with fundamentals of distributed applications and their protocols and file formats, such as the Hypertext Transfer Protocol (HTTP), Hypertext Markup language (HTML) and JavaScript Object Notation (JSON). In addition, we assume the reader is proficient in computer programming and scripting, preferably using the Go programming language and JavaScript.
 
+\subsection{Join Ordering}
 \subsubsection{Relations}
 Relations are tables in a database. 
 Its attributes are described by a database schema, which specifies the possible attribute types.
@@ -13,8 +13,8 @@ An entry in the table is described as a \textit{tuple}. Furthermore, we call the
 
 \subsubsection{Join}
 A join links two or more relations by building their cross product and filtering it with the help of a \textit{join predicate}. 
-The result is a new relation which contains the joined tuples, for which the predicate is true. We denote the join operator using the symbol "$\Join$". 
-As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``''$R \Join S$''.
+The result is a new relation which contains all the joined tuples for which the predicate evaluates to true. We denote the join operator using the symbol "$\Join$". 
+As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``$R \Join S$''.
 
 \subsubsection{Selectivity}
 The selectivity of two relations is the ratio between the cardinality of their cross product and the number of elements in the join's resulting relation. 
@@ -25,19 +25,18 @@ For two relations $R_i$ and $R_j$ regarding a predicate $p_{i,j}$ the selectivit
 f_{i,j} = \frac{|R_i\Join_{p_{i,j}}R_j|}{|R_i \times R_j|}	
 \end{equation}
 
-\begin{commentary}
+\begin{note}
 Since we can assume that $|R_i\Join_{p_{i,j}}R_j| \geq 0$, $|R_i \times R_j| > 0$ and $|R_i\Join_{p_{i,j}}R_j| \leq |R_i \times R_j|$ we know that $f_{i,j} \in [0,1]$.
-\end{commentary}
+\end{note}
 
-For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two relations given. 
-\newpage
+For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two given relations.
 
 \subsubsection{Query Types}
 \label{subsub:query-types}
 
 Relations can be connected in many different ways. These connections can be visualized using a graph. There is a number of different query types. Most importantly we want to have a look at the following six query types, because they represent distinct problems:
 
-\begin{figure}
+\begin{figure}[H]
     \captionsetup[subfigure]{justification=centering}
 
     \begin{subfigure}[t]{.4\textwidth}
@@ -137,7 +136,7 @@ Relations can be connected in many different ways. These connections can be visu
 \end{figure}
 
 
-\subsection{Operator Trees}
+\subsubsection{Operator Trees}
 An operator tree contains operators as inner nodes and relations as leaves.
 Through this tree the order in which the operations are executed, can be graphically visualized.
 It typically contains any operator of Codd's relational model, however in this thesis we limit those to the only relevant join operator ($\Join$), which is derived from a cross product and a subsequent selection.
@@ -208,12 +207,13 @@ The trees for $(R_1 \Join R_2) \Join R_3$, $R_1 \Join (R_2 \Join R_3)$, $(R_1 \J
 TODO
 
 \subsubsection{Bitvector Representation}
-As inspired by \cite{moerkotte2009} we represent sets of relations as bitvectors in the implementation. These are implemented using \texttt{unsigned int} variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
+\label{subsub:basics-bitvector}
+
+As inspired by \cite{moerkotte2009building} we represent sets of relations as bitvectors in the implementation. These are implemented using (unsigned) integer variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
 
 \begin{example}
     Hence, the following bitvectors for a 3-bit integer map to the corresponding sets of relations as indicated in figure \ref{fig:bitvector}.
     \begin{figure}[H]
-        \label{fig:bitvector}
         \begin{tabular}{ c | r }
             000 & \{\} \\ 
             001 & \{$R_1$\} \\
@@ -225,14 +225,25 @@ As inspired by \cite{moerkotte2009} we represent sets of relations as bitvectors
             111 & \{$R_1,R_2,R_3$\} \\
            \end{tabular}
         \caption{Bitvector representation}
+        \label{fig:bitvector}
     \end{figure}
 \end{example}
 
 \subsubsection{Orthogonality}
 We understand the term \textit{Orthogonality} as defined in \textit{The Art of Unix Programming} by Eric S. Raymond \cite{raymond2003compactness}:
 \begin{definition}
-    Orthogonality is one of the most important properties that can help make even complex designs compact. In a purely orthogonal design, operations do not have side effects; each action (whether it's an API call, a macro invocation, or a language operation) changes just one thing without affecting others.
+    ``Orthogonality is one of the most important properties that can help make even complex designs compact. In a purely orthogonal design, operations do not have side effects; each action (whether it's an API call, a macro invocation, or a language operation) changes just one thing without affecting others.''
 \end{definition}
+
+\subsection{Server}
+\label{sub:basics-server}
+
+\subsubsection{Gin}
+\label{subsub:basics-gin}
+
+\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
+It provides a router-level middleware that lets us specify API routes for our server-side code.
+%The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.
 
 \subsection{Client}
 \label{sub:basics-client}
@@ -275,14 +286,5 @@ class App extends React.Component {
 
 \texttt{Redux}\footnote{\url{https://redux.js.org}} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
 It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux}} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md}}.
+
 TODO: Short description 
-
-\subsection{Server}
-\label{sub:basics-server}
-
-\subsubsection{Gin}
-\label{subsub:basics-gin}
-
-\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
-It provides a router-level middleware that lets us specify API routes for our server-side code.
-%The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.

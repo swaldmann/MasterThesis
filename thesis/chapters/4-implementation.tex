@@ -570,16 +570,20 @@ func Neighbors(QG QueryGraph, S uint) uint {
 
 \subsubsection{Visualization}
 
-For the visualization we create a \texttt{visualization} package to handle all operations related to the visualization itself. Here, we keep track of an exported \texttt{VisualizationOn} Boolean variable to indicate whether the visualization code should be executed or not. Furthermore, we define two local variables:
+For the visualization we create a \texttt{visualization} package to handle all operations related to the visualization itself. Here, we keep track of an exported \texttt{VisualizationOn} Boolean variable to indicate whether the visualization code within the algorithm's implementation should be executed or not. Furthermore, we define two package-local variables:
+\vspace{0.2cm}
 \begin{minted}{go}
 var routines = []*VisualizationRoutine{}
 var stack = []*VisualizationRoutine{}
 \end{minted}
-Both are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. Both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the current execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but have to use exported functions to start new routines or add atomic visualization steps.
+\vspace{0.2cm}
+Both variables are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. They both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the  execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but have to use exported functions to start new routines or add atomic visualization steps. All available functions will be discussed in the following.
 
-For this purpose, we define the following functions:
+First of all, we create a \texttt{visualize} function to change the execution context of a join ordering algorithm.
 \begin{minted}{go}
-func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine
+func visualize(visualization Visualizable, 
+               QG QueryGraph, 
+               JTC JoinTreeCreator) []*VisualizationRoutine
 \end{minted}
 
 This \texttt{visualize} function can be used to call a function that conforms to the \texttt{Visualizable} type as defined in \ref{fig:visalizable}, one example being our implementation of \texttt{DPccp}. This will automatically set the \texttt{VisualizationOn} Boolean to \texttt{true}, execute the algorithm, and set it back to its previous value after finishing the execution. Moreover, it will return all the emitted routines as a \texttt{*ViszalizationRoutine} slice and reset all local variables after execution.
@@ -597,16 +601,18 @@ visualize(DPccp, QG, JTC)
     \begin{minted}{go}
 DPccp(QG, JTC)
     \end{minted}
-
-Notice that the function definition of \texttt{DPccp} doesn't have to be changed from its original implementation at all here. Thus, potenitially already existing calls to \texttt{DPccp} don't have to be modified.
 \end{example}
+
+\begin{note}
+Notice that the function definition of \texttt{DPccp} doesn't have to be changed from its original implementation at all here. Thus, potenitially already existing calls to \texttt{DPccp} don't have to be modified.
+\end{note}
 
 Within the function implementation we can now use the exported visalization functions to start new routines and add new visualization steps. Before adding the first step, we have to call the following function at least once: 
 \begin{minted}{go}
 func startVisualizeRoutine(routine *VisualizationRoutine)
 \end{minted}
 
-As the name implies, this function can be used to start a new visualization routine. This will add a new routine to the \texttt{routines} slice if the stack empty or push it to the stack if there's already a function being executed. Notice that whether the function is introduced as a consecutive routine or added to the call stack is determined by the \texttt{visualization} package implicitly, for the convenience of the package's user. An example how this call stack could look like for \texttt{DPccp} at a certain point in its execution is shown in figure \ref{fig:execution-stack}.
+As the name implies, this function can be used to start a new visualization routine. This will add a new routine to the \texttt{routines} slice if the current call stack is empty or push it to the stack if there's already a function being executed. Notice that whether the function is introduced as a consecutive routine or added to the call stack is determined by the \texttt{visualization} package implicitly, for the convenience of the package's user. An example how this call stack could look like for \texttt{DPccp} at a certain point in its execution is shown in figure \ref{fig:execution-stack}, with the most recent subroutine pushed onto the top of the stack.
 
 \begin{figure}[H]
 \begin{tikzpicture}[stack/.style={rectangle split, rectangle split parts=#1,draw, anchor=center}]
@@ -622,22 +628,21 @@ As the name implies, this function can be used to start a new visualization rout
 \label{fig:execution-stack}
 \end{figure}
 
-After starting a visualization routine we either start a new routine that is added onto the stack or add a visualization step using the following function, which takes a query graph and a \texttt{VariableTable} as its parameters.
+After starting a visualization routine we either start a new routine that is added onto the stack or add a visualization step using the following function, which takes a \texttt{QueryGraph} and a \texttt{VariableTable} as its parameters.
 
 \begin{minted}{go}
 func addVisualizationStep(QG QueryGraph, relations VariableTable)
 \end{minted}
 
-The implementation of this function will automatically construct a new \texttt{GraphState} from information in the passed \texttt{VariableTable} by retrieving its color configuration. This makes sure the observed relations and their corresponding nodes in the query graph have the same color without the need to specify it separately. Furthermore, a \texttt{UUID} is assigned to the visualization step, which used for efficient equivalence checks in the client implementation.
+The implementation of this function will automatically construct a new \texttt{GraphState} from information in the passed \texttt{VariableTable} by retrieving its respective color configuration. This makes sure the observed relations and their corresponding nodes in the query graph have the same color without the need to specify it separately or explicitly creating the \texttt{GraphState}. Furthermore, a \texttt{UUID} is assigned to the visualization step, which used for efficient equivalence checks in the client implementation.
 
+\begin{fullwidth}[width=\textwidth + 0.5cm,leftmargin=-2.5cm]
 \begin{algorithm}[H]
 \begin{minted}{go}
 func addVisualizationStep(QG QueryGraph, relations VariableTable) {
     n := uint(len(QG.R))
     nodeColors := []NodeColor{}
     currentStackIndex := len(stack) - 1
-
-    // Create graph state
     observedRelations := stack[currentStackIndex].ObservedRelations
     for i := n - 1; int(i-1) >= -1; i-- {
         for _, relation := range observedRelations {
@@ -655,16 +660,16 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
                                Variables: relations, 
                                UUID: uuid}
     currentRoutine := stack[currentStackIndex]
-    var v interface{}
-    v = step
+    var v interface{} = step
     currentRoutine.Steps = append(currentRoutine.Steps, &v)
 }
 \end{minted}
-\caption{Implementation of \texttt{addVisualizationStep} function to create a new atomic visualization step.}
+\caption{Go implementation of the \texttt{addVisualizationStep} function to create a new atomic visualization step.}
 \end{algorithm}
+\end{fullwidth}
 
 \begin{note}
-For the time being, we make the assumption that only one node color can be assigned to each node in the visualized query graph. Thus, we must make sure that the sets of all observed relations are disjoint. In order to formalize this requirement we define the set of observed relations $O$. Assume there are $v$ observed variables. For a concise mathematical definition we assume variable keys are integers $i \in \mathbb{N}$ from 0 to $v-1$:
+For the time being, we make the assumption that only one node color can be assigned to each node in the visualized query graph. Thus, we must make sure that the sets of all observed relations are disjoint. In order to formalize this requirement we define the set of observed relations $O \in R$. Assume there are $v$ observed variables. For a concise mathematical definition we assume variable keys are integers $i \in \mathbb{N}$ from 0 to $v-1$. Notice these keys should be interpreted as keys of a dictionary or map data structure and don't necessarily correspond to the index of the relation.
 \begin{equation}
 O := \{O_i\}_{i=0}^{v-1}
 \end{equation}
@@ -697,7 +702,13 @@ The usage of this algorithm is also demonstrated in the next section, \ref{subsu
 \subsubsection{DPccp}
 \label{subsub:implementation-dpccp}
 
+In the following we discuss the Go implementation of \texttt{DPccp} and its enumeration routines, namely \texttt{EnumerateCsg}, \texttt{EnumerateCsgRec}, and \texttt{EnumerateCmp}. We begin with the enumeration algorithms so we can later use them in the actual \texttt{DPccp} algorithm. 
 
+\texttt{EnumerateCsg} will calculate all connected subgraphs in the query graph. Thus, the slice of relations \texttt{R} of the query graph \texttt{QG} is traversed in descending order. As discussed in \ref{subsub:basics-bitvector} the relations are stored as a bitvector and individually accessed by shifting $1$ by the repective relation's index to the left.
+
+We make use of arithmetic integer overflow to for the \texttt{for} loop's exit condition as the \texttt{uint} cannot be smaller than 0. In order to get all relations $\mathbb{B}_i$ we shift 1 by $(i+1) - 1$ to the left, leaving us with a 64-bit unsigned integer with 1's for all bits at index $< i$ (Big endian) and $64 - (i-1)$ leading zeroes, representing relations $\{R_{j} \in R \vert j < i\}$.
+
+We keep track of a subgraphs slice which collects the recursively constructed subgraphs from \texttt{EnumerateCsg} and return the result of this slice.
 
 \begin{algorithm}[H]
 \begin{minted}{go}
@@ -724,9 +735,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
     n := uint(len(QG.R))
     Neighbors := Neighbors(QG, S)
     N := SetMinus(Neighbors, X, n)
-
     subgraphs := []uint{}
-
     for _, SPrime := range PowerSet(N) {
         if SPrime == 0 {
             continue
