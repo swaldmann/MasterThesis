@@ -235,12 +235,18 @@ We understand the term \textit{Orthogonality} as defined in \textit{The Art of U
 \end{definition}
 
 \subsection{Client}
+\label{sub:basics-client}
+
 \subsubsection{React.js}
+\label{subsub:basics-reactjs}
+
 \texttt{React.js}\footnote{\url{https://reactjs.org}} is a declarative, component-based JavaScript library for building user interfaces. 
 It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react}}, originally developed and maintained by Facebook.
 The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3}} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT}} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25}}.
 
 \subsubsection{JavaScript XML (JSX)}
+\label{subsub:basics-jsx}
+
 JavaScript XML (JSX) is an XML-style syntax extension to the JavaScript (ECMAScript) programming language.
 In addition to its HTML-like definition of the website's semantic structure, it allows JavaScript expressions when used in curly braces (\{\}).
 As such, it cannot be interpreted by web browsers, but has to be cross-compiled to valid JavaScript using a transpiler according to its specification\footnote{\url{https://facebook.github.io/jsx/}}.
@@ -265,25 +271,18 @@ class App extends React.Component {
 
 
 \subsubsection{Redux}
+\label{subsub:basics-redux}
+
 \texttt{Redux}\footnote{\url{https://redux.js.org}} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
 It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux}} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md}}.
 TODO: Short description 
 
 \subsection{Server}
+\label{sub:basics-server}
 
 \subsubsection{Gin}
+\label{subsub:basics-gin}
+
 \texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
-It provides a router-level middleware that lets us specify API routes for our server-side code. The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.
-
-
-
-
-% \begin{minted}{go}
-%     func PowerSet(S uint) []uint {
-%         subsets := Subsets(S)
-%         if len(subsets) == 1 && subsets[0] == S {
-%             return subsets
-%         }
-%         return append(subsets, S)
-%    }
-% \end{minted}
+It provides a router-level middleware that lets us specify API routes for our server-side code.
+%The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.

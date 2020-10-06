@@ -30,6 +30,22 @@
 \usepackage[]{algorithm2e} % Algorithms
 \usepackage{pgf-umlsd} % UML sequence diagrams
 \usepackage[nameinlink]{cleveref} % Change listing names
+\usepackage{forest} % Used for directory trees
+
+\definecolor{folderbg}{RGB}{124,166,198}
+\definecolor{folderborder}{RGB}{110,144,169}
+
+\def\Size{4pt}
+\tikzset{
+      folder/.pic={
+        \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+          (-1.05*\Size,0.2\Size+5pt) rectangle ++(.75*\Size,-0.2\Size-5pt);  
+        \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+          (-1.15*\Size,-\Size) rectangle (1.15*\Size,\Size);
+      }
+    }
+
+
 
 \usetikzlibrary{shapes.multipart} % Used for stacks
 \newenvironment{code}{\captionsetup{type=listing}}{}
@@ -71,7 +87,7 @@
 \clearpage
 \listofalgorithms
 \listoffigures
-\listoftables
+%\listoftables
 
 \include{chapters/1-introduction}
 \include{chapters/2-basics}
@@ -82,7 +98,6 @@
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
-%\printbibliography
 
 \newpage
 
