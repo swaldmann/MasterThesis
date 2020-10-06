@@ -2,8 +2,13 @@
 
 \subsection{Summary}
 
-Supports higher level drawings of datastructures to a degree where algorithms like DPCCP and Adaptive Radix Trees can be declaratively visualized.
+Supports higher level drawings of datastructures to a degree where algorithms like DPCCP can be declaratively visualized.
+
+while hiding details of the visualization implementation itself.
+To be precise, all algortihms containing on a query graph with disjoint observed relations can be visualized.
 
 \subsection{Future Work}
+
+Multi-color support for nodes.
 
 It could be possible that explicitly giving a \texttt{graphType} parameter to the \texttt{drawQueryGraph} method of the client is not necessary. This would however require us to infer the graph type from the relation's connections themselves.

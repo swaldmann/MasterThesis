@@ -55,6 +55,7 @@ type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
     \end{minted}
     \caption{\texttt{Visualizable} type conformance requirement}
     \centering
+\label{fig:visalizable}
 \end{figure}
 
 \begin{example}
@@ -496,6 +497,7 @@ type VisualizationRoutine struct {
 \end{minted}
 \caption{\texttt{VisualizationRoutine} type}
 \end{code}
+\label{datastructure:visualization-routine}
 \vspace{0.8cm}
 
 This \texttt{VisualizationRoutine} is transferred as a top-level object when making a server request and thus we don't need to specify any more data structures.
@@ -568,15 +570,134 @@ func Neighbors(QG QueryGraph, S uint) uint {
 
 \subsubsection{Visualization}
 
+For the visualization we create a \texttt{visualization} package to handle all operations related to the visualization itself. Here, we keep track of an exported \texttt{VisualizationOn} Boolean variable to indicate whether the visualization code should be executed or not. Furthermore, we define two local variables:
+\begin{minted}{go}
+var routines = []*VisualizationRoutine{}
+var stack = []*VisualizationRoutine{}
+\end{minted}
+Both are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. Both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the current execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but have to use exported functions to start new routines or add atomic visualization steps.
+
+For this purpose, we define the following functions:
+\begin{minted}{go}
+func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine
+\end{minted}
+
+This \texttt{visualize} function can be used to call a function that conforms to the \texttt{Visualizable} type as defined in \ref{fig:visalizable}, one example being our implementation of \texttt{DPccp}. This will automatically set the \texttt{VisualizationOn} Boolean to \texttt{true}, execute the algorithm, and set it back to its previous value after finishing the execution. Moreover, it will return all the emitted routines as a \texttt{*ViszalizationRoutine} slice and reset all local variables after execution.
+
+\begin{example}
+    An implementation of the \texttt{DPccp} algorithm defined through the following function
+    \begin{minted}{go}
+func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree
+    \end{minted}
+    can be visualized by calling
+    \begin{minted}{go}
+visualize(DPccp, QG, JTC)
+    \end{minted}
+    instead of directly calling
+    \begin{minted}{go}
+DPccp(QG, JTC)
+    \end{minted}
+
+Notice that the function definition of \texttt{DPccp} doesn't have to be changed from its original implementation at all here. Thus, potenitially already existing calls to \texttt{DPccp} don't have to be modified.
+\end{example}
+
+Within the function implementation we can now use the exported visalization functions to start new routines and add new visualization steps. Before adding the first step, we have to call the following function at least once: 
+\begin{minted}{go}
+func startVisualizeRoutine(routine *VisualizationRoutine)
+\end{minted}
+
+As the name implies, this function can be used to start a new visualization routine. This will add a new routine to the \texttt{routines} slice if the stack empty or push it to the stack if there's already a function being executed. Notice that whether the function is introduced as a consecutive routine or added to the call stack is determined by the \texttt{visualization} package implicitly, for the convenience of the package's user. An example how this call stack could look like for \texttt{DPccp} at a certain point in its execution is shown in figure \ref{fig:execution-stack}.
+
+\begin{figure}[H]
+\begin{tikzpicture}[stack/.style={rectangle split, rectangle split parts=#1,draw, anchor=center}]
+    \node[stack=5]  {
+        \nodepart{one}EnumerateCsgRec
+        \nodepart{two}EnumerateCsgRec
+        \nodepart{three}EnumerateCsgRec
+        \nodepart{four}EnumerateCsg
+        \nodepart{five}DPccp
+    };
+    \end{tikzpicture}
+\caption{Sample excution stack for \texttt{DPccp}}
+\label{fig:execution-stack}
+\end{figure}
+
+After starting a visualization routine we either start a new routine that is added onto the stack or add a visualization step using the following function, which takes a query graph and a \texttt{VariableTable} as its parameters.
+
+\begin{minted}{go}
+func addVisualizationStep(QG QueryGraph, relations VariableTable)
+\end{minted}
+
+The implementation of this function will automatically construct a new \texttt{GraphState} from information in the passed \texttt{VariableTable} by retrieving its color configuration. This makes sure the observed relations and their corresponding nodes in the query graph have the same color without the need to specify it separately. Furthermore, a \texttt{UUID} is assigned to the visualization step, which used for efficient equivalence checks in the client implementation.
+
+\begin{algorithm}[H]
+\begin{minted}{go}
+func addVisualizationStep(QG QueryGraph, relations VariableTable) {
+    n := uint(len(QG.R))
+    nodeColors := []NodeColor{}
+    currentStackIndex := len(stack) - 1
+
+    // Create graph state
+    observedRelations := stack[currentStackIndex].ObservedRelations
+    for i := n - 1; int(i-1) >= -1; i-- {
+        for _, relation := range observedRelations {
+            relationIndexes := relations[relation.Identifier]
+            if contains(relationIndexes, i) {
+                color := relation.Color
+                nodeColor := NodeColor{NodeIndex: i, Color: color}
+                nodeColors = append(nodeColors, nodeColor)
+            }
+        }
+    }
+    graphState := GraphState{NodeColors: nodeColors}
+    uuid := uuid.New().String()
+    step := &VisualizationStep{GraphState: graphState, 
+                               Variables: relations, 
+                               UUID: uuid}
+    currentRoutine := stack[currentStackIndex]
+    var v interface{}
+    v = step
+    currentRoutine.Steps = append(currentRoutine.Steps, &v)
+}
+\end{minted}
+\caption{Implementation of \texttt{addVisualizationStep} function to create a new atomic visualization step.}
+\end{algorithm}
+
+\begin{note}
+For the time being, we make the assumption that only one node color can be assigned to each node in the visualized query graph. Thus, we must make sure that the sets of all observed relations are disjoint. In order to formalize this requirement we define the set of observed relations $O$. Assume there are $v$ observed variables. For a concise mathematical definition we assume variable keys are integers $i \in \mathbb{N}$ from 0 to $v-1$:
+\begin{equation}
+O := \{O_i\}_{i=0}^{v-1}
+\end{equation}
+\end{note}
+
+Thus, the following equation must hold
+\begin{equation}
+\bigcap_{i=0}^{v-1}{O_i} \overset{!}{=} \emptyset
+\label{eq:disjointness-observed-relations}
+\end{equation}
+
+However, the union of these sets $\bigcup_{i=0}^{v-1}{O_i}$ does not necessarily have to be equal to the set of all relations $R$, but it suffices if $O \subseteq {R}$. If $O \not= R$ case we can just fall back to a  default color. This could be handled either in the implementation of \texttt{addVisualizationStep} or, alternatively, in the client-side implementation when drawing the query graph, which is how the supplementary code handles $O \subset R$.
+
+\subparagraph{Excursus: Impact on \texttt{DPccp} implementation}
+In \texttt{EnumerateCsgRec} inside \texttt{DPccp} we want to visualize the sets of relations $S$ and $X$, among others.  Assumption \ref{eq:disjointness-observed-relations} can then be fulfilled if we slightly change the definition of $\mathcal{B}_i$, so that inside \texttt{EnumerateCsgRec} $S \cap X = \emptyset$ holds. 
+
+\begin{theorem}
+$\mathcal{B}_i := \{v_j\vert j \leq i\}$ can be redefined to $\mathcal{B}_i := \{v_j\vert j < i\}$ without changing the emits of the algorithm, i.e. in every call of \texttt{EnumerateCsgRec} we can still assume that $v_i \notin S'$.
+\end{theorem}
+
+\begin{proof}
+Let us start at the \texttt{EnumerateCsgRec} call inside \texttt{EnumerateCsg}. The variables $S := \{v_i\}$ and $X := \mathcal{B}_i$ are used as parameters to \texttt{EnumerateCsgRec} and therefore, inside this call, $v_i \in S$. This will also hold for all recursive calls as the recursive set, denoted $S_{rec}$, will be defined as  $S_{rec} := S' \cup S \supseteq S$. From the definition of $\mathbb{N}(S)$ it follows that $\forall v_j \in S \colon v_j \notin \mathbb{N}(S)$ and thus $v_i \notin \mathbb{N}(S)$. Since $N := \mathbb{N}(S)\setminus X$ it follows that $N \subseteq \mathbb{N}(S)$, from which it transitively follows that $v_i \notin N$. Thus, since $S' \subseteq N$, it follows that $v_i \notin S'$.
+
+\end{proof}
 
 \paragraph{Usage}
 
-The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{DPccp} algorithm.
+The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{EnumerateCsg} algorithm. We visualize the entire algorithm in the supplemented code.
 
 \subsubsection{DPccp}
 \label{subsub:implementation-dpccp}
 
-Blabla
+
 
 \begin{algorithm}
 \begin{minted}{go}
@@ -771,6 +892,9 @@ As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.
 \paragraph{Linting}
 For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
 
+\paragraph{Dependencies}
+
+Since we're restructurig the files from the QueryCompiler exercise to increase modularity and reusability . We define all packages in a way that no cyclical dependencies exist.
 
 \subsection{Installation and Development}
 
