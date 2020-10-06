@@ -20,17 +20,8 @@ var (
 	orangeColor = color.RGBA{235, 165, 50, 1}
 )
 
-var steps = []interface{}{}
 var routines = []*VisualizationRoutine{}
 var stack = []*VisualizationRoutine{}
-
-func resetAllSteps() {
-	steps = []interface{}{}
-}
-
-func resetSteps(routineKey string) {
-	//delete(steps, routineKey)
-}
 
 func resetRoutines() {
 	routines = []*VisualizationRoutine{}
@@ -46,7 +37,6 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) [
 	visualizationOn = true
 	visualization(QG, JTC)
 	visualizationOn = oldVisualizationOn
-	defer resetAllSteps()
 	defer resetRoutines()
 	return routines
 }
@@ -66,6 +56,7 @@ func startVisualizeRoutine(routine *VisualizationRoutine) {
 }
 
 func endVisualizationRoutine(result *VisualizationRoutineResult) {
+	popStack()
 	//currentRoutineIndex := len(routines) - 1
 	//var v interface{}
 	//v = result
@@ -86,13 +77,13 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 
 	// Create graph state
 	observedRelations := stack[currentStackIndex].ObservedRelations
-	for j := n - 1; int(j-1) >= -1; j-- {
+	for i := n - 1; int(i-1) >= -1; i-- {
 		for _, relation := range observedRelations {
 			relationIndexes := relations[relation.Identifier]
-			if contains(relationIndexes, j) {
-				nodeColor := relation.Color
-				nodeConfiguration := NodeColor{NodeIndex: j, Color: nodeColor}
-				nodeColors = append(nodeColors, nodeConfiguration)
+			if contains(relationIndexes, i) {
+				color := relation.Color
+				nodeColor := NodeColor{NodeIndex: i, Color: color}
+				nodeColors = append(nodeColors, nodeColor)
 			}
 		}
 	}
