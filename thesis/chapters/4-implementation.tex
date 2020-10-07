@@ -326,6 +326,7 @@ where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable foll
 Likewise, the creation of the \texttt{relations} slice is trivial and therefore we don't illustrate the algorithm here.
 
 \subsection{Data Structures}
+\label{sub:data-structures}
 
 \subsubsection{Join Ordering}
 In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinproblemparser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
@@ -384,7 +385,9 @@ type CsgCmpPair struct {
 }
 \end{minted}
 \caption{\texttt{CsgCmpPair} type}
+\label{datastructure:csg-cmp-pair}
 \end{code}
+
 \vspace{0.8cm}
 
 \subsubsection{Visualization}
@@ -506,13 +509,13 @@ This \texttt{VisualizationRoutine} is transferred as a top-level object when mak
 
 \subsubsection{Utility Functions}
 
-
 In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} and \url{joinproblemparser.go} file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
 
 Modifications include:
 \paragraph{Simplification of \texttt{SetMinus}}
 We simplify the implementation for the \texttt{SetMinus} operation by omitting the use of a temporary helper variable for the result calculation. This is equivalent as it produces exactly the same assembly output as the old, commented-out code\footnote{using amd64 gc 1.15 compiler, compiled on \url{https://godbolt.org}}.
 
+\begin{algorithm}
 \begin{minted}{go}
 func SetMinus(S1 uint, S2 uint, length uint) uint {
     mask := uint((1 << length) - 1)
@@ -523,10 +526,14 @@ func SetMinus(S1 uint, S2 uint, length uint) uint {
     return S1 & ^S2 & mask
 }
 \end{minted}
+\caption{Go implementation of \texttt{SetMinus}}
+\label{alg:implementation-setminus}
+\end{algorithm}
 
 \paragraph{Addition of \texttt{PowerSet}}
 For the implementation of \texttt{DPccp} we need an additional function that returns not just the subsets of an (\texttt{unsigned int}) bit vector $S$ as does \texttt{Subsets}, but its power set excluding the empty set, $\mathcal P(S)\setminus\{\varnothing\}$.
 
+\begin{algorithm}
 \begin{minted}{go}
 func PowerSet(S uint) []uint {
     subsets := Subsets(S)
@@ -536,20 +543,51 @@ func PowerSet(S uint) []uint {
     return append(subsets, S)
 }
 \end{minted}
+\caption{Go implementation of \texttt{PowerSet}}
+\label{alg:implementation-powerset}
+\end{algorithm}
 
-We add some additional helper functions:
-\begin{minted}{go}   
-func contains(s []uint, e uint) bool {
-    for _, a := range s {
-        if a == e {
-            return true
+Furthermore, we add a function to calculate the minimum element of a \texttt{[]uint} slice, as well as a function to get the minimum set bit index for a (sub-)set of relations $S$, which makes use of the former.
+
+\begin{algorithm}[H]
+\begin{minted}{go}
+func MinUintSlice(slice []uint) uint {
+    if len(slice) == 0 {
+        return uint(0)
+    }
+    min := slice[0]
+    for _, value := range slice {
+        if min > value {
+            min = value
         }
     }
-    return false
-}    
-\end{minted}
+    return min
+}
 
-First, we'll add a method to retrieve the neighborhood for a subset of relations $S$.
+func MinUintSetBitIndex(S uint) uint {
+	setIndexes := IdxsOfSetBits(S)
+	minIndex := MinUintSlice(setIndexes)
+	return minIndex
+}
+\end{minted}
+\caption{Go implementation of \texttt{MinUintSlice} and \texttt{MinUintSetBitIndex}}
+\label{alg:implementation-minuintslice}
+\end{algorithm}
+\vspace{0.5cm}
+
+% We add some additional helper functions:
+% \begin{minted}{go}   
+% func contains(s []uint, e uint) bool {
+%     for _, a := range s {
+%         if a == e {
+%             return true
+%         }
+%     }
+%     return false
+% }    
+% \end{minted}
+
+Moreover, we'll add a method to retrieve the neighborhood for a subset of relations $S$.
 
 \begin{algorithm}[H]
 \begin{minted}{go}
@@ -567,17 +605,20 @@ func Neighbors(QG QueryGraph, S uint) uint {
 \end{minted}
 \caption{\texttt{Neighbors} function for a set of relations}
 \end{algorithm}
+\vspace{0.5cm}
 
 \subsubsection{Visualization}
 
-For the visualization we create a \texttt{visualization} package to handle all operations related to the visualization itself. Here, we keep track of an exported \texttt{VisualizationOn} Boolean variable to indicate whether the visualization code within the algorithm's implementation should be executed or not. Furthermore, we define two package-local variables:
+For the visualization we create a \texttt{visualization} package to handle all operations related to the visualization itself. 
+
+Here, we keep track of an exported \texttt{VisualizationOn} Boolean variable to indicate whether the visualization code within the algorithm's implementation should be executed or not. Furthermore, we define two package-local variables:
 \vspace{0.2cm}
 \begin{minted}{go}
 var routines = []*VisualizationRoutine{}
 var stack = []*VisualizationRoutine{}
 \end{minted}
 \vspace{0.2cm}
-Both variables are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. They both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the  execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but have to use exported functions to start new routines or add atomic visualization steps. All available functions will be discussed in the following.
+Both variables are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. They both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the  execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but tjhe exported functions to start new routines or add atomic visualization steps have to be used. All available functions will be discussed in the following.
 
 First of all, we create a \texttt{visualize} function to change the execution context of a join ordering algorithm.
 \begin{minted}{go}
@@ -697,18 +738,16 @@ Let us start at the \texttt{EnumerateCsgRec} call inside \texttt{EnumerateCsg}. 
 
 \paragraph{Usage}
 
-The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{EnumerateCsg} algorithm. We visualize the entire algorithm in the supplemented code.
+The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{EnumerateCsg} algorithm. We visualize the entire \texttt{DPccp} algorithm in the supplemented code.
 
 \subsubsection{DPccp}
 \label{subsub:implementation-dpccp}
 
-In the following we discuss the Go implementation of \texttt{DPccp} and its enumeration routines, namely \texttt{EnumerateCsg}, \texttt{EnumerateCsgRec}, and \texttt{EnumerateCmp}. We begin with the enumeration algorithms so we can later use them in the actual \texttt{DPccp} algorithm. 
+In the following we discuss the Go implementation of \texttt{DPccp} and its enumeration routines, namely \texttt{EnumerateCsg}, \texttt{EnumerateCsgRec}, and \texttt{EnumerateCmp}. We begin with the enumeration algorithms so we can later use them in the actual \texttt{DPccp} algorithm.
+For all algorithms, we implement the intersection of two arbitrary sets $S_1$ and $S_2$, $S_1 \cap S_2$, by using a bitwise OR (\texttt{|}) and their union $S_1 \cup S_2$ using a bitwise AND (\texttt{\&}).\\
 
-\texttt{EnumerateCsg} will calculate all connected subgraphs in the query graph. Thus, the slice of relations \texttt{R} of the query graph \texttt{QG} is traversed in descending order. As discussed in \ref{subsub:basics-bitvector} the relations are stored as a bitvector and individually accessed by shifting $1$ by the repective relation's index to the left.
-
-We make use of arithmetic integer overflow to for the \texttt{for} loop's exit condition as the \texttt{uint} cannot be smaller than 0. In order to get all relations $\mathbb{B}_i$ we shift 1 by $(i+1) - 1$ to the left, leaving us with a 64-bit unsigned integer with 1's for all bits at index $< i$ (Big endian) and $64 - (i-1)$ leading zeroes, representing relations $\{R_{j} \in R \vert j < i\}$.
-
-We keep track of a subgraphs slice which collects the recursively constructed subgraphs from \texttt{EnumerateCsg} and return the result of this slice.
+\texttt{EnumerateCsg} will calculate all connected subgraphs in the query graph in a breadth-first manner, beginning with the relation with the highest index. Thus, the slice of relations \texttt{R} of the query graph \texttt{QG} is traversed in descending order. As discussed in \ref{subsub:basics-bitvector} the relations are stored as a bitvector and can be individually accessed by shifting $1$ by the respective relation's index to the left. We make use of arithmetic integer overflow for the \texttt{for} loop's exit condition as $i \geq 0$ cannot be used as the \texttt{uint} cannot be smaller than 0. In order to get the set of relations $\mathcal{B}_i$ we shift 1 by $(i+1) - 1$ to the left, leaving us with a 64-bit unsigned integer with all bits set to 1 at index $j < i$ and $64 - (i-1)$ leading zeroes, thus representing relations $\{R_{j} \in R \vert j < i\}$. We keep track of a \texttt{subgraphs} \texttt{[]uint} slice which collects the recursively constructed subgraphs from \texttt{EnumerateCsgRec} and return the result of this slice after appending all emitted subgraphs.
+\vspace{0.4cm}
 
 \begin{algorithm}[H]
 \begin{minted}{go}
@@ -728,7 +767,15 @@ func EnumerateCsg(QG QueryGraph) []uint {
 \caption{Go implementation of \texttt{EnumerateCsg}}
 \label{alg:enumeratecsg}
 \end{algorithm}
+\vspace{0.8cm}
 
+Now, we need to implement the \texttt{EnumerateCsgRec} subroutine used inside the implementation of \texttt{EnumerateCsg}. Similarly, we keep track of all emitted subgraphs by defining a \texttt{subgraphs} slice, to which all emitted subgraphs are appended. This approach also works for recursive calls to \texttt{EnumerateCsgRec}. In order to calculate the subsets $S' \subset N$ we use the \texttt{PowerSet} function defined in algorithm \ref{alg:implementation-powerset}.
+
+\begin{note}
+Alternatively, we could also use a pointer to a \texttt{[]uint} slice containing all subgraphs that is passed along as a paremeter to \texttt{EnumerateCsgRec} and thus lets us append to the original slice instance directly. However, we choose this approach as it requires only function-scoped variables and thus makes the function's state more local and predictable, and thus arguably easier to understand and debug.
+\end{note}
+
+\vspace{0.4cm}
 \begin{algorithm}[H]
 \begin{minted}{go}
 func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
@@ -759,6 +806,13 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 \label{alg:enumeratecsgrec}
 \end{algorithm}
 
+In \texttt{EnumerateCmp}, we find complementary subgraphs to each connected subraph $S_1$.
+Here, we use the \texttt{MinUintSetBitIndex} function defined in \ref{alg:implementation-minuintslice} to calculate the index for the relation with the smallest index $i_{min}$ inside the passed subset $S_1$, i.e.
+\begin{equation}
+i_{min} = \arg\min_i(R_i \in S_1)
+\end{equation}
+As a result, we want to export all csg-cmp-pairs. In order to distinguish between the two sets we use the data structure \ref{datastructure:csg-cmp-pair}, \texttt{CsgCmpPair}, defined in section \ref{sub:data-structures}, which differentiates between sets $S_1$ and $S_2$. In order to calculate all pairs, we first recursively calculate all complements for the subgraph $S_1$ for each of its contained relations using \texttt{EnumerateCsgRec}. We then go through all of the calculated emits to pair them with $S_1$ and append it to our \texttt{pairs} slice.
+
 \begin{algorithm}[H]
 \begin{minted}{go}
 func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
@@ -770,26 +824,49 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
     neighbors := Neighbors(QG, S1)
     N := SetMinus(neighbors, X, n)
 
-    subgraphs := []CsgCmpPair{}
+    pairs := []CsgCmpPair{}
     setBits := IdxsOfSetBits(N)
     for i := len(setBits) - 1; i >= 0; i-- { // Descending
         v := setBits[i]
         pair := CsgCmpPair{Subgraph1: S1, Subgraph2: 1 << v}
-        subgraphs = append(subgraphs, pair)
+        pairs = append(pairs, pair)
 
         Bi := uint(1<<v - 1)
         recursiveComplements := EnumerateCsgRec(QG, 1<<v, X|(Bi&N))
         for _, S2 := range recursiveComplements {
             pair := CsgCmpPair{Subgraph1: S1, Subgraph2: S2}
-            subgraphs = append(subgraphs, pair)
+            pairs = append(pairs, pair)
         }
     }
-    return subgraphs
+    return pairs
 }
 \end{minted}
 \caption{Go implementation of \texttt{EnumerateCmp}}
 \label{alg:enumeratecmp}
 \end{algorithm}
+\newpage
+
+Finally, we can specify \texttt{DPccp}. 
+% Question: This can go away, right? We're not acessing those entries anyway.
+First, we allocate a slice to a \texttt{*Tree} pointer, called \texttt{bestTree}, where we store the optimal operator tree for the corresponding subgraph $S$. As this slice can potentially store the best entries for all combinations of subgraphs in the query graph, this slice reserves memory for $2^n$ \texttt{*Tree} pointers. Thus, on a 64-bit machine, the corresponding \texttt{make} allocates $64 * 2^n$ bits of memory.
+
+\begin{example}
+For 10 relations, this would be 
+\begin{equation}
+\frac{\SI{64}{\bit} * \SI[parse-numbers = false]{2^n}{\bit}}{\SI{1}{\byte}} = \SI{8192}{\byte} = \SI{8}{\kibi\byte}
+\end{equation}
+of memory required to store this slice of pointers.
+\end{example}
+
+Since the resulting operator trees for single relations are trivial we set each entry for indices $2^i$, representing reations $R_i \in R$, with a \texttt{\&Tree} containing only itself. 
+
+Further, we make use of the enumeration functions specified above to create all csg-cmp-pairs for all subgraphs generated by \texttt{EnumerateCsg} and \texttt{EnumerateCmp}. We store the result in the \texttt{csgCmpPairs} variable.
+
+Now, we can loop over all csg-cmp-pairs with subsets $S_1$ and $S_1$ and calculate the best operator tree for the union $S_1 \cup S_2$. This optimal tree is generated by taking the currently previously calculated optimal trees for $S_1$ and $S_2$, creating their join trees for $S_1 \Join S_2$ and $S_2 \Join S_1$ respectively, and re-setting the entry in the \texttt{bestTree} slice in case the cost of this join tree is lower than the corresponding current entry. Likewise, if the entry does not exist in \texttt{bestTree} yet, it is set to the operator tree for $S_1 \Join S_2$ or $S_2 \Join S_1$, whichever incurs a smaller cost according to the specified cost functions.
+
+Finally, we return \texttt{bestTree}'s $2^{n}-1$s entry, representing all relations $\{R_0,\ldots,R_{n-1}\} = R$.
+
+\newpage
 
 \begin{algorithm}[H]
 \begin{minted}{go}
@@ -844,10 +921,10 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 The server code is written in Go 1.15.1\footnote{\url{https://github.com/golang/go/releases/tag/go1.15.1}} released on September 1st 2020, and using the \texttt{go1.15.1 darwin/amd64} compiler. We do not set any custom build flags.
 
 \paragraph{Linting} The project uses the Go language linter\footnote{\url{https://github.com/golang/lint}} to ensure a common coding and documentation style with what is used at Google, the creators of Go.
-All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go} have been modified to satisfy all linter requirements by doing some miscellaneous changes to remove warnings generated from static analysis by using the official Go linter\footnote{\url{https://github.com/golang/lint}}, e.g. by converting variable and function names from \texttt{snake\_case} to \texttt{camelCase}, or adding descriptive comments to exported functions. As these changes are mostly trivial we omit further details here.
+All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go}) have been modified to satisfy all linter requirements by doing some miscellaneous changes to remove warnings generated from this static analysis, e.g. by converting variable and function names from \texttt{snake\_case} to \texttt{camelCase}, or adding descriptive comments to exported functions. In addition, all newly created files adhere to the linter guidelines. As these changes are mostly trivial we omit further details here. 
 
 \subsection{JSON Representation}
-\label{sub:data-structures}
+\label{sub:json-representation}
 
 \subsubsection{Join Problem}
 \label{subsub:join-problem-data-structure}
@@ -880,11 +957,11 @@ All join problems are represented using the following JSON structure. ``JSON'' r
 The names of the keys correspond to the explicitly defined keys for the \texttt{JSONJoinProblem} type in the \texttt{joinProblemParser.go} file.
 
 \subsection{Client Implementation}
-The client can interpret the JSON files as specified in section \ref{sub:data-structures} that are  generated by the server. It initiates and manages all communication with the very same and lets the user specify all possible parameters of the visualization. Furthermore, it provides a bitmap GUI to graphically render all steps.
+The client can interpret the JSON files as specified in section \ref{sub:json-representation} that are  generated by the server. It initiates and manages all communication with the very same and lets the user specify all possible parameters of the visualization. Furthermore, it provides a bitmap GUI to graphically render all steps.
 
 For the client implementation we use the two JavaScript libraries \texttt{React.js}\footnote{\url{https://reactjs.org}} and \texttt{Redux}\footnote{\url{https://redux.js.org}} in order to be able to declaratively create a performant and maintainable client codebase. A rudimentary introduction is provided in sections \ref{subsub:basics-reactjs} through \ref{subsub:basics-redux}, and more extensive guides can be found on the libraries' respective websites.
 
-\paragraph{Project Structure} 
+\subsubsection{Project Structure} 
 In order to bootstrap the project, we use Facebook's \texttt{create-react-app}\footnote{\url{https://github.com/facebook/create-react-app}} command-line tool, which creates an initial project structure and installs transitive dependencies. From this starting point we create the following directory structure:
 
 \begin{figure}[H]
@@ -974,6 +1051,7 @@ Supplementary files, such as dotfiles configuring the \texttt{git} repository ar
 \paragraph{Dependencies}
 We are using a number of dependencies to make use of existing user interface or middleware components.
 
+\subsubsection{Utility Functions}
 \paragraph{Pairing Function}
 We use the \textit{elegant pairing function} developed by Matthew Szudzik \cite{szudzik2006elegant} for two $k_1,k_2 \in \mathbb{Z}$ in order to create a unique key for repeated elements in a nested loop with depth 2, by combining the two loops' indices.
 
@@ -988,8 +1066,11 @@ We use the \textit{elegant pairing function} developed by Matthew Szudzik \cite{
     \end{aligned}
 \end{equation}
 
+This is used as a \texttt{key} property for dynamically created \texttt{React.js} list items inside two stacked \texttt{map}s. This serves as a performance improvement, as per \texttt{React}'s official documentation, which states:\\
+``Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity''\footnote{\url{https://reactjs.org/docs/lists-and-keys.html}}.
+
 \subsubsection{Building}
-As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel cross-compiler\footnote{\url{https://babeljs.io}} to a more downwards-compatible JavaScript version when building the project to improve browser support.
+As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io}} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
 
 \paragraph{Linting}
 For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
