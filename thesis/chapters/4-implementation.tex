@@ -330,8 +330,8 @@ Likewise, the creation of the Go \texttt{relations} slice is trivial and therefo
 
 \subsubsection{Join Ordering}
 In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinProblemParser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
+\vspace{0.4cm}
 
-TODO: Remove "Relation" prefix here and in code
 \begin{code}
 \begin{minted}{go}
 type JSONRelation struct {
@@ -343,9 +343,8 @@ type JSONRelation struct {
 \end{minted}
 \caption{\texttt{JSONRelation} type}
 \end{code}
-\vspace{0.8cm}
+\vspace{0.6cm}
 
-TODO: Remove "Problem" prefix here and in code
 \begin{code}
 \begin{minted}{go}
 type JSONJoinProblem struct {
