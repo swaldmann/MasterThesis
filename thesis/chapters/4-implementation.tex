@@ -1098,7 +1098,7 @@ Supplementary files, such as dotfiles configuring the \texttt{git} repository ar
 \end{itemize}
 
 \paragraph{Dependencies}
-We are using a number of dependencies to make use of existing user interface or middleware components.
+We are using a number of dependencies to make use of existing user interface or middleware components. Those are specified in the \texttt{package.json} file. Upon installing these dependencies all recursive dependencies will also be installed.
 
 \subsubsection{Utility Functions}
 \paragraph{Pairing Function}
@@ -1117,6 +1117,29 @@ We use the \textit{elegant pairing function} developed by Matthew Szudzik \cite{
 
 This is used as a \texttt{key} property for dynamically created \texttt{React.js} list items inside two stacked \texttt{map}s. This serves as a performance improvement, as per \texttt{React}'s official documentation, which states:\\
 ``Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity''\footnote{\url{https://reactjs.org/docs/lists-and-keys.html}}.
+
+\subsubsection{Redux Actions}
+In the following, we list all actions that can mutate the application's Redux state.
+
+\begin{table}[H]
+\setlength\extrarowheight{2pt}
+\begin{tabularx}{\textwidth + 2cm}{|C|C|}
+\hline
+\texttt{updateAlgorithms} & Updates available algorithms upon server receiving the server response\\\hline
+\texttt{changeOptionNumberOfRelations} & Sets the number of relations sent to the server when (re-)calculating the visualization steps\\\hline
+\texttt{changeOptionQueryGraphType} & Sets the query graph type sent to the server when (re-)calculating the visualization steps\\\hline
+\texttt{changeOptionAlgorithm} & Sets the algorithm sent to the server when (re-)calculating the visualization steps\\\hline
+\texttt{changeQueryGraph} & Sets the query graph configuration (node coordinates, cardinalities, and selectivities) upon receiving the server response\\\hline
+\texttt{updateGraphState} & Sets the query graph state (color configuration) upon receiving the server response\\\hline
+\texttt{updateRoutines} & Sets the routines including all the steps to be used for setting the query graph state shown in the variable table\\\hline
+\texttt{increaseStep} & Increases the visualization step by a specified amount\\\hline
+\texttt{decreaseStep} & Decreases the visualization step by a specified amount\\\hline
+\texttt{resetSteps} & Resets the visualization step back to 1\\\hline
+\texttt{updateSteps} & Updates steps (TODO: More extensive)\\\hline
+\texttt{updateCurrentStepUUID} & Updates the UUID in order to highlight the current step\\\hline
+\end{tabularx}
+\caption{Redux Actions}
+\end{table}
 
 \subsubsection{Building}
 As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io}} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
