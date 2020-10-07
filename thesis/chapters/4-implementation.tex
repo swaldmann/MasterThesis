@@ -319,17 +319,17 @@ The set of neighbors does not make use of the symmetry of selectivities and thus
 Specifying the relations $R$ is trivial. 
 
 \begin{equation}
-R := \{r_i\}_{i=0}^{n-1}
+R := \{R_i\}_{i=0}^{n-1}
 \end{equation}
 where the cardinality $c_{r_i}$ of each relation $r_i$ is a random variable following uniform distribution over the set $\mathbb{R} \cap [0,10000]$.
 
-Likewise, the creation of the \texttt{relations} slice is trivial and therefore we don't illustrate the algorithm here.
+Likewise, the creation of the Go \texttt{relations} slice is trivial and therefore we don't illustrate the algorithm here.
 
 \subsection{Data Structures}
 \label{sub:data-structures}
 
 \subsubsection{Join Ordering}
-In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinproblemparser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
+In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinProblemParser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
 
 TODO: Remove "Relation" prefix here and in code
 \begin{code}
@@ -926,35 +926,85 @@ All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go}) 
 \subsection{JSON Representation}
 \label{sub:json-representation}
 
+The JSON representation of join problems and visualizations can be understood as the interface definition between server and client. 
+``JSON'' refers to the \textit{JavaScript Object Notation Data Interchange Format} as specified in RFC 8259\footnote{\url{https://tools.ietf.org/html/rfc8259}}.
+It is the output that can be interpreted language-independently and transferred between both entities. Since JSON files do not explicitly define semantics of their content, the server and the client have to agree on the data's interpretation.
+
+As of today (\today), there is no official JSON schema definition file format yet. Therfore, we use the most recent (``2019-09'') draft as specified by the Internet Engineering Task Force (IETF)\footnote{\url{https://www.ietf.org}}, released on September 19, 2019\footnote{\url{https://json-schema.org/draft/2019-09/json-schema-core.html}}. Its specification and further information can be found on its website \url{http://json-schema.org}.
+
 \subsubsection{Join Problem}
 \label{subsub:join-problem-data-structure}
 
-All join problems are represented using the following JSON structure. ``JSON'' refers to the JavaScript Object Notation Data Interchange Format as specified in RFC 7159\footnote{\url{https://tools.ietf.org/html/rfc7159}}.
+The schema definition for join problems can be found in figure \ref{fig:json-joinproblem}.
+All the keys correspond to the explicitly defined JSON tags for the \texttt{JSONJoinProblem} type in the \texttt{joinProblemParser.go} file.
+
+\subsubsection{Visualization Routines}
+Likewise, there is a fixed JSON definition for an algorithm's visualization routines found in figure \ref{fig:json-visualization-routine}.
+
+\newpage
+
 \begin{figure}[H]
 \begin{minted}{json}
-[
-    {
-        problemID: number,
-        problemNeighbors: {
-            number{relationRID}: [neighbors]
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema",
+    "title": "JoinProblem",
+    "type": "object",
+    "properties": {
+        "problemID": "number",
+        "problemNeighbors": {
+            "number{relationRID}": ["string{neighbors}"]
         },
-        problemNumberOfRelations: number,
-        problemRelations: [
-            relationCardinality: number,
-            relationName: string,
-            relationPID: number,
-            relationRID: number
+        "problemNumberOfRelations": "number",
+        "problemRelations": [
+            "relationCardinality": "number",
+            "relationName": "string",
+            "relationPID": "number",
+            "relationRID": "number"
         ],
-        problemSelectivities: {
-            [s1,s2]: number
+        "problemSelectivities": {
+            "string{s1,s2}": "number"
         }
     }
-]
+}
 \end{minted}
-\caption{JSON representation of a join problem}
+\caption{JSON schema of a join problem}
+\label{fig:json-joinproblem}
 \end{figure}
 
-The names of the keys correspond to the explicitly defined keys for the \texttt{JSONJoinProblem} type in the \texttt{joinProblemParser.go} file.
+\newpage
+
+\begin{figure}[H]
+    \begin{minted}{json}
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema",
+    "title": "VisualizationRoutine",
+    "type": "object",
+    "properties": {
+        "name": "string",
+        "observedRelations": [
+            {
+                "identifier": "string",
+                "color": {
+                    "R": "number",
+                    "G": "number",
+                    "B": "number",
+                    "A": "number"
+                }
+            }
+        ],
+        "steps": [
+            {
+                ""
+            }
+        ]
+    }
+}
+\end{minted}
+\caption{JSON schema of a visualization routine}
+\label{fig:json-visualization-routine}
+\end{figure}
+
+\newpage
 
 \subsection{Client Implementation}
 The client can interpret the JSON files as specified in section \ref{sub:json-representation} that are  generated by the server. It initiates and manages all communication with the very same and lets the user specify all possible parameters of the visualization. Furthermore, it provides a bitmap GUI to graphically render all steps.
@@ -1082,49 +1132,63 @@ Since we're restructurig the files from the QueryCompiler exercise to increase m
 \subsection{Installation and Development}
 
 \subsubsection{Prerequisites}
+\label{subsub:implementation-prerequisites}
+
 In order to run the project locally some prerequisites have to be fulfilled:
 \begin{itemize}
+    \item A state-of-the-art web browser has to be installed, such as a recent version of Google Chrome\footnote{\url{https://www.google.com/chrome/}}, Mozilla Firefox\footnote{\url{https://www.mozilla.org/firefox/}}, Microsoft Edge\footnote{\url{https://www.microsoft.com/edge}}, or Apple Safari\footnote{\url{https://www.apple.com/safari/}}
     \item The Go programming language has to be installed according to the official installation guidelines\footnote{\url{https://golang.org/doc/install}}
-    \item The Go development has to be set up correctly, namely specifying the \texttt{\$GOOROOT} and \texttt{\$GOPATH} environment variables
+    \item The Go environment has to be set up, namely correctly specifying the \texttt{\$GOOROOT} and \texttt{\$GOPATH} environment variables. Furthermore, the project has to be moved to the \texttt{\$GOPATH/src} directory
     \item The Node Package Manager (npm) has to be installed along with the Node.js runtime\footnote{\url{https://www.npmjs.com/get-npm}}
+    \item While not required, it is strongly recommended to install the Git\footnote{\url{https://git-scm.com}} distributed version control system 
 \end{itemize}
 
 \subsubsection{Dependencies}
 \label{subsub:dependencies}
 
 \paragraph{Client}
-Client dependencies are maintained in the \texttt{package.json} file of the project's \texttt{client} directory.
+Client dependencies are maintained in the \texttt{package.json} file of the project's \texttt{client} directory. All client repositories have to be installed by navigating to the \texttt{client} directory and then using the following command:
+\begin{minted}{shell-session}
+$ npm install
+\end{minted}
 
 \paragraph{Server}
-The server-side code doesn't require any dependencies other than the Go standard libary packages as listed on \url{https://golang.org/pkg/#stdlib}.
+The server-side code dependencies are defined in the \texttt{go.mod} file of the project's \texttt{server} directory. They can be installed by navigating to the \texttt{server} directory and then using the following command:
+\begin{minted}{shell-session}
+$ go get ./...
+\end{minted}
 
 \subsubsection{Local Development}
 Once dependencies are installed as specified in section \ref{subsub:dependencies}, the project can be run locally by navigating to the project directory in a Unix shell (macOS and Linux) or PowerShell (Windows) and running
 
 \begin{minted}{shell-session}
-    $ cd client && npm install && npm start
+    $ cd server && go run main.go
 \end{minted}
 and, in another shell instance,
 \begin{minted}{shell-session}
-    $ cd server && go install && go run main.go
+    $ cd client && npm start
 \end{minted}
 
-This will start two locally running web servers that can be accessed via \url{https://localhost:3000/} (Client) and \url{https://localhost:8080/} (Server).
+This will start two locally running web servers that can be accessed via \url{https://localhost:8080/} (Server) and \url{https://localhost:3000/} (Client).
 
+\begin{note}
+As the client is fetching its data from the server please keep in mind that the server has to be started \textit{before} accessing the client URL.
+\end{note}
 
 \subsection{Deployment}
+One of the major benefits of using a client-server architecture and web technologies is that we can host the server part on an application server or platform-as-a-service offering such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine}} and the front-end (client) on a web server.
+This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side. Likewise, the deployment of new application versions is simple and can be done with a single shell instruction for both client and server.
 
-One of the major benefits of using a client-server architecture is that we can host the server part on a web server or platform-as-a-service offerings such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine}}.
-This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side.
+In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk}} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com}} for hosting the front-end.
 
-In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk}} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com}} for hosting the frontend.
-
-TODO: Move to appendix?
 \paragraph{Prerequisites}   
-    
+
+\subparagraph{Server}
 The Google Cloud SDK must be installed using 
 \begin{minted}{shell-session}
     $ curl https://sdk.cloud.google.com | bash
 \end{minted}
 Follow the instructions in the terminal session to continue. 
 
+\subparagraph{Client}
+All Node.js 
