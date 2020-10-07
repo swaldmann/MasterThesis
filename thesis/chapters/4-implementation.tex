@@ -304,7 +304,7 @@ symNeighbors := func() map[uint]string {
     }
     return dict
 }
-problemNeighbors := symNeighbors()
+neighbors := symNeighbors()
 \end{minted}
 \caption{Go implementation to calculate symmetrical neighbors. \texttt{k} is the degree of the tree and \texttt{n} the number of relations. Both must be set before using them in the above lambda expressions (Go function literals).}
 \label{alg:symNeighbors}
@@ -335,10 +335,10 @@ TODO: Remove "Relation" prefix here and in code
 \begin{code}
 \begin{minted}{go}
 type JSONRelation struct {
-    RelationCardinality float64 `json:"relationCardinality"`
-    RelationName        string  `json:"relationName"`
-    RelationPID         uint    `json:"relationPID"`
-    RelationRID         uint    `json:"relationRID"`
+    Cardinality float64 `json:"cardinality"`
+    Name        string  `json:"name"`
+    ProblemID   uint    `json:"problemID"`
+    RelationID  uint    `json:"relationID"`
 }
 \end{minted}
 \caption{\texttt{JSONRelation} type}
@@ -349,11 +349,11 @@ TODO: Remove "Problem" prefix here and in code
 \begin{code}
 \begin{minted}{go}
 type JSONJoinProblem struct {
-    ProblemID                uint               `json:"problemID"`
-    ProblemNeighbors         map[uint]string    `json:"problemNeighbors"`
-    ProblemNumberOfRelations uint               `json:"problemNumberOfRelations"`
-    ProblemRelations         []JSONRelation     `json:"problemRelations"`
-    ProblemSelectivities     map[string]float64 `json:"problemSelectivities"`
+    ProblemID         uint               `json:"problemID"`
+    Neighbors         map[uint]string    `json:"neighbors"`
+    NumberOfRelations uint               `json:"numberOfRelations"`
+    Relations         []JSONRelation     `json:"relations"`
+    Selectivities     map[string]float64 `json:"selectivities"`
 }
 \end{minted}
 \caption{\texttt{JSONJoinProblem} type}
@@ -951,17 +951,17 @@ Likewise, there is a fixed JSON definition for an algorithm's visualization rout
     "type": "object",
     "properties": {
         "problemID": "number",
-        "problemNeighbors": {
-            "number{relationRID}": ["string{neighbors}"]
+        "neighbors": {
+            "number{relationID}": ["string{neighbors}"]
         },
-        "problemNumberOfRelations": "number",
-        "problemRelations": [
-            "relationCardinality": "number",
-            "relationName": "string",
-            "relationPID": "number",
-            "relationRID": "number"
+        "numberOfRelations": "number",
+        "relations": [
+            "cardinality": "number",
+            "name": "string",
+            "problemID": "number",
+            "relationID": "number"
         ],
-        "problemSelectivities": {
+        "selectivities": {
             "string{s1,s2}": "number"
         }
     }

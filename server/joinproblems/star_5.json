@@ -1,47 +1,47 @@
 [
     {
         "problemID": 0,
-        "problemNeighbors": {
+        "neighbors": {
             "0": "1,2,3,4",
             "1": "0",
             "2": "0",
             "3": "0",
             "4": "0"
         },
-        "problemNumberOfRelations": 5,
-        "problemRelations": [
+        "numberOfRelations": 5,
+        "relations": [
             {
-                "relationCardinality": 6761.230546061097,
-                "relationName": "<unknown>",
-                "relationPID": 0,
-                "relationRID": 0
+                "cardinality": 6761.230546061097,
+                "name": "<unknown>",
+                "problemID": 0,
+                "relationID": 0
             },
             {
-                "relationCardinality": 4011.368000267313,
-                "relationName": "<unknown>",
-                "relationPID": 0,
-                "relationRID": 1
+                "cardinality": 4011.368000267313,
+                "name": "<unknown>",
+                "problemID": 0,
+                "relationID": 1
             },
             {
-                "relationCardinality": 2639.119216814652,
-                "relationName": "<unknown>",
-                "relationPID": 0,
-                "relationRID": 2
+                "cardinality": 2639.119216814652,
+                "name": "<unknown>",
+                "problemID": 0,
+                "relationID": 2
             },
             {
-                "relationCardinality": 135.1106833796348,
-                "relationName": "<unknown>",
-                "relationPID": 0,
-                "relationRID": 3
+                "cardinality": 135.1106833796348,
+                "name": "<unknown>",
+                "problemID": 0,
+                "relationID": 3
             },
             {
-                "relationCardinality": 7.70954008593561,
-                "relationName": "<unknown>",
-                "relationPID": 0,
-                "relationRID": 4
+                "cardinality": 7.70954008593561,
+                "name": "<unknown>",
+                "problemID": 0,
+                "relationID": 4
             }
         ],
-        "problemSelectivities": {
+        "selectivities": {
             "0,1": 0.02484106267368241,
             "0,2": 0.37621692045511996,
             "0,3": 0.013942789078979444,
@@ -50,47 +50,47 @@
     },
     {
         "problemID": 1,
-        "problemNeighbors": {
+        "neighbors": {
             "0": "1,2,3,4",
             "1": "0",
             "2": "0",
             "3": "0",
             "4": "0"
         },
-        "problemNumberOfRelations": 5,
-        "problemRelations": [
+        "numberOfRelations": 5,
+        "relations": [
             {
-                "relationCardinality": 26122.588553184545,
-                "relationName": "<unknown>",
-                "relationPID": 1,
-                "relationRID": 0
+                "cardinality": 26122.588553184545,
+                "name": "<unknown>",
+                "problemID": 1,
+                "relationID": 0
             },
             {
-                "relationCardinality": 9984.168052590872,
-                "relationName": "<unknown>",
-                "relationPID": 1,
-                "relationRID": 1
+                "cardinality": 9984.168052590872,
+                "name": "<unknown>",
+                "problemID": 1,
+                "relationID": 1
             },
             {
-                "relationCardinality": 7628.855576770722,
-                "relationName": "<unknown>",
-                "relationPID": 1,
-                "relationRID": 2
+                "cardinality": 7628.855576770722,
+                "name": "<unknown>",
+                "problemID": 1,
+                "relationID": 2
             },
             {
-                "relationCardinality": 386.9246228774714,
-                "relationName": "<unknown>",
-                "relationPID": 1,
-                "relationRID": 3
+                "cardinality": 386.9246228774714,
+                "name": "<unknown>",
+                "problemID": 1,
+                "relationID": 3
             },
             {
-                "relationCardinality": 24.353898740210052,
-                "relationName": "<unknown>",
-                "relationPID": 1,
-                "relationRID": 4
+                "cardinality": 24.353898740210052,
+                "name": "<unknown>",
+                "problemID": 1,
+                "relationID": 4
             }
         ],
-        "problemSelectivities": {
+        "selectivities": {
             "0,1": 7.272131349525654e-05,
             "0,2": 1.4742304395442902e-05,
             "0,3": 1.2362832805588659e-05,

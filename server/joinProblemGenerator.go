@@ -41,10 +41,10 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 		array := make([]JSONRelation, size)
 		for i := uint(0); i < size; i++ {
 			array[i] = JSONRelation{
-				RelationCardinality: rand.Float64() * 10000,
-				RelationName:        "unknown",
-				RelationPID:         0,
-				RelationRID:         i,
+				Cardinality: rand.Float64() * 10000,
+				Name:        "unknown",
+				ProblemID:   0,
+				RelationID:  i,
 			}
 		}
 		return array
@@ -91,11 +91,11 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 	}
 
 	data := JSONJoinProblem{
-		ProblemID:                0,
-		ProblemNeighbors:         problemNeighbors,
-		ProblemNumberOfRelations: size,
-		ProblemRelations:         relationsResult,
-		ProblemSelectivities:     selectivitiesResult,
+		ProblemID:         0,
+		Neighbors:         problemNeighbors,
+		NumberOfRelations: size,
+		Relations:         relationsResult,
+		Selectivities:     selectivitiesResult,
 	}
 
 	sizeString := strconv.FormatUint(uint64(size), 10)
