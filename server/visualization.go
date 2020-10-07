@@ -13,12 +13,18 @@ type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
 var VisualizationOn = false
 
 var (
-	blueColor   = color.RGBA{90, 165, 255, 1}
-	greenColor  = color.RGBA{85, 165, 34, 1}
-	grayColor   = color.RGBA{120, 120, 120, 1}
-	whiteColor  = color.RGBA{255, 255, 255, 1}
-	redColor    = color.RGBA{255, 0, 0, 1}
-	orangeColor = color.RGBA{235, 165, 50, 1}
+	// BlueColor Color constant for blue nodes
+	BlueColor = color.RGBA{90, 165, 255, 1}
+	// GreenColor constant for green nodes
+	GreenColor = color.RGBA{85, 165, 34, 1}
+	// GrayColor Color constant for gray nodes
+	GrayColor = color.RGBA{120, 120, 120, 1}
+	// WhiteColor Color constant for white nodes
+	WhiteColor = color.RGBA{255, 255, 255, 1}
+	// RedColor Color constant for red nodes
+	RedColor = color.RGBA{255, 0, 0, 1}
+	// OrangeColor Color constant for orange nodes
+	OrangeColor = color.RGBA{235, 165, 50, 1}
 )
 
 var routines = []*VisualizationRoutine{}
@@ -32,7 +38,8 @@ func popStack() {
 	stack = stack[:len(stack)-1]
 }
 
-func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine {
+// Visualize Wrapper function for calling functions in the visualization context
+func Visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine {
 	resetRoutines()
 	oldVisualizationOn := VisualizationOn
 	VisualizationOn = true
@@ -42,7 +49,8 @@ func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) [
 	return routines
 }
 
-func startVisualizeRoutine(routine *VisualizationRoutine) {
+// StartVisualizationRoutine Begin a new visualization routine
+func StartVisualizationRoutine(routine *VisualizationRoutine) {
 	stack = append(stack, routine)
 
 	if len(stack) > 1 {
@@ -55,7 +63,8 @@ func startVisualizeRoutine(routine *VisualizationRoutine) {
 	}
 }
 
-func endVisualizationRoutine(result ...*VisualizationRoutineResult) {
+// EndVisualizationRoutine End a visualization routine and optionally pass a result
+func EndVisualizationRoutine(result ...*VisualizationRoutineResult) {
 	//popStack()
 	//currentRoutineIndex := len(routines) - 1
 	//var v interface{}
@@ -63,7 +72,8 @@ func endVisualizationRoutine(result ...*VisualizationRoutineResult) {
 	//routines[currentRoutineIndex].Steps = append(routines[currentRoutineIndex].Steps, &v)
 }
 
-func addVisualizationStep(QG QueryGraph, relations VariableTable) {
+// AddVisualizationStep Add a new atomic visualization step to the current routine
+func AddVisualizationStep(QG QueryGraph, relations VariableTable) {
 	n := uint(len(QG.R))
 
 	nodeColors := []NodeColor{}

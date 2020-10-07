@@ -72,7 +72,7 @@ func startServer() {
 
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 				JTC := JoinTreeCreator{false, false, Costfunctions}
-				routines := visualize(DPccp, QG, JTC)
+				routines := Visualize(DPccp, QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
 					"routines":      routines,
@@ -84,7 +84,7 @@ func startServer() {
 
 				Costfunctions := []costfunctionT{Cnlj, Chj, Csmj}
 				JTC := JoinTreeCreator{false, false, Costfunctions}
-				routines := visualize(DPsize, QG, JTC)
+				routines := Visualize(DPsize, QG, JTC)
 
 				c.JSON(http.StatusOK, gin.H{
 					"routines":      routines,

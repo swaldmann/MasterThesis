@@ -62,7 +62,7 @@ type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
 This way, a Go function \texttt{DPccp} that conforms to this type can be instructed to produce the output  log necessary for the visualization by simply calling 
 
 \begin{minted}{go}
-visualize(DPccp, QG, JTC)
+Visualize(DPccp, QG, JTC)
 \end{minted}
 instead of the algorithm itself. The \texttt{visualize} function then automatically sets the appropriate flags to enable visualization output and can allow the algorithm to run without the visualization code and thus no memory overhead.
 
@@ -89,7 +89,7 @@ Furthermore, the number of relations in the query graph $n$ has to be specified,
 
 Depending on the previously selected parameters the algorithm's steps are fetched upon clicking the ``Recalculate'' button. This will trigger another HTTP server request that transmits the algorithm (:a), number of relations (:r) and graph type (:g) as path parameters.
 
-As the server receives this request, it calls the corresponding algorithm by using the \texttt{visualize()} function specified in section TODO: ref. This produces a JSON response containing the query graph $QG$ with information about cardinalities, selectivities, and neighbors, as well as the algorithm's generated visualization steps $S$.
+As the server receives this request, it calls the corresponding algorithm by using the \texttt{Visualize()} function specified in section TODO: ref. This produces a JSON response containing the query graph $QG$ with information about cardinalities, selectivities, and neighbors, as well as the algorithm's generated visualization steps $S$.
 
 Upon receiving this response, the client renders the query graph including labels for cardinalities and selectivities, and edges for connected query graph nodes. Moreover, the algorithm's steps are rendered in a hierarchical table.
 
@@ -622,7 +622,7 @@ Both variables are slices of pointers to the \texttt{VisualizationRoutine} type 
 
 First of all, we create a \texttt{visualize} function to change the execution context of a join ordering algorithm.
 \begin{minted}{go}
-func visualize(visualization Visualizable, 
+func Visualize(visualization Visualizable, 
                QG QueryGraph, 
                JTC JoinTreeCreator) []*VisualizationRoutine
 \end{minted}
@@ -636,7 +636,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree
     \end{minted}
     can be visualized by calling
     \begin{minted}{go}
-visualize(DPccp, QG, JTC)
+Visualize(DPccp, QG, JTC)
     \end{minted}
     instead of directly calling
     \begin{minted}{go}
@@ -650,7 +650,7 @@ Notice that the function definition of \texttt{DPccp} doesn't have to be changed
 
 Within the function implementation we can now use the exported visalization functions to start new routines and add new visualization steps. Before adding the first step, we have to call the following function at least once: 
 \begin{minted}{go}
-func startVisualizeRoutine(routine *VisualizationRoutine)
+func StartVisualizationRoutine(routine *VisualizationRoutine)
 \end{minted}
 
 As the name implies, this function can be used to start a new visualization routine. This will add a new routine to the \texttt{routines} slice if the current call stack is empty or push it to the stack if there's already a function being executed. Notice that whether the function is introduced as a consecutive routine or added to the call stack is determined by the \texttt{visualization} package implicitly, for the convenience of the package's user. An example how this call stack could look like for \texttt{DPccp} at a certain point in its execution is shown in figure \ref{fig:execution-stack}, with the most recent subroutine pushed onto the top of the stack.
@@ -672,7 +672,7 @@ As the name implies, this function can be used to start a new visualization rout
 After starting a visualization routine we either start a new routine that is added onto the stack or add a visualization step using the following function, which takes a \texttt{QueryGraph} and a \texttt{VariableTable} as its parameters.
 
 \begin{minted}{go}
-func addVisualizationStep(QG QueryGraph, relations VariableTable)
+func AddVisualizationStep(QG QueryGraph, relations VariableTable)
 \end{minted}
 
 The implementation of this function will automatically construct a new \texttt{GraphState} from information in the passed \texttt{VariableTable} by retrieving its respective color configuration. This makes sure the observed relations and their corresponding nodes in the query graph have the same color without the need to specify it separately or explicitly creating the \texttt{GraphState}. Furthermore, a \texttt{UUID} is assigned to the visualization step, which used for efficient equivalence checks in the client implementation.
@@ -680,7 +680,7 @@ The implementation of this function will automatically construct a new \texttt{G
 \begin{fullwidth}[width=\textwidth + 0.5cm,leftmargin=-2.5cm]
 \begin{algorithm}[H]
 \begin{minted}{go}
-func addVisualizationStep(QG QueryGraph, relations VariableTable) {
+func AddVisualizationStep(QG QueryGraph, relations VariableTable) {
     n := uint(len(QG.R))
     nodeColors := []NodeColor{}
     currentStackIndex := len(stack) - 1
@@ -705,7 +705,7 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
     currentRoutine.Steps = append(currentRoutine.Steps, &v)
 }
 \end{minted}
-\caption{Go implementation of the \texttt{addVisualizationStep} function to create a new atomic visualization step.}
+\caption{Go implementation of the \texttt{AddVisualizationStep} function to create a new atomic visualization step.}
 \end{algorithm}
 \end{fullwidth}
 
@@ -722,7 +722,7 @@ Thus, the following equation must hold
 \label{eq:disjointness-observed-relations}
 \end{equation}
 
-However, the union of these sets $\bigcup_{i=0}^{v-1}{O_i}$ does not necessarily have to be equal to the set of all relations $R$, but it suffices if $O \subseteq {R}$. If $O \not= R$ case we can just fall back to a  default color. This could be handled either in the implementation of \texttt{addVisualizationStep} or, alternatively, in the client-side implementation when drawing the query graph, which is how the supplementary code handles $O \subset R$.
+However, the union of these sets $\bigcup_{i=0}^{v-1}{O_i}$ does not necessarily have to be equal to the set of all relations $R$, but it suffices if $O \subseteq {R}$. If $O \not= R$ case we can just fall back to a  default color. This could be handled either in the implementation of \texttt{AddVisualizationStep} or, alternatively, in the client-side implementation when drawing the query graph, which is how the supplementary code handles $O \subset R$.
 
 \subparagraph{Excursus: Impact on \texttt{DPccp} implementation}
 In \texttt{EnumerateCsgRec} inside \texttt{DPccp} we want to visualize the sets of relations $S$ and $X$, among others.  Assumption \ref{eq:disjointness-observed-relations} can then be fulfilled if we slightly change the definition of $\mathcal{B}_i$, so that inside \texttt{EnumerateCsgRec} $S \cap X = \emptyset$ holds. 
