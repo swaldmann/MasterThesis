@@ -209,7 +209,7 @@ TODO
 \subsubsection{Bitvector Representation}
 \label{subsub:basics-bitvector}
 
-As inspired by \cite{moerkotte2009building} we represent sets of relations as bitvectors in the implementation. These are implemented using (unsigned) integer variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
+In alignment with \cite{moerkotte2009building} we represent sets of relations as bitvectors in the implementation. These are implemented using (unsigned) integer variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
 
 \begin{example}
     Hence, the following bitvectors for a 3-bit integer map to the corresponding sets of relations as indicated in figure \ref{fig:bitvector}.
@@ -254,6 +254,7 @@ It provides a router-level middleware that lets us specify API routes for our se
 \texttt{React.js}\footnote{\url{https://reactjs.org}} is a declarative, component-based JavaScript library for building user interfaces. 
 It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react}}, originally developed and maintained by Facebook.
 The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3}} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT}} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25}}.
+React components are JavaScript classes extending \texttt{React.Component} or implemented as functional components specified using the JSX language (see section \ref{subsub:basics-jsx}). Each component contains two, and only two, instance properties, \texttt{props} and \texttt{state}, both JavaScript objects. Whereas \texttt{props} contains all data passed to the component, \texttt{state} manages the component-internal state. Communication takes place in form of a unidirectional, top-down data data flow, avoiding two-way data binding. By keeping an library-internal \textit{virtual} Document Object Model (DOM) in-memory changes in the HTML structure can be efficiently (re-)rendered.
 
 \subsubsection{JavaScript XML (JSX)}
 \label{subsub:basics-jsx}
@@ -286,5 +287,4 @@ class App extends React.Component {
 
 \texttt{Redux}\footnote{\url{https://redux.js.org}} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
 It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux}} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md}}.
-
-TODO: Short description 
+The library refers to itself as ``A predictable state container for JavaScript apps.''\footnote{Website title of \url{https://redux.js.org}}. It uses elements of functional programming, such as \texttt{map}, \texttt{reduce} or \texttt{filter} to transfer one state to the next. This is not achieved by mutating the current state, but by creating an entrirely new state. In order to optimize the expensive copying operations libraries such as Facebook's \texttt{Immutable.JS} \footnote{\url{https://redux.js.org/recipes/using-immutablejs-with-redux}} can be used in combination with \texttt{Redux}. All of the application's state is held in the global \texttt{Redux} \textit{store}, which is changed according to rules defined in \textit{reducers} by invoking defined \textit{actions} holding a payload.
