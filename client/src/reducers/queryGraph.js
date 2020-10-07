@@ -44,7 +44,7 @@ export function queryGraph(state = QUERY_GRAPH_DEFAULT, action) {
 export function settingGraphTypeValue(state = "moerkotte", action) {
     switch (action.type) {
         case CHANGE_QUERY_GRAPH_TYPE:
-            return action.graphTypeOptionValue
+            return action.graphType
         default:
             return state
     }

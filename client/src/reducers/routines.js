@@ -11,12 +11,3 @@ export function routines(state = [], action) {
             return state
     }
 }
-
-export function currentRoutine(state = {}, action) {
-    switch (action.type) {
-        case UPDATE_CURRENT_ROUTINE:
-            return action.routine
-        default:
-            return state
-    }
-}

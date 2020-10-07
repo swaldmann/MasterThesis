@@ -4,7 +4,6 @@ class VariableTable extends React.Component {
 
     render() {
         const { routines } = this.props
-        window.renderedStep = 0
 
         return (
             <div>
