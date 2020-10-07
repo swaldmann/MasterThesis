@@ -54,7 +54,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 			bestTree[S] = currentTree
 		}
 	}
-	rainbow.Green(BestTree[(1<<n)-1].ToString()) // Print best tree
+	rainbow.Green(bestTree[(1<<n)-1].ToString()) // Print best tree
 	return bestTree[(1<<n)-1]
 }
 
@@ -166,12 +166,12 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 	ℕ := ℕ(QG, S1)
 	N := SetMinus(ℕ, X, n)
 
-	subgraphs := []CsgCmpPair{}
+	pairs := []CsgCmpPair{}
 	setBits := IdxsOfSetBits(N)
 	for i := len(setBits) - 1; i >= 0; i-- { // Descending
 		v := setBits[i]
 		pair := CsgCmpPair{Subgraph1: S1, Subgraph2: 1 << v}
-		subgraphs = append(subgraphs, pair)
+		pairs = append(pairs, pair)
 
 		if visualizationOn {
 			variableState := VariableTable{}
@@ -182,10 +182,10 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 		recursiveComplements := EnumerateCsgRec(QG, 1<<v, X|(𝔅i&N))
 		for _, S2 := range recursiveComplements {
 			pair := CsgCmpPair{Subgraph1: S1, Subgraph2: S2}
-			subgraphs = append(subgraphs, pair)
+			pairs = append(pairs, pair)
 		}
 	}
-	return subgraphs
+	return pairs
 }
 
 /* Helpers */
