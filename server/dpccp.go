@@ -9,7 +9,7 @@ import (
 
 // DPccp Generate best plan using DPccp.
 func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
-	if visualizationOn {
+	if VisualizationOn {
 		//emitObserver := ObservedRelation{Identifier: "emit", Color: orangeColor}
 		observedRelations := []ObservedRelation{}
 		currentRoutine := &VisualizationRoutine{Name: "DPccp", ObservedRelations: observedRelations}
@@ -60,7 +60,7 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 // EnumerateCsg Enumerate connected subgraphs.
 func EnumerateCsg(QG QueryGraph) []uint {
-	if visualizationOn {
+	if VisualizationOn {
 		emitObserver := ObservedRelation{Identifier: "emit", Color: orangeColor}
 		observedRelations := []ObservedRelation{emitObserver}
 		currentRoutine := &VisualizationRoutine{Name: "EnumerateCsg", ObservedRelations: observedRelations}
@@ -74,7 +74,7 @@ func EnumerateCsg(QG QueryGraph) []uint {
 	for i := n - 1; i < n; i-- {
 		v := uint(1 << i)
 
-		if visualizationOn {
+		if VisualizationOn {
 			variableState := VariableTable{}
 			variableState["emit"] = IdxsOfSetBits(v)
 			addVisualizationStep(QG, variableState)
@@ -86,7 +86,7 @@ func EnumerateCsg(QG QueryGraph) []uint {
 		subgraphs = append(subgraphs, recursiveSubgraphs...)
 	}
 
-	if visualizationOn {
+	if VisualizationOn {
 		//resultArray := IdxsOfSetBits(subgraphs))
 		//description := uintArrayToString(IdxsOfSetBits(subgraphs), 2
 		description := "Test"
@@ -102,7 +102,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	ℕ := ℕ(QG, S)
 	N := SetMinus(ℕ, X, n)
 
-	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
+	if VisualizationOn && !(N == 0 && S != 1<<(n-1)) {
 		sObserver := ObservedRelation{Identifier: "S", Color: blueColor}
 		xObserver := ObservedRelation{Identifier: "X", Color: grayColor}
 		nObserver := ObservedRelation{Identifier: "N", Color: greenColor}
@@ -113,7 +113,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		defer popStack()
 	}
 
-	if visualizationOn && !(N == 0 && S != 1<<(n-1)) {
+	if VisualizationOn && !(N == 0 && S != 1<<(n-1)) {
 		variableState := VariableTable{}
 		variableState["S"] = IdxsOfSetBits(S)
 		variableState["X"] = IdxsOfSetBits(SetMinus(X, S, n))
@@ -130,7 +130,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		SuSPrime := S | SPrime
 		subgraphs = append(subgraphs, SuSPrime)
 
-		if visualizationOn {
+		if VisualizationOn {
 			variableState := VariableTable{}
 			variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
 			addVisualizationStep(QG, variableState)
@@ -150,7 +150,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 
 // EnumerateCmp Enumerate complementary subgraphs.
 func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
-	if visualizationOn {
+	if VisualizationOn {
 		emitObserver := ObservedRelation{Identifier: "emit", Color: orangeColor}
 		observedRelations := []ObservedRelation{emitObserver}
 		currentRoutine := &VisualizationRoutine{Name: "EnumerateCmp", ObservedRelations: observedRelations}
@@ -173,7 +173,7 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 		pair := CsgCmpPair{Subgraph1: S1, Subgraph2: 1 << v}
 		pairs = append(pairs, pair)
 
-		if visualizationOn {
+		if VisualizationOn {
 			variableState := VariableTable{}
 			variableState["emit"] = IdxsOfSetBits(v)
 			addVisualizationStep(QG, variableState)

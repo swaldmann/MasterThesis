@@ -9,7 +9,8 @@ import (
 // Visualizable Type conformance for visualizing join ordering/query graph algorithms
 type Visualizable func(QG QueryGraph, JTC JoinTreeCreator) *Tree
 
-var visualizationOn = false
+// VisualizationOn Boolean indicating whether the visualization code should be executed
+var VisualizationOn = false
 
 var (
 	blueColor   = color.RGBA{90, 165, 255, 1}
@@ -33,10 +34,10 @@ func popStack() {
 
 func visualize(visualization Visualizable, QG QueryGraph, JTC JoinTreeCreator) []*VisualizationRoutine {
 	resetRoutines()
-	oldVisualizationOn := visualizationOn
-	visualizationOn = true
+	oldVisualizationOn := VisualizationOn
+	VisualizationOn = true
 	visualization(QG, JTC)
-	visualizationOn = oldVisualizationOn
+	VisualizationOn = oldVisualizationOn
 	defer resetRoutines()
 	return routines
 }
@@ -47,16 +48,15 @@ func startVisualizeRoutine(routine *VisualizationRoutine) {
 	if len(stack) > 1 {
 		currentStackIndex := len(stack) - 2
 		currentRoutine := stack[currentStackIndex]
-		var v interface{}
-		v = routine
+		var v interface{} = routine
 		currentRoutine.Steps = append(currentRoutine.Steps, &v)
 	} else {
 		routines = append(routines, routine)
 	}
 }
 
-func endVisualizationRoutine(result *VisualizationRoutineResult) {
-	popStack()
+func endVisualizationRoutine(result ...*VisualizationRoutineResult) {
+	//popStack()
 	//currentRoutineIndex := len(routines) - 1
 	//var v interface{}
 	//v = result
@@ -92,8 +92,7 @@ func addVisualizationStep(QG QueryGraph, relations VariableTable) {
 	step := &VisualizationStep{GraphState: graphState, Variables: relations, UUID: uuid}
 
 	currentRoutine := stack[currentStackIndex]
-	var v interface{}
-	v = step
+	var v interface{} = step
 	currentRoutine.Steps = append(currentRoutine.Steps, &v)
 }
 
