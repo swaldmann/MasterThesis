@@ -176,7 +176,8 @@ Analogously, the drawable height is given by
 
 In order to be able to interchange $\hat{w}$ and $\hat{h}$, e.g. in the radius calculation of a cyclic query, we also set the condition that $\hat{w} = \hat{h}$, i.e. our canvas is a square.
 
-One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types} is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and not within the scope of this thesis.
+One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. 
+(Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types} is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and not within the scope of this thesis.)
 
 Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formul\ae described in the following.
 

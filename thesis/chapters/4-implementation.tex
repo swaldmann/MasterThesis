@@ -64,7 +64,7 @@ This way, a Go function \texttt{DPccp} that conforms to this type can be instruc
 \begin{minted}{go}
 Visualize(DPccp, QG, JTC)
 \end{minted}
-instead of the algorithm itself. The \texttt{visualize} function then automatically sets the appropriate flags to enable visualization output and can allow the algorithm to run without the visualization code and thus no memory overhead.
+instead of the algorithm itself. The \texttt{visualize} function then automatically sets the appropriate flags to enable visualization output and can allow the algorithm to run without the visualization code and thus no (significant) runtime or memory overhead.
 
 \end{example}
 
@@ -77,6 +77,9 @@ when required. Thus, we can achieve an inobtrusive
 debugging tool that can be written alongisde an 
 algorithm's implementation code and doesn't decrease
 its signal-to-noise ratio.
+
+\paragraph{Query Graph Planarity}
+The visualized query graph should be drawn in a way that no edges are overlapping. This is possible when the query graph is \textit{planar} \cite{trudeau2013introduction}.
 
 
 \subsection{Architecture}
@@ -306,7 +309,7 @@ symNeighbors := func() map[uint]string {
 }
 neighbors := symNeighbors()
 \end{minted}
-\caption{Go implementation to calculate symmetrical neighbors. \texttt{k} is the degree of the tree and \texttt{n} the number of relations. Both must be set before using them in the above lambda expressions (Go function literals).}
+\caption[Go implementation to calculate symmetrical neighbors]{Go implementation to calculate symmetrical neighbors. \texttt{k} is the degree of the tree and \texttt{n} the number of relations. Both must be set before using them in the above lambda expressions (Go function literals).}
 \label{alg:symNeighbors}
 \end{algorithm}
 
@@ -1164,13 +1167,11 @@ Furthermore, if a function using direct recursion, an arrow or multiple arrow sy
 If the \texttt{Redux} state's current step UUID is equal to a step's UUID the table entry is highlighted in a different background color.
 
 \subparagraph{AlgorithmVisualization} 
-\texttt{AlgorithmVisualization} is a layout container consisting of a \texttt{JoinProblemSettings} header, and the \texttt{AlgorithmCanvas} and \texttt{VariableTable} components in a two-column layout below.
-
-An example rendered result is displayed in figure \texttt{}
+\texttt{AlgorithmVisualization} is a layout container consisting of a \texttt{JoinProblemSettings} header, and the \texttt{AlgorithmCanvas} and \texttt{VariableTable} components in a two-column layout below. An example rendered result is displayed in figure \ref{fig:sample-rendered-app}.
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth + 2cm]{img/renderedVisualization.png}
-    \caption{Sample rendered result of \texttt{DPccp} on a ``Moerkotte 2018'' query graph at step 1. The variable table on the right is scrollable to reveal more steps.}
+    \caption[Sample rendered result of \texttt{DPccp} on a ``Moerkotte 2018'' query graph at step 1]{Sample rendered result of \texttt{DPccp} on a ``Moerkotte 2018'' query graph at step 1. The variable table on the right is scrollable to reveal more steps.}
     \label{fig:sample-rendered-dpccp}
 \end{figure}
 
