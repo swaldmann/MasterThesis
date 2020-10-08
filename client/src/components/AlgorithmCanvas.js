@@ -73,7 +73,7 @@ class AlgorithmCanvas extends React.Component {
     }
 
     render() {
-        const { step, steps, configuration, routine } = this.props
+        const { step, steps } = this.props
         const isFirstStep = step === 0
         const isLastStep = step === steps.length - 1
 

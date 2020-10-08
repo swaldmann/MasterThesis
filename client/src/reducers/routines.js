@@ -1,5 +1,4 @@
 import {
-    UPDATE_CURRENT_ROUTINE,
     UPDATE_ROUTINES
 } from '../constants/ActionTypes'
 
