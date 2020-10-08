@@ -1141,6 +1141,39 @@ In the following, we list all actions that can mutate the application's Redux st
 \caption{Redux Actions}
 \end{table}
 
+\paragraph{Components}
+There are five main components making up the user interface. They are described in some detail in the following.
+
+\subparagraph{JoinProblemSettings}
+\texttt{JoinProblemSettings} contains controls to change the join problem and algorithm settings. It also contains a button to recalculate the specified algorithm with updated settings.
+
+\subparagraph{AlgorithmCanvas}
+The \texttt{AlgorithmCanvas} component contains a HTML5 \texttt{<canvas>} element\footnote{\url{https://html.spec.whatwg.org/multipage/canvas.html}} on which the query graph is drawn, and button controls to change the currently visualized step. 
+
+\subparagraph{VariableTable}
+\texttt{VariableTable} renders a table of all the routines' steps.
+
+\subparagraph{VariableTableEntry}
+\texttt{VariableTableEntry} is a component used inside a \texttt{VariableTable} that displays the observed relation variable keys in their respective color and the values taken on by these variables as a set of relations.
+
+It can also recursively hold child \texttt{VariableTableEntry} components for stacked routines. 
+In order to visualize hierarchy, it can darken its background color depending on the stack's size at the time of the execution of the corresponding subroutine.
+
+Furthermore, if a function using direct recursion, an arrow or multiple arrow symbols will be prepended to the routine name, depending on the depth of the recursion.
+
+If the \texttt{Redux} state's current step UUID is equal to a step's UUID the table entry is highlighted in a different background color.
+
+\subparagraph{AlgorithmVisualization} 
+\texttt{AlgorithmVisualization} is a layout container consisting of a \texttt{JoinProblemSettings} header, and the \texttt{AlgorithmCanvas} and \texttt{VariableTable} components in a two-column layout below.
+
+An example rendered result is displayed in figure \texttt{}
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth + 2cm]{img/renderedVisualization.png}
+    \caption{Sample rendered result of \texttt{DPccp} on a ``Moerkotte 2018'' query graph at step 1. The variable table on the right is scrollable to reveal more steps.}
+    \label{fig:sample-rendered-dpccp}
+\end{figure}
+
 \subsubsection{Building}
 As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io}} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
 
