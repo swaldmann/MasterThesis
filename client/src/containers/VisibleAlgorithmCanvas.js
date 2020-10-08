@@ -10,7 +10,6 @@ const mapStateToProps = state => {
         settingNumberOfRelations: state.settingNumberOfRelations,
         settingGraphTypeValue: state.settingGraphTypeValue,
 
-        routine: state.currentRoutine,
         configuration: state.configuration,
         graphState: state.graphState,
         queryGraph: state.queryGraph,

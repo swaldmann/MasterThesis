@@ -1,1 +1,15 @@
 \section{Analysis}
+
+TODO: Finish.\\
+
+\textbf{Note to Prof. Moerkotte}: there's not a lot of analysis regarding \texttt{DPccp} itself that hasn't been done in \cite{moerkotte2009building} or \cite{moerkotte2006analysis} before, so I don't think I necessarily have to do (a lot of) benchmarking. My implementation is very/sufficiently fast though (ca. 2.5 ms on my local computer for the ``Moerkotte 2018'' query graph), \textit{including} generating the JSON output, i.e. one server request.\\
+
+My ideas for this chapter (probably rather short though):
+\begin{itemize}
+    \item How can other algorithms be visualized with this toolset (I also tested it for \texttt{DPsize})? 
+    \item What steps have to be taken to visualize other (join ordering) algorithms, such as \texttt{GOO} (We can already show cardinalities/selectivities, for the cost function)? 
+    \item How can the toolset be extended in general?
+    \item Can the toolset be applied to other domains?
+    \item When is the output too large to create a meaningful visualization (too many steps)?
+    \item Qualitative research as to how effective algorithm visualizations are pedagocically (?)
+\end{itemize}

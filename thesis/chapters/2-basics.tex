@@ -1,11 +1,11 @@
 \section{Basics}
 \label{sec:basics}
 
-\subsection{Domain}
 There are certain terms and concepts the reader should be familiar with in order to understand the aim and purpose of this thesis. 
-We forego a formal mathematical introduction to relational algebra, although a familiarity of its basic concepts is highly recommended. 
-Moreover, we assume that the Landau notation is known.
+We forego a formal mathematical introduction to relational algebra, although a familiarity with its basic concepts is highly recommended. 
+Moreover, we assume that the Landau notation is known. A basic understanding of mathematical set theory, first-order logic, and trigonometry is also strongly recommended. Further, the user should be familiar with fundamentals of distributed applications and their protocols and file formats, such as the Hypertext Transfer Protocol (HTTP), Hypertext Markup language (HTML) and JavaScript Object Notation (JSON). In addition, we assume the reader is proficient in computer programming and scripting, preferably using the Go programming language and JavaScript.
 
+\subsection{Join Ordering}
 \subsubsection{Relations}
 Relations are tables in a database. 
 Its attributes are described by a database schema, which specifies the possible attribute types.
@@ -13,8 +13,8 @@ An entry in the table is described as a \textit{tuple}. Furthermore, we call the
 
 \subsubsection{Join}
 A join links two or more relations by building their cross product and filtering it with the help of a \textit{join predicate}. 
-The result is a new relation which contains the joined tuples, for which the predicate is true. We denote the join operator using the symbol "$\Join$". 
-As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``''$R \Join S$''.
+The result is a new relation which contains all the joined tuples for which the predicate evaluates to true. We denote the join operator using the symbol "$\Join$". 
+As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``$R \Join S$''.
 
 \subsubsection{Selectivity}
 The selectivity of two relations is the ratio between the cardinality of their cross product and the number of elements in the join's resulting relation. 
@@ -25,12 +25,11 @@ For two relations $R_i$ and $R_j$ regarding a predicate $p_{i,j}$ the selectivit
 f_{i,j} = \frac{|R_i\Join_{p_{i,j}}R_j|}{|R_i \times R_j|}	
 \end{equation}
 
-\begin{commentary}
+\begin{note}
 Since we can assume that $|R_i\Join_{p_{i,j}}R_j| \geq 0$, $|R_i \times R_j| > 0$ and $|R_i\Join_{p_{i,j}}R_j| \leq |R_i \times R_j|$ we know that $f_{i,j} \in [0,1]$.
-\end{commentary}
+\end{note}
 
-For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two relations given. 
-\newpage
+For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two given relations.
 
 \subsubsection{Query Types}
 \label{subsub:query-types}
@@ -38,86 +37,106 @@ For simplification purposes we only inspect joins with at most one join predicat
 Relations can be connected in many different ways. These connections can be visualized using a graph. There is a number of different query types. Most importantly we want to have a look at the following six query types, because they represent distinct problems:
 
 \begin{figure}[H]
-\begin{center}
+    \captionsetup[subfigure]{justification=centering}
 
-\begin{subfigure}[c]{.3\textwidth}
-\vspace{0pt}
-\centering
-\psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
-$R_1$\\
-& $R_2$\\
-& & $R_3$
-\ncline{-}{1,1}{2,2}
-\ncline{-}{2,2}{3,3}
-\endpsmatrix
-\subcaption{Chain}
-\end{subfigure}
-
-    
-
-\begin{subfigure}[c]{.3\textwidth}
-    \psmatrix[colsep=1.5cm,rowsep=1.5cm,mnode=circle]
-    $R_1$ & $R_2$\\
-    $R_3$ & $R_4$
-    \ncline{-}{1,1}{1,2}
-    \ncline{-}{2,1}{2,2}
-    \ncline{-}{1,1}{2,1}
-    \ncline{-}{1,2}{2,2}
-    \endpsmatrix
-    \subcaption{Cycle}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+        $R_1$\\
+        & $R_2$\\
+        & & $R_3$
+        \ncline{-}{1,1}{2,2}
+        \ncline{-}{2,2}{3,3}
+        \endpsmatrix
+        \caption{Chain}
     \end{subfigure}
-    \begin{subfigure}[c]{0.3\textwidth}
-    \vspace{0.8cm}
-    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
-    $R_1$ & & $R_3$\\
-    & $R_2$\\
-    $R_4$ & & $R_5$
-    \ncline{-}{1,1}{2,2}
-    \ncline{-}{1,3}{2,2}
-    \ncline{-}{3,1}{2,2}
-    \ncline{-}{3,3}{2,2}
-    \endpsmatrix 
-    \subcaption{Star}
-\end{subfigure}
-
-\begin{subfigure}[c]{.3\textwidth}
-    \vspace{0pt}
-    \centering
-    \psmatrix[colsep=0.3cm,rowsep=0.3cm,mnode=circle]
-    & & $R_1$ & & \\
-    & $R_2$ & & $R_3$ & \\
-    $R_4$ & $R_5$ & & $R_6$ & $R_7$
-    %\ncline{-}{1,1}{2,2}
-    \endpsmatrix
-    \subcaption{Tree}
-\end{subfigure}
-
-    \hspace{2cm}
-    \begin{subfigure}[c]{0.3\textwidth}
-    \vspace{0.5cm}
-    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
-    & $R_1$\\
-    $R_2$ & & $R_3$\\
-    $R_4$ & & $R_5$
-    \ncline{-}{2,1}{1,2}
-    \ncline{-}{2,3}{1,2}
-    \ncline{-}{3,1}{1,2}
-    \ncline{-}{3,3}{1,2}
-    \ncline{-}{2,1}{2,3}
-    \ncline{-}{2,1}{3,3}
-    \ncline{-}{2,1}{3,1}
-    \ncline{-}{3,1}{3,3}
-    \ncline{-}{2,3}{3,3}
-    \ncline{-}{3,1}{2,3}
-    \endpsmatrix
-    \subcaption{Clique}
+    \hspace{0.5cm}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+        $R_1$ & & $R_3$\\
+        & $R_2$\\
+        $R_4$ & & $R_5$
+        \ncline{-}{1,1}{2,2}
+        \ncline{-}{1,3}{2,2}
+        \ncline{-}{3,1}{2,2}
+        \ncline{-}{3,3}{2,2}
+        \endpsmatrix 
+        \caption{Star}
     \end{subfigure}
-    \end{center}
-    \caption{Query Graphs}
+    \vspace{0.3cm}
+
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=1.5cm,rowsep=1.5cm,mnode=circle]
+        $R_1$ & $R_2$\\
+        $R_3$ & $R_4$
+        \ncline{-}{1,1}{1,2}
+        \ncline{-}{2,1}{2,2}
+        \ncline{-}{1,1}{2,1}
+        \ncline{-}{1,2}{2,2}
+        \endpsmatrix
+        \caption{Cycle}
+    \end{subfigure}
+    \hspace{0.5cm}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=1.5cm,mnode=circle]
+        $R_1$ & $R_2$ & $R_5$\\
+        $R_3$ & $R_4$ & $R_6$
+        \ncline{-}{1,1}{1,2}
+        \ncline{-}{2,1}{2,2}
+        \ncline{-}{1,1}{2,1}
+        \ncline{-}{1,2}{2,2}
+        \ncline{-}{2,2}{2,3}
+        \ncline{-}{1,2}{1,3}
+        \endpsmatrix
+        \caption{Cyclic}
+    \end{subfigure}
+    \vspace{0.3cm}
+
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.1cm,rowsep=0.3cm,mnode=circle]
+        & & $R_1$\\
+        & $R_2$ & & $R_3$\\
+        $R_4$ & $R_5$ & & $R_6$ & $R_7$
+        \ncline{-}{1,3}{2,2}
+        \ncline{-}{1,3}{2,4}
+        \ncline{-}{2,2}{3,1}
+        \ncline{-}{2,2}{3,2}
+        \ncline{-}{2,4}{3,4}
+        \ncline{-}{2,4}{3,5}
+        \endpsmatrix
+        \caption{Tree}
+    \end{subfigure}
+    \hspace{0.5cm}
+    \begin{subfigure}[t]{.4\textwidth}
+        \centering
+        \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+        & $R_1$\\
+        $R_2$ & & $R_3$\\
+        $R_4$ & & $R_5$
+        \ncline{-}{2,1}{1,2}
+        \ncline{-}{2,3}{1,2}
+        \ncline{-}{3,1}{1,2}
+        \ncline{-}{3,3}{1,2}
+        \ncline{-}{2,1}{2,3}
+        \ncline{-}{2,1}{3,3}
+        \ncline{-}{2,1}{3,1}
+        \ncline{-}{3,1}{3,3}
+        \ncline{-}{2,3}{3,3}
+        \ncline{-}{3,1}{2,3}
+        \endpsmatrix
+        \caption{Clique}
+    \end{subfigure}
+    \vspace{0.3cm}
+
+\caption{Query Graphs}
 \end{figure}
 
 
-\subsection{Operator Trees}
+\subsubsection{Operator Trees}
 An operator tree contains operators as inner nodes and relations as leaves.
 Through this tree the order in which the operations are executed, can be graphically visualized.
 It typically contains any operator of Codd's relational model, however in this thesis we limit those to the only relevant join operator ($\Join$), which is derived from a cross product and a subsequent selection.
@@ -185,19 +204,61 @@ The trees for $(R_1 \Join R_2) \Join R_3$, $R_1 \Join (R_2 \Join R_3)$, $(R_1 \J
 
 \subsubsection{Dynamic Programming}
 
+TODO
+
+\subsubsection{Bitvector Representation}
+\label{subsub:basics-bitvector}
+
+In alignment with \cite{moerkotte2009building} we represent sets of relations as bitvectors in the implementation. These are implemented using (unsigned) integer variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
+
+\begin{example}
+    Hence, the following bitvectors for a 3-bit integer map to the corresponding sets of relations as indicated in figure \ref{fig:bitvector}.
+    \begin{figure}[H]
+        \begin{tabular}{ c | r }
+            000 & \{\} \\ 
+            001 & \{$R_1$\} \\
+            010 & \{$R_2$\} \\
+            011 & \{$R_1,R_2$\} \\
+            100 & \{$R_3$\} \\
+            101 & \{$R_1,R_3$\} \\
+            110 & \{$R_2,R_3$\} \\
+            111 & \{$R_1,R_2,R_3$\} \\
+           \end{tabular}
+        \caption{Bitvector representation}
+        \label{fig:bitvector}
+    \end{figure}
+\end{example}
+
 \subsubsection{Orthogonality}
 We understand the term \textit{Orthogonality} as defined in \textit{The Art of Unix Programming} by Eric S. Raymond \cite{raymond2003compactness}:
 \begin{definition}
-    Orthogonality is one of the most important properties that can help make even complex designs compact. In a purely orthogonal design, operations do not have side effects; each action (whether it's an API call, a macro invocation, or a language operation) changes just one thing without affecting others.
+    ``Orthogonality is one of the most important properties that can help make even complex designs compact. In a purely orthogonal design, operations do not have side effects; each action (whether it's an API call, a macro invocation, or a language operation) changes just one thing without affecting others.''
 \end{definition}
 
+\subsection{Server}
+\label{sub:basics-server}
+
+\subsubsection{Gin}
+\label{subsub:basics-gin}
+
+\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
+It provides a router-level middleware that lets us specify API routes for our server-side code.
+%The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.
+
 \subsection{Client}
+\label{sub:basics-client}
+
 \subsubsection{React.js}
+\label{subsub:basics-reactjs}
+
 \texttt{React.js}\footnote{\url{https://reactjs.org}} is a declarative, component-based JavaScript library for building user interfaces. 
 It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react}}, originally developed and maintained by Facebook.
 The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3}} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT}} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25}}.
+React components are JavaScript classes extending \texttt{React.Component} or implemented as functional components specified using the JSX language (see section \ref{subsub:basics-jsx}). Each component contains two, and only two, instance properties, \texttt{props} and \texttt{state}, both JavaScript objects. Whereas \texttt{props} contains all data passed to the component, \texttt{state} manages the component-internal state. Communication takes place in form of a unidirectional, top-down data data flow, avoiding two-way data binding. By keeping an library-internal \textit{virtual} Document Object Model (DOM) in-memory changes in the HTML structure can be efficiently (re-)rendered.
 
 \subsubsection{JavaScript XML (JSX)}
+\label{subsub:basics-jsx}
+
 JavaScript XML (JSX) is an XML-style syntax extension to the JavaScript (ECMAScript) programming language.
 In addition to its HTML-like definition of the website's semantic structure, it allows JavaScript expressions when used in curly braces (\{\}).
 As such, it cannot be interpreted by web browsers, but has to be cross-compiled to valid JavaScript using a transpiler according to its specification\footnote{\url{https://facebook.github.io/jsx/}}.
@@ -222,25 +283,8 @@ class App extends React.Component {
 
 
 \subsubsection{Redux}
+\label{subsub:basics-redux}
+
 \texttt{Redux}\footnote{\url{https://redux.js.org}} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
 It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux}} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md}}.
-TODO: Short description 
-
-\subsection{Server}
-
-\subsubsection{Gin}
-\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
-It provides a router-level middleware that lets us specify API routes for our server-side code. The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.
-
-
-
-
-% \begin{minted}{go}
-%     func PowerSet(S uint) []uint {
-%         subsets := Subsets(S)
-%         if len(subsets) == 1 && subsets[0] == S {
-%             return subsets
-%         }
-%         return append(subsets, S)
-%    }
-% \end{minted}
+The library refers to itself as ``A predictable state container for JavaScript apps.''\footnote{Website title of \url{https://redux.js.org}}. It uses elements of functional programming, such as \texttt{map}, \texttt{reduce} or \texttt{filter} to transfer one state to the next. This is not achieved by mutating the current state, but by creating an entrirely new state. In order to optimize the expensive copying operations libraries such as Facebook's \texttt{Immutable.JS} \footnote{\url{https://redux.js.org/recipes/using-immutablejs-with-redux}} can be used in combination with \texttt{Redux}. All of the application's state is held in the global \texttt{Redux} \textit{store}, which is changed according to rules defined in \textit{reducers} by invoking defined \textit{actions} holding a payload.

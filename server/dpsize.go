@@ -2,12 +2,12 @@ package main
 
 // DPsize Generate best plan using DPsize.
 func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
-	if visualizationOn {
-		s1Observer := ObservedRelation{Identifier: "S1", Color: orangeColor}
-		s2Observer := ObservedRelation{Identifier: "S2", Color: blueColor}
+	if VisualizationOn {
+		s1Observer := ObservedRelation{Identifier: "S1", Color: OrangeColor}
+		s2Observer := ObservedRelation{Identifier: "S2", Color: BlueColor}
 		observedRelations := []ObservedRelation{s1Observer, s2Observer}
 		currentRoutine := &VisualizationRoutine{Name: "DPsize", ObservedRelations: observedRelations}
-		startVisualizeRoutine(currentRoutine)
+		StartVisualizationRoutine(currentRoutine)
 		defer popStack()
 	}
 
@@ -25,11 +25,11 @@ func DPsize(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 			for _, S1 := range PlansSizeK[s1] {
 				for _, S2 := range PlansSizeK[s2] {
 
-					if visualizationOn {
+					if VisualizationOn {
 						variableState := VariableTable{}
 						variableState["S1"] = IdxsOfSetBits(S1)
 						variableState["S2"] = IdxsOfSetBits(S2)
-						addVisualizationStep(QG, variableState)
+						AddVisualizationStep(QG, variableState)
 					}
 
 					if (S1&S2) != 0 || !(QG.Connected(S1, S2)) {

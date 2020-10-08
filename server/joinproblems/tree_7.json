@@ -1,61 +1,65 @@
-[{
+{
  "problemID": 0,
- "problemNeighbors": {
+ "neighbors": {
   "0": "1,2",
-  "1": "3,4",
-  "2": "5,6"
+  "1": "3,4,0",
+  "2": "5,6,0",
+  "3": "1",
+  "4": "1",
+  "5": "2",
+  "6": "2"
  },
- "problemNumberOfRelations": 7,
- "problemRelations": [
+ "numberOfRelations": 7,
+ "relations": [
   {
-   "relationCardinality": 794.5362337387197,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 0
+   "cardinality": 794.5362337387197,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 0
   },
   {
-   "relationCardinality": 5948.085976830626,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 1
+   "cardinality": 5948.085976830626,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 1
   },
   {
-   "relationCardinality": 591.2065131387529,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 2
+   "cardinality": 591.2065131387529,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 2
   },
   {
-   "relationCardinality": 6920.24587353112,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 3
+   "cardinality": 6920.24587353112,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 3
   },
   {
-   "relationCardinality": 3015.2268100655997,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 4
+   "cardinality": 3015.2268100655997,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 4
   },
   {
-   "relationCardinality": 1732.6623818270527,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 5
+   "cardinality": 1732.6623818270527,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 5
   },
   {
-   "relationCardinality": 5410.998550087353,
-   "relationName": "unknown",
-   "relationPID": 0,
-   "relationRID": 6
+   "cardinality": 5410.998550087353,
+   "name": "unknown",
+   "problemID": 0,
+   "relationID": 6
   }
  ],
- "problemSelectivities": {
-  "0,1": 0.544155573000885,
-  "0,2": 0.27850762181610883,
-  "1,3": 0.4231522015718281,
-  "1,4": 0.5305857153507052,
-  "2,5": 0.2535405005150605,
-  "2,6": 0.28208099496492467
+ "selectivities": {
+  "0,1": 0.2535405005150605,
+  "0,2": 0.28208099496492467,
+  "1,3": 0.544155573000885,
+  "1,4": 0.27850762181610883,
+  "2,5": 0.4231522015718281,
+  "2,6": 0.5305857153507052
  }
-}]
+}

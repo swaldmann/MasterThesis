@@ -8,26 +8,26 @@ const QUERY_GRAPH_DEFAULT = {
     problemID: 0,
     problemType: "chain",
     problemTypeFormatted: "Chain",
-    problemNeighbors: {
+    neighbors: {
         0: 1,
         1: 0
     },
-    problemNumberOfRelations: 2,
-    problemRelations: [
+    numberOfRelations: 2,
+    relations: [
         {
-            relationCardinality: 135.1106833796348,
-            relationName: "<unknown>",
-            relationPID: 0,
-            relationRID: 0
+            cardinality: 135.1106833796348,
+            name: "<unknown>",
+            problemID: 0,
+            relationID: 0
         },
         {
-            relationCardinality: 7.70954008593561,
-            relationName: "<unknown>",
-            relationPID: 0,
-            relationRID: 1
+            cardinality: 7.70954008593561,
+            name: "<unknown>",
+            problemID: 0,
+            relationID: 1
         }
     ],
-    problemSelectivities: {
+    selectivities: {
         "0,1": 0.12570116771021658
     }
 }
@@ -44,7 +44,7 @@ export function queryGraph(state = QUERY_GRAPH_DEFAULT, action) {
 export function settingGraphTypeValue(state = "moerkotte", action) {
     switch (action.type) {
         case CHANGE_QUERY_GRAPH_TYPE:
-            return action.graphTypeOptionValue
+            return action.graphType
         default:
             return state
     }

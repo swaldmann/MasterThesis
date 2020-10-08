@@ -20,19 +20,19 @@ sizes must be a subset of {2,...,10}
 
 // JSONRelation Represents a relation in JSON
 type JSONRelation struct {
-	RelationCardinality float64 `json:"relationCardinality"`
-	RelationName        string  `json:"relationName"`
-	RelationPID         uint    `json:"relationPID"`
-	RelationRID         uint    `json:"relationRID"`
+	Cardinality float64 `json:"cardinality"`
+	Name        string  `json:"name"`
+	ProblemID         uint    `json:"problemID"`
+	RelationID         uint    `json:"relationID"`
 }
 
 // JSONJoinProblem Represents a join problem in JSON
 type JSONJoinProblem struct {
 	ProblemID                uint               `json:"problemID"`
-	ProblemNeighbors         map[uint]string    `json:"problemNeighbors"`
-	ProblemNumberOfRelations uint               `json:"problemNumberOfRelations"`
-	ProblemRelations         []JSONRelation     `json:"problemRelations"`
-	ProblemSelectivities     map[string]float64 `json:"problemSelectivities"`
+	Neighbors         map[uint]string    `json:"neighbors"`
+	NumberOfRelations uint               `json:"numberOfRelations"`
+	Relations         []JSONRelation     `json:"relations"`
+	Selectivities     map[string]float64 `json:"selectivities"`
 }
 
 func mapper(JJPs []JSONJoinProblem) []QueryGraph {
@@ -41,15 +41,15 @@ func mapper(JJPs []JSONJoinProblem) []QueryGraph {
 		var QG QueryGraph
 
 		// Set relations
-		relations := make([]uint, len(jjp.ProblemRelations))
-		for i := 0; i < len(jjp.ProblemRelations); i++ {
-			relations[i] = uint(jjp.ProblemRelations[i].RelationCardinality)
+		relations := make([]uint, len(jjp.Relations))
+		for i := 0; i < len(jjp.Relations); i++ {
+			relations[i] = uint(jjp.Relations[i].Cardinality)
 		}
 		QG.R = relations
 
 		// Set selectivities
 		QG.S = map[uint]float64{}
-		for key, sel := range jjp.ProblemSelectivities {
+		for key, sel := range jjp.Selectivities {
 			var idxs []string = strings.Split(key, ",")
 			const base = 10
 			const bitsize = 64
@@ -68,7 +68,7 @@ func mapper(JJPs []JSONJoinProblem) []QueryGraph {
 
 		// Set neighbors
 		QG.N = map[uint][]uint{}
-		for rel, neighborString := range jjp.ProblemNeighbors {
+		for rel, neighborString := range jjp.Neighbors {
 			var idxs []string = strings.Split(neighborString, ",")
 			const base = 10
 			const bitsize = 64

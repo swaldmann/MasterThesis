@@ -45,7 +45,7 @@ class JoinProblemSettings extends React.Component {
         const json = await response.json()
         const { actions } = this.props
         actions.updateAlgorithms(json.algorithms)
-        actions.changeAlgorithm(json.algorithms[0])
+        actions.changeOptionAlgorithm(json.algorithms[0])
     }
 
     async updateAlgorithm() {
@@ -76,24 +76,24 @@ class JoinProblemSettings extends React.Component {
         actions.updateRoutines(json.routines)
         const firstStep = steps[0]
         if (firstStep) {
-            actions.updateStepUUID(steps[0].uuid)
+            actions.updateCurrentStepUUID(steps[0].uuid)
             actions.updateGraphState(steps[0].graphState)
         }
     }
     
     handleNumberOfRelationsChange = numberOfRelations => {
         const actions = this.props.actions
-        actions.changeQueryNumberOfRelations(numberOfRelations)
+        actions.changeOptionNumberOfRelations(numberOfRelations)
     }
 
     handleGraphTypeOptionChange = graphTypeOption => {
         const actions = this.props.actions
-        actions.changeQueryGraphTypeOption(graphTypeOption.value)
+        actions.changeOptionQueryGraphType(graphTypeOption.value)
     }
 
     handleAlgorithmChange = algorithm => {
         const { actions } = this.props
-        actions.changeAlgorithm(algorithm)
+        actions.changeOptionAlgorithm(algorithm)
     }
     
     onKeyDown(keyName, e, handle) {

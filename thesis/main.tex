@@ -3,7 +3,7 @@
 % General document formatting
  
 \usepackage{floatrow}
-\usepackage[cache=false]{minted} % Syntax highlighting for algorithms \usepackage[outputdir=out,cache=false]{minted}
+\usepackage[cache=false,newfloat=true]{minted} % Syntax highlighting for algorithms \usepackage[outputdir=out,cache=false]{minted}
 \usepackage[utf8]{inputenc}
 
 \usepackage{subcaption}
@@ -26,9 +26,38 @@
 \usepackage{lmodern} % Fix some unfedined font shapes http://ctan.org/pkg/lm
 %\usepackage{anyfontsize} % Fix some unavailable font sizes
 %\usepackage{libertine}
-\usepackage{inconsolata} % Better monospace font
+\usepackage{inconsolata} % Nicer monospace font
 \usepackage[]{algorithm2e} % Algorithms
+\usepackage{pgf-umlsd} % UML sequence diagrams
+\usepackage{hyperref}
+\usepackage[nameinlink]{cleveref} % Change listing names
+\hypersetup{linktocpage}
+\usepackage{forest} % Used for directory trees
+\usepackage{fullwidth} % Allow full-width for algorithms
+\usepackage[binary-units=true]{siunitx} % SI units
 
+\usepackage{tabularx,ragged2e}
+\newcolumntype{C}{>{\Centering\arraybackslash}X} % centered "X" column
+
+\definecolor{folderbg}{RGB}{124,166,198}
+\definecolor{folderborder}{RGB}{110,144,169}
+
+\def\Size{4pt}
+\tikzset{
+      folder/.pic={
+        \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+          (-1.05*\Size,0.2\Size+5pt) rectangle ++(.75*\Size,-0.2\Size-5pt);  
+        \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+          (-1.15*\Size,-\Size) rectangle (1.15*\Size,\Size);
+      }
+    }
+
+
+
+\usetikzlibrary{shapes.multipart} % Used for stacks
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=\textbf{Data Structure}}
+\crefname{listing}{Program code}{Program codes}
 
 %\usepackage[
 %backend=biber,
@@ -41,6 +70,8 @@
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
 \newtheorem{commentary}{Comment}
+\newtheorem{note}{Note}
+\newtheorem{theorem}{Theorem}
 
 \usetikzlibrary{plotmarks,trees,arrows}
 \usetikzlibrary{graphs,graphs.standard}
@@ -74,7 +105,6 @@
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
-%\printbibliography
 
 \newpage
 

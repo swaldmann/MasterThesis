@@ -41,10 +41,10 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 		array := make([]JSONRelation, size)
 		for i := uint(0); i < size; i++ {
 			array[i] = JSONRelation{
-				RelationCardinality: rand.Float64() * 10000,
-				RelationName:        "unknown",
-				RelationPID:         0,
-				RelationRID:         i,
+				Cardinality: rand.Float64() * 10000,
+				Name:        "unknown",
+				ProblemID:   0,
+				RelationID:  i,
 			}
 		}
 		return array
@@ -72,12 +72,30 @@ func GenerateTreeQueryGraph(degree uint, size uint) {
 		return result
 	}
 
+	relationsResult := relations(size)
+	selectivitiesResult := selectivities(degree, size)
+
+	// Append parents to neighbors
+	for i := uint(0); i < size; i++ {
+		if i == 0 {
+			continue // The first node has no parent
+		}
+		parentIndex := (i - 1) / degree
+		parentString := strconv.FormatUint(uint64(parentIndex), 10)
+		if currentNeighborsString, ok := problemNeighbors[i]; ok {
+			joinStrings := []string{currentNeighborsString, parentString}
+			problemNeighbors[i] = strings.Join(joinStrings, ",")
+		} else {
+			problemNeighbors[i] = parentString
+		}
+	}
+
 	data := JSONJoinProblem{
-		ProblemID:                0,
-		ProblemNeighbors:         problemNeighbors,
-		ProblemNumberOfRelations: size,
-		ProblemRelations:         relations(size),
-		ProblemSelectivities:     selectivities(degree, size),
+		ProblemID:         0,
+		Neighbors:         problemNeighbors,
+		NumberOfRelations: size,
+		Relations:         relationsResult,
+		Selectivities:     selectivitiesResult,
 	}
 
 	sizeString := strconv.FormatUint(uint64(size), 10)

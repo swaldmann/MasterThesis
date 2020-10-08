@@ -38,7 +38,7 @@ class AlgorithmCanvas extends React.Component {
     handleNextStep = step => {
         const { steps, actions } = this.props
         const nextStep = steps[step + 1]
-        actions.updateStepUUID(nextStep.uuid)
+        actions.updateCurrentStepUUID(nextStep.uuid)
         actions.increaseStep(1)
         actions.updateGraphState(nextStep.graphState)
         //window.scrollTo(0, document.body.scrollHeight);
@@ -47,7 +47,7 @@ class AlgorithmCanvas extends React.Component {
     handlePreviousStep = step => {
         const { actions, steps } = this.props
         const previousStep = steps[step - 1]
-        actions.updateStepUUID(previousStep.uuid)
+        actions.updateCurrentStepUUID(previousStep.uuid)
         actions.decreaseStep(1)
         actions.updateGraphState(previousStep.graphState)
         //window.scrollTo(0, document.body.scrollHeight);
@@ -73,7 +73,7 @@ class AlgorithmCanvas extends React.Component {
     }
 
     render() {
-        const { step, steps, configuration, routine } = this.props
+        const { step, steps } = this.props
         const isFirstStep = step === 0
         const isLastStep = step === steps.length - 1
 

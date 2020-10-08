@@ -4,6 +4,9 @@
 
 \subsubsection{DPccp}
 
+\paragraph{CreateJoinTree}
+The \texttt{CreateJoinTree} algorithm lorem ipsum dolor sit amet.
+
 \vspace{0.5cm}
 \texttt{CreateJoinTree}($T_1, T_2$)
 \begin{algorithm}
@@ -31,7 +34,23 @@ BestTree = NULL;\\
 \caption{CreateJoinTree}
 \end{algorithm}
 
-One of the algorithms visualized is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neunmann in 2006 \cite{moerkotte2006analysis}.
+We make the assumption that all nodes of the query graph are indirectly or directly connected.
+
+
+\paragraph{Csg-cmp-pairs}
+For a set of relation $S$ we use the term \textit{csg-cmp-pair} as defined in \cite{moerkotte2006analysis}.
+\begin{definition}
+    Let $S_1$ and $S_2$ be subsets of the nodes of a query graph. We say $(S1, S2)$ is a \textit{csg-cmp-pair} if and only if
+    \begin{enumerate}
+        \item $S_1$ induces a connected subgraph of the query graph,
+        \item $S_2$ induces a connected subgraph of the query graph,
+        \item $S_1 and S_2$ are disjoint, and
+        \item there exists at least one edge connecting a node in $S_1$ to a node in $S_2$.
+    \end{enumerate}
+\end{definition}
+
+\paragraph{DPccp}
+The algorithm visualized is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neunmann in 2006 \cite{moerkotte2006analysis}. This algorithm is a join ordering algorithm that limits the search space of possible joins to a theoretical lower boundary \cite{moerkotte2009building}. 
 The algorithm is specified as follows:
 
 \vspace{0.5cm}
@@ -63,6 +82,18 @@ CsgCmpPairCounter = 2 * OnoLohmanCounter;\\
 \vspace{0.5cm}
 \caption{DPccp}
 \end{algorithm}
+
+First, we define the notation used in the algorithm, which is equivalent to the one specified in \cite{moerkotte2009building}. By $G = (V,E)$ we denote an undirected graph. For each of the nodes $v \in V$ we define the neighborhood $\mathbb{N}(v)$ of $v$ as 
+
+\begin{equation}
+    \mathbb{N}(v) := \{v' \vert (v,v') \in E\}
+\end{equation}
+
+For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as 
+\begin{equation}
+    \mathbb{N}(S) := \cup_{v \in S}\mathbb{N}(v) \setminus S
+\end{equation}
+
 
 \vspace{0.5cm}
 \texttt{EnumerateCsg}
@@ -118,85 +149,265 @@ CsgCmpPairCounter = 2 * OnoLohmanCounter;\\
 
 In order for the server not having to memorize client or session information, we want to establish a stateless communications protocol.
 Thus, we're conforming to the Representational state transfer (REST) architecture as laid out in \cite{fielding2000architectural}.
-The exact API entry points are specified in \ref{sub:api-entry-points}.
-
-\subsubsection{API Specification}
-\label{sub:api-entry-points}
 
 \subsection{Client}
 
 \subsubsection{Query Graphs}
+\label{subsub:query-graphs}
 
-Visual representations of query graphs are drawn on a canvas with a top-left origin.
-With $n$ we define the number of nodes, $h$ is the height of the canvas, and $w$ its width. 
+Visual representations of query graphs are drawn on a canvas with a top-left origin. Each query graph consists of nodes drawn as a circle depicting the relations, with the relation name centered inside. In addition, we draw edges  between two relations signalling a (direct) connection. Furthermore, we want to be able to draw labels for the cardinality of a relation beneath its resepective node and show a label for the selectivity of two relations, which is drawn on the edge right between the two corresponding nodes.
+
+In order to calculate the points for each represented node on the canvas we first specify some variables.
+With $n$ we define the number of nodes, $h$ is the height of the canvas, and $w$ is the canvas width. 
 As restricted by the user interface, we also set the condition that $n \geq 3$.
 
 Additionally, we define $m$ as the margin to the canvas bounds, and $r$ as the radius of a node.
-Taking $m$ and $r$ into consideration, the drawable width of the canvas, i.e. a centered layout box inside the canvas with margin $m$, is given by 
+Taking $m$ and $r$ into consideration, the drawable width $\hat{w}$ and drawable height $\hat{h}$ of the canvas, used to form a centered layout box inside the canvas with margin $m$, is therefore given by subtracting $m$ and $r$ from either side of the canvas. Defining these variables here will simplify the devisement some of our coordinate calculation formul\ae.
 
 \begin{equation}\label{eqn:painting-w_hat}
-    \hat{w} = w - 2(m - r)
+    \hat{w} = w - 2(m + r)
 \end{equation}
 
-and analogously, the drawable height is given by
+Analogously, the drawable height is given by
 
 \begin{equation}\label{eqn:painting-h_hat}
-    \hat{h} = h - 2(m - r)    
+    \hat{h} = h - 2(m + r)    
 \end{equation}
 
-\paragraph{Chain} For chain query graphs we draw nodes at the vertical center of the canvas and set an equal spacing in between. Thus, the canvas point ($x_i$, $y_i$) for the node with index $i$ is given by
+In order to be able to interchange $\hat{w}$ and $\hat{h}$, e.g. in the radius calculation of a cyclic query, we also set the condition that $\hat{w} = \hat{h}$, i.e. our canvas is a square.
 
+One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. 
+(Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types} is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and not within the scope of this thesis.)
+
+Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formul\ae described in the following.
+
+
+First, we'll start with the calculation of the node coordinates. We make the assumption that the relations are ordered in a breadth-first search in the input array given to the tree parser algorithm. The relation $i$ corresponds to the $i$-th node $n_i$ in the query graph, and thus the notation used to refer to this node is simply using its index $i$ of the ordered set/array of nodes. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types, irrespective of implementation details. More details regarding the specific implementation are discussed in section \ref{sec:implementation}.
+
+As a second step, we calculate all the edge points. We need to calculate a start point $(x_s, y_s)$ and an end point $(x_e, y_e)$ and draw a straight line from the start point to the end point. Thus, it is sufficient to calculate these two points.
+
+\paragraph{Chain} 
+
+\subparagraph{Nodes} For chain query graphs we draw nodes at the vertical center of the canvas and set an equal spacing in between all nodes. Thus—when also considering the canvas margin $m$ and the node radius $r$ as defined before—the canvas point ($x_i$, $y_i$) for the node with index $i$ is given by
 
 \begin{equation}
     (x_i, y_i) = (m + r + \frac{i\hat{w}}{n - 1}, \frac{h}{2})
 \end{equation}
 
-\paragraph{Star} 
-Star query graphs are drawn by placing the node with index $i = 0$ at the canvas' center, and all following nodes in a circle around it, starting at the rightmost vertically centered point ($\theta_0 = 0^{\circ}$).
+\subparagraph{Edges}
 
-The radius of this circle is equivalent to %Cycle graph%
-and given by 
+The coordinates for edges in chain query graph trees are easily specified. We take the point for the current node at index $i$ and its predecessor at $i-1$ for all $i > 0$.
+
+\begin{equation}
+    \begin{aligned}
+        (x_s, y_s)_i &= (x_i, y_i)\\   
+        (x_e, y_e)_i &= (x_{i-1}, y_{i-1})
+    \end{aligned}
+\end{equation}
+
+\paragraph{Star} 
+
+\subparagraph{Nodes} Star query graphs are drawn by placing the node with index $i = 0$ at the canvas' center, and all following nodes with $i > 0$ in a circle around it, while starting (arbitrarily) at the rightmost vertically centered coordinate point ($\theta_0 = 0^{\circ}$).
+
+First up, we need to specify the radius of circle for nodes with $i > 0$. In order to allow for the highest possible number of nodes we are using the entire drawable width $\hat{w}$.
 
 \begin{equation}\label{eqn:painting-r_star}
-    r_{star} = \frac{w}{2} - r - m
+    r_{star} = \frac{\hat{w}}{2}
 \end{equation}
 
-For the current node we define the angle by
+For all nodes with $i > 0$ we also define the angle for the current node by
 \begin{equation}\label{eqn:painting-theta}
-    \theta_i = \frac{2i\pi}{n - 1}
+    \theta_i = \frac{2\pi i}{n - 1}
 \end{equation}
 
-Thus, the point for the node at index $i$ is given by
+This gives us an equally spaced circle of nodes for indices $\{1,\dots,n-1\}$ since $\vert\{1,...,n-1\}\vert = n-1$ and
+\begin{equation}
+    \frac{\frac{2\pi(n-1)}{n-1}}{2\pi} = 1   
+\end{equation}
+
+Hence, starting from the canvas center $(\frac{w}{2}, \frac{h}{2})$ we can then use trigonometric functions to calculate the point of a respective node on this circle.
+The point $(x_i, y_i)$ for the node at index $i$ is therefore given by
 
 \begin{equation}
     (x_i, y_i) = 
     \begin{cases}
         (\frac{w}{2}, \frac{h}{2}),& \text{if } i = 0\\
-        (r_{star}\cos{\theta_i} + r_{star} + r + m, r_{star}\sin{\theta_i} + r_{star} + r + m), & \text{otherwise}
+        (\frac{w}{2} + r_{star}\cos{\theta_i}, \frac{h}{2} + r_{star}\sin{\theta_i}), & \text{otherwise}
     \end{cases}
 \end{equation}
 
-\paragraph{Tree}
+\subparagraph{Edges}
+Edges for star query graphs are drawn for all nodes at index $i > 0$ from their respective position to the central node at $(x_0, y_0)$. Hence, we get 
+\begin{equation}
+    \begin{aligned}
+        (x_s, y_s)_i &= (x_i, y_i)\\   
+        (x_e, y_e)_i &= (x_{0}, y_{0})
+    \end{aligned}
+\end{equation}
+
+\paragraph{Complete $\mathbf{k}$-ary Tree}
 
 The node position calculation for tree query graphs requires an additional parameter. 
-By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn.
-First, we calculate the vertical position for each given node $i$.
+By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn, since drawing non-complete graphs would require us to specfiy which tree leaves are filled, e.g. by storing \texttt{null} values in the relations array. In our toolset however we assume that $k = 2$, i.e. representing a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
+
+First, we calculate the level $l_i$ for a given node at index $i$. This is given by
 
 \begin{equation}
-    (x_i, y_i) = (i - 2^{\lfloor \log_k(i+1) \rfloor}, r + m + \frac{\hat{w}}{\lfloor \log_kn \rfloor} \lfloor \log_k(i + 1) \rfloor)
+    \label{eq:qg-tree-level}
+    l_i = \lfloor \log_{k}(i+1)\rfloor
+\end{equation}
+
+Furthermore, we calculate the number of nodes on the respective level, i.e. the width $\phi_{l_i}$ (Any better symbols for this than $\phi$?) of the tree at that level, which is given by
+\begin{equation}
+    \phi_{l_i} = 2^{l_i}
+\end{equation}
+
+In the next step, we calculate the current column $\rho$ (is there a better name and symbol?) for the current node. In this formula we make use of the width of the tree at $i$s level as calculated beforehand.
+
+\begin{equation}
+    \rho_{i} = i - 2^{\phi_{l_i} + 1}
+\end{equation}
+
+Now we can directly calculate the $x$-coordinate for the current node, which is given by
+\begin{equation}
+    x_i = (\rho_{i} + 0.5) * \frac{\hat{w}}{\phi_{l_i}} + r + m
+\end{equation}
+
+Moreover, for calculating the $y$-coordinate we first need to calculate the distance $d_{n,k}$ between the levels in a $k$-ary tree with $n$ relations. This is given by
+\begin{equation}
+    d_{n,k} = \frac{\hat{w}}{\lfloor \log_k{n} \rfloor}
+\end{equation}
+
+Finally, this lets us calculate the $y$-coordinate for the node at index $i$:
+\begin{equation}
+    \label{eq:qg-tree-y}
+    y_i = l_i * d_{n,k} + r + m
+\end{equation}
+
+Since we calculated $x_i$ and $y_i$ now the point $(x_i, y_i)$ can be defined.
+
+\subparagraph{Edges}
+The calculation for edge coordinates in tree query graphs requires us to calculate the index $i_p$ of the parent node first, for all $i > 0$. This is given by 
+\begin{equation}
+    i_p = \lfloor \frac{i-1}{2} \rfloor
+\end{equation}
+Now, we can calculate the node position for this parent node as specified in equations \ref{eq:qg-tree-level} through \ref{eq:qg-tree-y}. Hence, the edge coordinates are given by 
+\begin{equation}
+    \begin{aligned}
+        (x_s, y_s)_i &= (x_i, y_i)\\   
+        (x_e, y_e)_i &= (x_{i_p}, y_{i_p})
+    \end{aligned}
 \end{equation}
 
 \paragraph{Cycle} 
 
-We define $r_{star}$ the same way as we did in \eqref{eqn:painting-r_star}.
-Similarly to \eqref{eqn:painting-theta}, $\theta_i$ is given by
+\subparagraph{Nodes} A cycle query is essentially drawn as a star query with the node at the center missing. Hence, we define $r_{cycle}$ the same way as we defined $r_{star}$ in \eqref{eqn:painting-r_star}.
+\begin{equation}
+    r_{cycle} = \frac{\hat{w}}{2}
+\end{equation}
+
+Similarly to \eqref{eqn:painting-theta}, the angle for the current node, denoted $\theta_i$, is given by
 
 \begin{equation}\label{eqn:painting-theta_cycle}
-    \theta_i = \frac{2i\pi}{n}
+    \theta_i = \frac{2\pi(i+1)}{n}
 \end{equation}
 
-Thus, the point for a respective node is given by
+Again, we can use trigonometric functions to calculate the node coordinates. Thus, the point $(x_i, y_i)$ for a respective node is given by
 
 \begin{equation}
-    (x_i, y_i) = (r_{star}\cos{\theta_i} + r_{star} + r + m, r_{star}\sin{\theta_i} + r_{star} + r + m)
+    (x_i, y_i) = (r_{cycle}\cos{\theta_i} + r_{cycle} + r + m, r_{cycle}\sin{\theta_i} + r_{cycle} + r + m)
 \end{equation}
+
+\subparagraph{Edges}
+In order to calculate edge coordinates for cycle queries we calculate the successor angle $\theta_{i+1}$ for all $i$ and with this result the sucessor coordinate $(x_{i+1}, y_{i+1})$. Thus, the edge coordinates are given by
+\begin{equation}
+    \begin{aligned}
+        (x_s, y_s)_i &= (x_i, y_i)\\   
+        (x_e, y_e)_i &= (x_{i+1}, y_{i+1})
+    \end{aligned}
+\end{equation}
+
+\subparagraph{Moerkotte 2018}
+As this work serves as a supplementary material to the book ``Building Query Compilers'' by Prof. Guido Moerkotte \cite{moerkotte2009building}, we also allow to draw the query graph used as an example to explain the \texttt{EnumerateCsg} subroutine of the \texttt{DPccp} algorithm.
+
+\begin{figure}[H]
+    \centering
+    \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
+    & $R_0$\\
+    $R_1$ & $R_2$ & $R_3$\\
+    & $R_4$
+    \ncline{-}{1,2}{2,2}
+    \ncline{-}{1,2}{2,1}
+    \ncline{-}{1,2}{2,3}
+    \ncline{-}{2,1}{3,2}
+    \ncline{-}{3,2}{2,2}
+    \ncline{-}{3,2}{2,3}
+    \ncline{-}{2,3}{2,2}
+    \endpsmatrix 
+    \caption{Sample graph from \cite{moerkotte2009building} to illustrate \texttt{EnumerateCsg}}
+\end{figure}
+
+\subparagraph{Nodes} This query graph is distinct to the other query graphs calculated beforehand as it can be categorized as a cyclic query graph, but not a cycle one. Since there is a large number of cyclic query graphs even for $n \leq 10$ and it cannot be uniquely specified by a small number of parameters, the dimensions of this query graph are hardcoded in the implementation. In order to allow a layout box of arbitrary size we however calculate the horizontal center $c_x$, vertical center $c_y$, and layout offset $o$ as follows:
+\begin{equation}
+    c_x = \frac{w}{2}
+\end{equation}
+\begin{equation}
+    c_y = \frac{h}{2}
+\end{equation}
+\begin{equation}
+    o = r + m
+\end{equation}
+
+Now, we can calculate the respective points $(x_i, y_i)$ for all relations $\{i \in \mathbb{N} \vert 0 \leq i < 5 = n$\}:
+
+\begin{equation}
+    \begin{aligned}
+        (x_0, y_0) &= (c_x,o)\\
+        (x_1, y_1) &= (o,c_y)\\
+        (x_2, y_2) &= (c_x,c_y)\\
+        (x_3, y_3) &= (w-o,c_y)\\
+        (x_4, y_4) &= (c_x,h-o)\\
+    \end{aligned}
+\end{equation}
+
+\subparagraph{Edges}
+Edges coordinates for this query graph are similarly hardcoded and drawn for the following node coordinate-pairs:\\
+
+$
+\begin{aligned}
+    \{& ((x_0,y_0), (x_1, y_1)), ((x_0, y_0), (x_2, y_2)), ((x_0, y_0), (x_3,y_3)),\\
+      & ((x_1, y_1),(x_4, y_4)),\\
+      & ((x_2, y_2),(x_3, y_3)), ((x_2,y_2),(x_4, y_4)),\\
+      & ((x_3, y_3),(x_4, y_4)) \}    
+\end{aligned}
+$
+
+\paragraph{Labels}
+In addition to visualizing the relations as nodes and connections as edges in the query graph we want to draw labels for the cardinality of a relation and the selectivity between two relations.
+
+\subparagraph{Cardinality} The cardinality label is drawn right under a relation's node. We make the assumption that the width of the text $\sigma$ and its height $\tau$ at the specified font size is known by being provided by the canvas' layout engine, or can be calculated otherwise.
+// TODO: Finish
+
+\subparagraph{Selectivity}
+The selectivity label is drawn at the center point of the straight line edge between two connected nodes. The coordinates for this point $(l_{cx}, l_{cy})$ are given by
+
+\begin{equation}
+    l_{cx} = \min{(x_s, x_e)} + \frac{\vert x_s - x_e \vert}{2}
+\end{equation}
+and analogously
+\begin{equation}
+    l_{cy} = \min{(y_s, y_e)} + \frac{\vert y_s - y_e \vert}{2}
+\end{equation}
+
+Since the label has a height and width dimension itself this point however cannot be used as the origin of the label. Most layout engines' implementations for drawing rectangles accept parameters for their origin, width and height, with a top-left origin. Thus, we have to subtract half of its height and width respectively to get the point $(l_{ox}, l_{oy})$ specifying the label's origin. Analogously to the cardinality frame calculation we also make the assumption that the width of the text $\sigma$ and its height $\tau$ are known. Furthermore, we add a small constant $c$ to those size dimensions specifying the margin of the label's text to its enclosing box's outer bounds, giving an equal margin of $\frac{c}{2}$ on either side.
+\begin{equation}
+    (l_{ox}, l_{oy}) = (l_{cx} - \frac{\sigma + c}{2}, l_{cy} - \frac{\tau + c}{2})
+\end{equation}
+
+
+
+% \begin{note}
+%     Although JSON is for JavaScript Object notation it has become a de facto standard format for transferring data via HTTP protocols, even if no JavaScript is involved. Thus, we assume this format as an intermediate 
+% \end{note}
+
+% Further parameters for this query graph can be trivially added to the existing implementation, e.g. the width of an edge.
