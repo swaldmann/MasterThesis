@@ -5,7 +5,7 @@
 \label{subsub:api-requirements-goals}
 
 \paragraph{Orthogonality}
-Most importantly though, the property  of orthogonality 
+Most importantly, the property  of orthogonality 
 as defined by Eric S. Raymond in \textit{The Art of Unix
 Programming} \cite{raymond2003compactness} has to be fulfilled for the visualization code with regards to the algorithm implementation's code, i.e. it should not change its behavior or state.
 
@@ -13,10 +13,10 @@ Programming} \cite{raymond2003compactness} has to be fulfilled for the visualiza
 the amount of code or configuration that has to be added to exisiting algorithms' implementations in order to make use of the visualization for its intended purpose in exploration or debugging. The visualization should therefore be specified as declaratively as 
 possible, with the user specifying \textit{only} the relevant parameters–while minimizing the amount of required boilerplate code.
 
-This allows for many side-effects like reusability, mainta
+%This allows for many side-effects like reusability, mainta
 
 \paragraph{Separation of Concerns}
-With the separation of the complex algorithm and user interface/visualization logic in mind is to keep the amount code required to create new visualizations as minimal as possible. 
+With the separation of the complex algorithm and user interface/visualization logic in mind it is imperative to keep the amount code required to create new visualizations as minimal as possible. 
 Thus, we organize their architecture in a client-server 
 relationship, whereby the client specifies the join 
 problem parameters and configuration and the server can
@@ -35,15 +35,15 @@ The advantages of this approach are multifold:
           slow, interpreting JavaScript engine, but being 
           able to run compiled and thus more optimized and therefore faster 
           code
-    \item (Allows us to formally specify interfaces between
-          client and server) (Abbildung malen)
+    \item It allows us to formally specify interfaces between
+          client and server %(Abbildung malen)
 \end{itemize}
 
 \paragraph{Flexibility}
 The visualization tools should be abstract enough that it is not catered towards a specific algorithm, but can used to visualize a wide range of algorithms, especially ones it has not been explicitly programmed for.  
 
 Since there is a large number of data structures an algorithm can use for its implementation we limit ourselves to procedures involving a query graph with information about its number of relations, the query graph type as specified in \ref{subsub:query-types}, and its cardinalities and selectivities.
-This limitation is necessary to enfore a manageable scope for creating a minimum viable product.
+This limitation is necessary to enforce a manageable scope for creating a minimum viable product.
 
 More pragmatically, this means that the algorithm has to 
 conform to the \texttt{Visualizable} Go type we define as 
@@ -92,7 +92,7 @@ Furthermore, the number of relations in the query graph $n$ has to be specified,
 
 Depending on the previously selected parameters the algorithm's steps are fetched upon clicking the ``Recalculate'' button. This will trigger another HTTP server request that transmits the algorithm (:a), number of relations (:r) and graph type (:g) as path parameters.
 
-As the server receives this request, it calls the corresponding algorithm by using the \texttt{Visualize()} function specified in section TODO: ref. This produces a JSON response containing the query graph $QG$ with information about cardinalities, selectivities, and neighbors, as well as the algorithm's generated visualization steps $S$.
+As the server receives this request, it calls the corresponding algorithm by using the \texttt{Visualize()} function specified in section \ref{subsub:implementation-visualization}. This produces a JSON response containing the query graph $QG$ with information about cardinalities, selectivities, and neighbors, as well as the algorithm's generated visualization steps $S$.
 
 Upon receiving this response, the client renders the query graph including labels for cardinalities and selectivities, and edges for connected query graph nodes. Moreover, the algorithm's steps are rendered in a hierarchical table.
 
@@ -129,8 +129,9 @@ As the rendering completes, the number of total steps |S| is calculated and the 
 
 
 \subsection{Choice of Technology}
+TODO: more detail, citations
 
-For the implementation of both client and server code we
+For the technology used in thr implementation of both client and server code we
 want to maximize
 
 \begin{enumerate}[label={(\roman*)}]
@@ -156,9 +157,9 @@ For the server code and algorithm implementations we use the Go programming lang
 \subsubsection{Join Problem Generator}
 We represent the join problems in a JSON format as defined in section \ref{subsub:join-problem-data-structure}. 
 Some JSON files are taken from the supplementary material to the ``IE 630 Query Optimization'' course exercises at the University of Mannheim\footnote{\url{https://www.wim.uni-mannheim.de/moerkotte/teaching/courses/query-optimization/}}
-, which contains examples for join problems with a query type $QT \in $ \{Chain, Clique, Cycle, Star\} and a number of relations $n \in [2,10]$.
+, which contains examples for join problems with a query type $QT \in $ \{Chain, Clique, Cycle, Star\} and a number of relations $n \in [2,10]$. All further references to \texttt{joinProblemParser.go} or \texttt{infra.go} refer to the two (modified) files taken from this supplementary material.
 
-Additionally, we create a join problem generator for complete binary trees with a degree $k$ and a number of relations $n$.
+Additionally, we create a join problem generator for complete $k$-ary trees with a degree $k$ and a number of relations $n$.
 
 Since selectivities are symmetrical, they are stored once and once only in the JSON. This means, if an edge ($R_0, R_1$) in the query graph exists, we don't store ($R_1, R_0$) explicitly as well. However, we store the selectivities in a breadth-first manner starting from $R_0$, i.e. the edge always points from the relation with the smaller index to the larger one. More formally, we can say that the following implication holds:
 
@@ -610,6 +611,7 @@ func Neighbors(QG QueryGraph, S uint) uint {
 \vspace{0.5cm}
 
 \subsubsection{Visualization}
+\label{subsub:implementation-visualization}
 
 For the visualization we create a \texttt{visualization} package to handle all operations related to the visualization itself. 
 
@@ -620,7 +622,7 @@ var routines = []*VisualizationRoutine{}
 var stack = []*VisualizationRoutine{}
 \end{minted}
 \vspace{0.2cm}
-Both variables are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. They both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the  execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but tjhe exported functions to start new routines or add atomic visualization steps have to be used. All available functions will be discussed in the following.
+Both variables are slices of pointers to the \texttt{VisualizationRoutine} type defined in figure \ref{datastructure:visualization-routine}. They both fulfill different purposes: the former keeps track of consecutively executed visualization routines, whereas the latter stores the  execution stack of the current routine, which allow for stacked or recursive routine calls. In order to enforce modularity, those variables cannot be changed directly, but the exported functions to start new routines or add atomic visualization steps have to be used. All available functions will be discussed in the following.
 
 First of all, we create a \texttt{visualize} function to change the execution context of a join ordering algorithm.
 \begin{minted}{go}
@@ -724,7 +726,7 @@ Thus, the following equation must hold
 \label{eq:disjointness-observed-relations}
 \end{equation}
 
-However, the union of these sets $\bigcup_{i=0}^{v-1}{O_i}$ does not necessarily have to be equal to the set of all relations $R$, but it suffices if $O \subseteq {R}$. If $O \not= R$ case we can just fall back to a  default color. This could be handled either in the implementation of \texttt{AddVisualizationStep} or, alternatively, in the client-side implementation when drawing the query graph, which is how the supplementary code handles $O \subset R$.
+However, the union of these sets $\bigcup_{i=0}^{v-1}{O_i}$ does not necessarily have to be equal to the set of all relations $R$, but it suffices if $O \subseteq {R}$. If $O \not= R$ we can just fall back to a  default color. This could be handled either in the implementation of \texttt{AddVisualizationStep} or, alternatively, in the client-side implementation when drawing the query graph, which is how the supplementary code handles $O \subset R$.
 
 \subparagraph{Excursus: Impact on \texttt{DPccp} implementation}
 In \texttt{EnumerateCsgRec} inside \texttt{DPccp} we want to visualize the sets of relations $S$ and $X$, among others.  Assumption \ref{eq:disjointness-observed-relations} can then be fulfilled if we slightly change the definition of $\mathcal{B}_i$, so that inside \texttt{EnumerateCsgRec} $S \cap X = \emptyset$ holds. 
@@ -740,13 +742,13 @@ Let us start at the \texttt{EnumerateCsgRec} call inside \texttt{EnumerateCsg}. 
 
 \paragraph{Usage}
 
-The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{EnumerateCsg} algorithm. We visualize the entire \texttt{DPccp} algorithm in the supplemented code.
+The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{EnumerateCsg} algorithm. We visualize the entire \texttt{DPccp} algorithm in the supplemented code. (TODO: No it's not, yet. It can be found in the supplementary code though).
 
 \subsubsection{DPccp}
 \label{subsub:implementation-dpccp}
 
 In the following we discuss the Go implementation of \texttt{DPccp} and its enumeration routines, namely \texttt{EnumerateCsg}, \texttt{EnumerateCsgRec}, and \texttt{EnumerateCmp}. We begin with the enumeration algorithms so we can later use them in the actual \texttt{DPccp} algorithm.
-For all algorithms, we implement the intersection of two arbitrary sets $S_1$ and $S_2$, $S_1 \cap S_2$, by using a bitwise OR (\texttt{|}) and their union $S_1 \cup S_2$ using a bitwise AND (\texttt{\&}).\\
+For all algorithms, we implement the intersection of two arbitrary sets $S_1$ and $S_2$, $S_1 \cap S_2$, by using a bitwise AND (\texttt{\&}) and their union $S_1 \cup S_2$ using a bitwise OR (\texttt{|}).\\
 
 \texttt{EnumerateCsg} will calculate all connected subgraphs in the query graph in a breadth-first manner, beginning with the relation with the highest index. Thus, the slice of relations \texttt{R} of the query graph \texttt{QG} is traversed in descending order. As discussed in \ref{subsub:basics-bitvector} the relations are stored as a bitvector and can be individually accessed by shifting $1$ by the respective relation's index to the left. We make use of arithmetic integer overflow for the \texttt{for} loop's exit condition as $i \geq 0$ cannot be used as the \texttt{uint} cannot be smaller than 0. In order to get the set of relations $\mathcal{B}_i$ we shift 1 by $(i+1) - 1$ to the left, leaving us with a 64-bit unsigned integer with all bits set to 1 at index $j < i$ and $64 - (i-1)$ leading zeroes, thus representing relations $\{R_{j} \in R \vert j < i\}$. We keep track of a \texttt{subgraphs} \texttt{[]uint} slice which collects the recursively constructed subgraphs from \texttt{EnumerateCsgRec} and return the result of this slice after appending all emitted subgraphs.
 \vspace{0.4cm}
@@ -853,7 +855,7 @@ Finally, we can specify \texttt{DPccp}.
 First, we allocate a slice to a \texttt{*Tree} pointer, called \texttt{bestTree}, where we store the optimal operator tree for the corresponding subgraph $S$. As this slice can potentially store the best entries for all combinations of subgraphs in the query graph, this slice reserves memory for $2^n$ \texttt{*Tree} pointers. Thus, on a 64-bit machine, the corresponding \texttt{make} allocates $64 * 2^n$ bits of memory.
 
 \begin{example}
-For 10 relations, this would be 
+For the maximum 10 relations, this would be 
 \begin{equation}
 \frac{\SI{64}{\bit} * \SI[parse-numbers = false]{2^n}{\bit}}{\SI{1}{\byte}} = \SI{8192}{\byte} = \SI{8}{\kibi\byte}
 \end{equation}
@@ -866,7 +868,7 @@ Further, we make use of the enumeration functions specified above to create all 
 
 Now, we can loop over all csg-cmp-pairs with subsets $S_1$ and $S_1$ and calculate the best operator tree for the union $S_1 \cup S_2$. This optimal tree is generated by taking the currently previously calculated optimal trees for $S_1$ and $S_2$, creating their join trees for $S_1 \Join S_2$ and $S_2 \Join S_1$ respectively, and re-setting the entry in the \texttt{bestTree} slice in case the cost of this join tree is lower than the corresponding current entry. Likewise, if the entry does not exist in \texttt{bestTree} yet, it is set to the operator tree for $S_1 \Join S_2$ or $S_2 \Join S_1$, whichever incurs a smaller cost according to the specified cost functions.
 
-Finally, we return \texttt{bestTree}'s $2^{n}-1$s entry, representing all relations $\{R_0,\ldots,R_{n-1}\} = R$.
+Finally, we return \texttt{bestTree}'s $2^{n}-1$th entry, representing all relations $\{R_0,\ldots,R_{n-1}\} = R$.
 
 \newpage
 
@@ -942,6 +944,8 @@ All the keys correspond to the explicitly defined JSON tags for the \texttt{JSON
 
 \subsubsection{Visualization Routines}
 Likewise, there is a fixed JSON definition for an algorithm's visualization routines found in figure \ref{fig:json-visualization-routine}.
+
+TODO: They are not completely finished yet.
 
 \newpage
 
@@ -1162,12 +1166,12 @@ The \texttt{AlgorithmCanvas} component contains a HTML5 \texttt{<canvas>} elemen
 It can also recursively hold child \texttt{VariableTableEntry} components for stacked routines. 
 In order to visualize hierarchy, it can darken its background color depending on the stack's size at the time of the execution of the corresponding subroutine.
 
-Furthermore, if a function using direct recursion, an arrow or multiple arrow symbols will be prepended to the routine name, depending on the depth of the recursion.
+Furthermore, if a function is using direct recursion, an arrow or multiple arrow symbols will be prepended to the routine name, depending on the depth of the recursion.
 
 If the \texttt{Redux} state's current step UUID is equal to a step's UUID the table entry is highlighted in a different background color.
 
 \subparagraph{AlgorithmVisualization} 
-\texttt{AlgorithmVisualization} is a layout container consisting of a \texttt{JoinProblemSettings} header, and the \texttt{AlgorithmCanvas} and \texttt{VariableTable} components in a two-column layout below. An example rendered result is displayed in figure \ref{fig:sample-rendered-app}.
+\texttt{AlgorithmVisualization} is a layout container consisting of a \texttt{JoinProblemSettings} header, and the \texttt{AlgorithmCanvas} and \texttt{VariableTable} components in a two-column layout below. An example rendered result is displayed in figure \ref{fig:sample-rendered-dpccp}.
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth + 2cm]{img/renderedVisualization.png}
@@ -1176,14 +1180,14 @@ If the \texttt{Redux} state's current step UUID is equal to a step's UUID the ta
 \end{figure}
 
 \subsubsection{Building}
-As the project makes heavy use of the ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io}} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
+As the project makes heavy use of the modern ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io}} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
 
 \paragraph{Linting}
 For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
 
-\paragraph{Dependencies}
+%\paragraph{Dependencies}
 
-Since we're restructurig the files from the QueryCompiler exercise to increase modularity and reusability . We define all packages in a way that no cyclical dependencies exist.
+%Since we're restructurig the files from the QueryCompiler exercise to increase modularity and reusability . We define all packages in a way that no cyclical dependencies exist.
 
 \subsection{Installation and Development}
 
@@ -1232,6 +1236,8 @@ As the client is fetching its data from the server please keep in mind that the 
 \end{note}
 
 \subsection{Deployment}
+TODO: Finish, move to appendix?
+
 One of the major benefits of using a client-server architecture and web technologies is that we can host the server part on an application server or platform-as-a-service offering such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine}} and the front-end (client) on a web server.
 This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side. Likewise, the deployment of new application versions is simple and can be done with a single shell instruction for both client and server.
 
@@ -1247,4 +1253,7 @@ The Google Cloud SDK must be installed using
 Follow the instructions in the terminal session to continue. 
 
 \subparagraph{Client}
-All Node.js 
+The user needs a GitHub account and host the repository on the very same. GitHub Pages\footnote{\url{https://pages.github.com}} has to be configured for the project. Now, we can simply deploy the project by typing
+\begin{minted}{shell-session}
+$ npm deploy
+\end{minted}

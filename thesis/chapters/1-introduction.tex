@@ -2,45 +2,40 @@
 
 \subsection{Motivation}
 
-Computational algorithms described in scientific papers can be hard to grasp.
+Computational algorithms introduced in university lectures or scientific papers are not always immedeately and intuitively understood by their readers.
+A significant amount of time has to be allocated to internalizing new concepts from a textual, formal description. While formalization helps with unambiguity it often requires a large degree of domain expertise and can fail to appeal to the readers intuition.
+
+In order to improve accessibility and comprehensibility, researchers and lecturers create visual aids such as sketches, graphs, output tables to keep track of certain variables in the algorithm's execution, coloring, or informal textual descriptions to make their content more accessible. 
+
+However, these visualizations are usually limited by the constraints put on them by the typesetting system they are written in, which produces output to be printed on physical paper: they are static, they cover just one example or a very small and incomplete subset of possible examples, and they are often manually specified instead of generated from an already existing implementation of an algorithm. Moreover, scientific journals even further broaden those constraints by imposing page or word limits on article submissions. While it is possible to create graphical representations of data structures like graphs in a typesetting system such as \LaTeX using libraries like \texttt{pgf-tikz}\footnote{\url{https://github.com/pgf-tikz/pgf}}, those are often cumbersome and time-consuming to specify.
+One of the most powerful, but scarcely available tools are algorithm visualizations that are interactive, dynamically created, and can be used on a large subset of all possible inputs. 
+
+% Thus, seeking to minimize the time required by providing helpful supplementary material 
 % Any technique to simplify understanding and thought processes used in the construction and implementation of an algorithm 
-A very common technique to help with understanding are visualizations in the form of sketches and diagrams, output tables to keep track of certain variables in the algorithm's execution, or arrows to indicate recursive calls.
-
-However, these visualizations are usually limited by the constraints put on them by the typesetting system they are written in, which produces output to be printed on physical paper: they are static, they cover just one example or a very small and incomplete subset of possible examples, and they are often manually specified instead of generated from an already existing implementation of an algorithm. Furthermore, scientific journals even further broaden those constraints by imposing page or word limits on article submissions.
-
-While it is possible to create graphical representations of data structures like graphs in a typesetting system such as \LaTeX  using libraries like \texttt{pgf-tikz}\footnote{\url{https://github.com/pgf-tikz/pgf}}, those are often cumbersome and time-consuming  to specify.
-
-As media can be and are consumed digitally though on graphical user interfaces on the bitmap screen of a laptop or tablet computer, these limitations seem artificial and mostly stem from the ``printability'' aspect of the paper.
 
 
-A further explanation for the lack of available visualizations is that researchers and instructors often don't have the time or resources to produce high-quality, interactive visualizations for their algorithms.
+With today's consumer electronics, such as laptops or tablet computers, giving the possibility to consume media digitally on flexible graphical user interfaces (GUI), these limitations seem artificial and mostly stem from the ``printability'' aspect of physical paper. A further explanation for the lack of available visualizations is that researchers and instructors often don't have the time or resources to produce high-quality, interactive visualizations for their algorithms.
 
-A common compromise is to use presentation software like Microsoft PowerPoint which comps  
+% A common compromise is to use presentation software like Microsoft PowerPoint which comps  
 
 While the 2002 publications from Hundhausen et al. \cite{hundhausen2002meta} and Naps et al. \cite{naps2002exploring} criticize the efficiacy of algorithm visualizations as a pedagogical tool, numerous successful examples have emerged in more recent years.
 Hohman et al. present and discuss many of such examples in their 2020 article ``Communicating with Interactive Articles'' \cite{hohman2020communicating}.
-The YouTube channel ``3blue1brown'' who specializes on the visualization of concepts in mathematics and computer science has gained 5 million subscribers in 4 years and is collaborating with a group at MIT to provide supplementary materials for their course on computational thinking \footnote{\url{https://www.patreon.com/posts/mit-lectures-41240316}}.
-
-
-This thesis draws inspiration Python-based mathematics visualization library \texttt{manim}\footnote{https://github.com/3b1b/manim}.
+The YouTube channel ``3blue1brown''\footnote{\url{https://www.youtube.com/c/3blue1brown}} who specializes on the visualization of concepts in mathematics and computer science has more than 3 million subscribers and 160 million views in its mere 5 years of existence and is collaborating with reputable universities such as the Massachusets Institute of Technology to create supplementary material for their lectures \footnote{\url{https://www.patreon.com/posts/mit-lectures-41240316}}.
 
 \subsection{Goal of this Thesis}
-to visualize algorithms from in specific instances.
+This thesis aims to specify and implement a toolset to let us create such an interactive and dynamically created visualization for the algorithm \texttt{DPccp} as introduced in \cite{moerkotte2006analysis}. Instead of catering to  this specific algorithm we want to keep reusability in mind and try to avoid hardcoded solutions wherever possible.
 
-The domain of query optimization poses many algorithms that can be visualized well.
+We also try to minimize the amount of time required to create such a visualization by specifying a declarative toolset that can be used alongside already existing implementations of algorithms—no explicit drawing is needed.
 
-However, visualizing algorithms can provide far more than just merely helping students understand the intricate concepts better.
-Among professional computer scientists and software engineers the visualization of algorithms has proven a useful debugging and exploration technique.
+The generic and declarative nature of the toolset makes it not just a useful teaching tool for one particular algortihm, but can be used among professional computer scientists and software engineers as a quick visual debugging and exploration technique.
 
-In this Master thesis, I want to provide a generic toolset for algorithms. I aim for a framework that lets you generate the visualizations in a generic way—no explicit drawing is needed.
+%Instead of investigating what the constitutents of an algorithm \textit{could} be and
+%implementing them accordingly, we use a top-down approach and implement the steps of
+%two pre-chosen algorithms, namely \texttt{DPccp} \cite{moerkotte2006analysis} and Adaptive Radix Trees \cite{leis2013adaptive}.
 
-Instead of investigating what the constitutents of an algorithm \textit{could} be and
-implementing them accordingly, we use a top-down approach and implement the steps of
-two pre-chosen algorithms, namely \texttt{DPccp} \cite{moerkotte2006analysis} and Adaptive Radix Trees \cite{leis2013adaptive}.
-
-Lack of good tooling in database algorithm development.
-Visual debugging and aids more commonplace.
+%Lack of good tooling in database algorithm development.
+%Visual debugging and aids more commonplace.
 
 \subsection{Prior Art}
 
-TODO
+TODO: Finish.

@@ -3,13 +3,15 @@
 \subsection{Algorithms}
 
 \subsubsection{DPccp}
+\textbf{Note to Prof. Moerkotte:} Section 3.1 is rather incomplete for now but is only describing the \texttt{DPccp} algorithm, so you can skip to section \ref{sub:concepts-server}.
 
 \paragraph{CreateJoinTree}
-The \texttt{CreateJoinTree} algorithm lorem ipsum dolor sit amet.
+%The \texttt{CreateJoinTree} algorithm lorem ipsum dolor sit amet.
+
 
 \vspace{0.5cm}
 \texttt{CreateJoinTree}($T_1, T_2$)
-\begin{algorithm}
+\begin{algorithm}[H]
 \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 \Input{Two (optimal) join trees $T_1$ and $T_2$. For linear trees, we assume that $T_2$ is a single relation}
 \Output{An (optimal) join tree for joining $T_1$ and $T_2$.}
@@ -55,7 +57,7 @@ The algorithm is specified as follows:
 
 \vspace{0.5cm}
 \texttt{DPccp}($R = \{R_1, \ldots, R_n\}$)
-\begin{algorithm}
+\begin{algorithm}[H]
 \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 \Input{A connected query graph with relations $R = \{R_0,\ldots,R_{n-1}\}$}
 \Output{An optimal bushy join tree}
@@ -97,7 +99,7 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
 
 \vspace{0.5cm}
 \texttt{EnumerateCsg}
-\begin{algorithm}
+\begin{algorithm}[H]
 \SetKwInOut{Input}{Input}
 \SetKwInput{kwPrecondition}{Precondition}
 \SetKwInOut{Output}{Output}
@@ -114,7 +116,7 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
 \end{algorithm}
 
 \texttt{EnumerateCsgRec}
-\begin{algorithm}
+\begin{algorithm}[H]
     \BlankLine
     $N = \mathcal{N}(S) \setminus X$;\\
     \ForEach{$S' \subseteq N, S' \neq \emptyset$, enumerate subsets first}{
@@ -146,6 +148,7 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
 \end{algorithm}
 
 \subsection{Server}
+\label{sub:concepts-server}
 
 In order for the server not having to memorize client or session information, we want to establish a stateless communications protocol.
 Thus, we're conforming to the Representational state transfer (REST) architecture as laid out in \cite{fielding2000architectural}.
@@ -157,12 +160,13 @@ Thus, we're conforming to the Representational state transfer (REST) architectur
 
 Visual representations of query graphs are drawn on a canvas with a top-left origin. Each query graph consists of nodes drawn as a circle depicting the relations, with the relation name centered inside. In addition, we draw edges  between two relations signalling a (direct) connection. Furthermore, we want to be able to draw labels for the cardinality of a relation beneath its resepective node and show a label for the selectivity of two relations, which is drawn on the edge right between the two corresponding nodes.
 
+\paragraph{Calculations}
 In order to calculate the points for each represented node on the canvas we first specify some variables.
 With $n$ we define the number of nodes, $h$ is the height of the canvas, and $w$ is the canvas width. 
 As restricted by the user interface, we also set the condition that $n \geq 3$.
 
 Additionally, we define $m$ as the margin to the canvas bounds, and $r$ as the radius of a node.
-Taking $m$ and $r$ into consideration, the drawable width $\hat{w}$ and drawable height $\hat{h}$ of the canvas, used to form a centered layout box inside the canvas with margin $m$, is therefore given by subtracting $m$ and $r$ from either side of the canvas. Defining these variables here will simplify the devisement some of our coordinate calculation formul\ae.
+Taking $m$ and $r$ into consideration, the drawable width $\hat{w}$ and drawable height $\hat{h}$ of the canvas, used to form a centered layout box inside the canvas with margin $m$, is therefore given by subtracting $m$ and $r$ from either side of the canvas. Defining these variables here will simplify the specification of some of our coordinate calculation formul\ae.
 
 \begin{equation}\label{eqn:painting-w_hat}
     \hat{w} = w - 2(m + r)
@@ -177,12 +181,15 @@ Analogously, the drawable height is given by
 In order to be able to interchange $\hat{w}$ and $\hat{h}$, e.g. in the radius calculation of a cyclic query, we also set the condition that $\hat{w} = \hat{h}$, i.e. our canvas is a square.
 
 One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. 
-(Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types} is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and not within the scope of this thesis.)
 
-Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formul\ae described in the following.
+(Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types}
+%is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and 
+not within the scope of this thesis.)
+
+Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formulas described in the following.
 
 
-First, we'll start with the calculation of the node coordinates. We make the assumption that the relations are ordered in a breadth-first search in the input array given to the tree parser algorithm. The relation $i$ corresponds to the $i$-th node $n_i$ in the query graph, and thus the notation used to refer to this node is simply using its index $i$ of the ordered set/array of nodes. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types, irrespective of implementation details. More details regarding the specific implementation are discussed in section \ref{sec:implementation}.
+First, we'll start with the calculation of the node coordinates. We make the assumption that the relations are ordered in a breadth-first manner in the input array given to the tree parser algorithm. The relation $R_i$ corresponds to the $i$-th node $n_i$ in the query graph, and thus the notation used to refer to this node is simply using its index $i$ of the ordered set/array of nodes. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types, irrespective of implementation details. More details regarding the specific implementation are discussed in section \ref{sec:implementation}.
 
 As a second step, we calculate all the edge points. We need to calculate a start point $(x_s, y_s)$ and an end point $(x_e, y_e)$ and draw a straight line from the start point to the end point. Thus, it is sufficient to calculate these two points.
 
@@ -248,7 +255,7 @@ Edges for star query graphs are drawn for all nodes at index $i > 0$ from their 
 \paragraph{Complete $\mathbf{k}$-ary Tree}
 
 The node position calculation for tree query graphs requires an additional parameter. 
-By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs be drawn, since drawing non-complete graphs would require us to specfiy which tree leaves are filled, e.g. by storing \texttt{null} values in the relations array. In our toolset however we assume that $k = 2$, i.e. representing a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
+By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs can be drawn, since drawing non-complete graphs would require us to specfiy which tree leaves are filled, e.g. by storing \texttt{null} values in the relations array. In our toolset however we assume that $k = 2$, i.e. representing a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
 
 First, we calculate the level $l_i$ for a given node at index $i$. This is given by
 
@@ -262,7 +269,7 @@ Furthermore, we calculate the number of nodes on the respective level, i.e. the 
     \phi_{l_i} = 2^{l_i}
 \end{equation}
 
-In the next step, we calculate the current column $\rho$ (is there a better name and symbol?) for the current node. In this formula we make use of the width of the tree at $i$s level as calculated beforehand.
+In the next step, we calculate the current column $\rho$ (is there a better name and symbol?) for the current node. In this formula we make use of the width of the tree at the $i$-th level as calculated beforehand.
 
 \begin{equation}
     \rho_{i} = i - 2^{\phi_{l_i} + 1}
