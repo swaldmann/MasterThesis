@@ -3,14 +3,14 @@
 \subsection{Algorithms}
 
 \subsubsection{DPccp}
-\textbf{Note to Prof. Moerkotte:} Section 3.1 is rather incomplete for now but is only describing the \texttt{DPccp} algorithm, so you can skip to section \ref{sub:concepts-server}.
 
-\paragraph{CreateJoinTree}
-%The \texttt{CreateJoinTree} algorithm lorem ipsum dolor sit amet.
+In the following we introduce all algorithms, subroutines and concepts necessary for the later implementation of \texttt{DPccp}. It should be noted that we make the assumption of all nodes in the query graph being indirectly or directly connected to each other.
 
+\paragraph{CreateJoinTree} In our implementation of \texttt{DPccp} we'll make use of the \texttt{CreateJoinTree} algorithm as specified in \cite{moerkotte2009building}, in order to determine the tree with the minimal cost, depending on an arbitrarily specified cost function.
+\vspace{0.4cm}
 
-\vspace{0.5cm}
 \texttt{CreateJoinTree}($T_1, T_2$)
+
 \begin{algorithm}[H]
 \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 \Input{Two (optimal) join trees $T_1$ and $T_2$. For linear trees, we assume that $T_2$ is a single relation}
@@ -36,27 +36,26 @@ BestTree = NULL;\\
 \caption{CreateJoinTree}
 \end{algorithm}
 
-We make the assumption that all nodes of the query graph are indirectly or directly connected.
-
 
 \paragraph{Csg-cmp-pairs}
-For a set of relation $S$ we use the term \textit{csg-cmp-pair} as defined in \cite{moerkotte2006analysis}.
+As \texttt{DPccp}'s name entails, we make use of the notion of \textit{csg-cmp-pairs}. For a set of relation $S$ we use the term csg-cmp-pair as defined in \cite{moerkotte2006analysis}:
 \begin{definition}
-    Let $S_1$ and $S_2$ be subsets of the nodes of a query graph. We say $(S1, S2)$ is a \textit{csg-cmp-pair} if and only if
+    Let $S_1$ and $S_2$ be subsets of the nodes of a query graph. We say $(S1, S2)$ is a csg-cmp-pair if and only if
     \begin{enumerate}
         \item $S_1$ induces a connected subgraph of the query graph,
         \item $S_2$ induces a connected subgraph of the query graph,
-        \item $S_1 and S_2$ are disjoint, and
+        \item $S_1$ and $S_2$ are disjoint, and
         \item there exists at least one edge connecting a node in $S_1$ to a node in $S_2$.
     \end{enumerate}
 \end{definition}
 
 \paragraph{DPccp}
-The algorithm visualized is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neunmann in 2006 \cite{moerkotte2006analysis}. This algorithm is a join ordering algorithm that limits the search space of possible joins to a theoretical lower boundary \cite{moerkotte2009building}. 
+The algorithm we focus our visualization efforts on is \texttt{DPccp}, as introduced by Guido Moerkotte and Thomas Neumann in 2006 \cite{moerkotte2006analysis}. This algorithm is a join ordering algorithm that limits the search space of possible joins to a theoretical lower boundary \cite{moerkotte2009building}. 
 The algorithm is specified as follows:
+\vspace{0.4cm}
 
-\vspace{0.5cm}
 \texttt{DPccp}($R = \{R_1, \ldots, R_n\}$)
+
 \begin{algorithm}[H]
 \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 \Input{A connected query graph with relations $R = \{R_0,\ldots,R_{n-1}\}$}
@@ -85,7 +84,7 @@ CsgCmpPairCounter = 2 * OnoLohmanCounter;\\
 \caption{DPccp}
 \end{algorithm}
 
-First, we define the notation used in the algorithm, which is equivalent to the one specified in \cite{moerkotte2009building}. By $G = (V,E)$ we denote an undirected graph. For each of the nodes $v \in V$ we define the neighborhood $\mathbb{N}(v)$ of $v$ as 
+In order to further detail the subroutines, we first define the notation used in the algorithm, which is equivalent to the one specified in \cite{moerkotte2009building}. By $G = (V,E)$ we denote an undirected graph. For each of the nodes $v \in V$ we define the neighborhood $\mathbb{N}(v)$ of $v$ as 
 
 \begin{equation}
     \mathbb{N}(v) := \{v' \vert (v,v') \in E\}
@@ -96,9 +95,20 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
     \mathbb{N}(S) := \cup_{v \in S}\mathbb{N}(v) \setminus S
 \end{equation}
 
+Furthermore, we define $\mathcal{B}_i$ as
+
+\begin{equation}
+    \mathcal{B}_i = \{v_j \vert j \leq i\}
+\end{equation}
 
 \vspace{0.5cm}
+
+With these definitions we can specify the subroutines \texttt{EnumerateCsg}, \texttt{EnumerateCsgRec} and \texttt{EnumerateCmp} as introduced in \cite{moerkotte2006analysis}.
+
+\vspace{0.3cm}
+
 \texttt{EnumerateCsg}
+
 \begin{algorithm}[H]
 \SetKwInOut{Input}{Input}
 \SetKwInput{kwPrecondition}{Precondition}
@@ -115,7 +125,10 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
 \caption{EnumerateCsg}
 \end{algorithm}
 
+\vspace{0.5cm}
+
 \texttt{EnumerateCsgRec}
+
 \begin{algorithm}[H]
     \BlankLine
     $N = \mathcal{N}(S) \setminus X$;\\
@@ -129,7 +142,9 @@ For a subset $S \subseteq V$ of $V$ the neighborhood of $S$ is defined as
 \caption{EnumerateCsgRec}
 \end{algorithm}
 
-\begin{algorithm}
+\texttt{EnumerateCmp}
+
+\begin{algorithm}[H]
     \SetKwInOut{Input}{Input}
     \SetKwInput{kwPrecondition}{Precondition}
     \SetKwInOut{Output}{Output}
@@ -158,7 +173,7 @@ Thus, we're conforming to the Representational state transfer (REST) architectur
 \subsubsection{Query Graphs}
 \label{subsub:query-graphs}
 
-Visual representations of query graphs are drawn on a canvas with a top-left origin. Each query graph consists of nodes drawn as a circle depicting the relations, with the relation name centered inside. In addition, we draw edges  between two relations signalling a (direct) connection. Furthermore, we want to be able to draw labels for the cardinality of a relation beneath its resepective node and show a label for the selectivity of two relations, which is drawn on the edge right between the two corresponding nodes.
+Visual representations of query graphs are drawn on a canvas with a top-left origin. Each query graph consists of nodes drawn as a circle depicting the relations, with the relation name centered inside. In addition, we draw edges  between two relations signalling a (direct) connection. Furthermore, we want to be able to draw labels for the cardinality of a relation beneath its respective node and show a label for the selectivity of two relations, which is drawn on the edge right between the two corresponding nodes.
 
 \paragraph{Calculations}
 In order to calculate the points for each represented node on the canvas we first specify some variables.
@@ -180,18 +195,15 @@ Analogously, the drawable height is given by
 
 In order to be able to interchange $\hat{w}$ and $\hat{h}$, e.g. in the radius calculation of a cyclic query, we also set the condition that $\hat{w} = \hat{h}$, i.e. our canvas is a square.
 
-One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. 
+One parameter that is not abstracted away however is the query graph type. As of now, this information can not be implicitly derived from the makeup of the join problem itself using our toolset. Automatically classifying the graph into one of the groups as categorized in section \ref{subsub:query-types} is not within the scope of this thesis.
 
-(Automatically classifying the graph into on of the groups as categorized in section \ref{subsub:query-types}
-%is possible at least to some degree (TODO: be more precise, e.g. BFS for cycle detection), but not computationally efficient and 
-not within the scope of this thesis.)
+Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formulas described in the following.\\
 
-Besides, our toolset can only calculate chain, star, complete $k$-ary tree, and cycle query graphs procedurally, as the only parameters required to unambiguously specify those are the number of relations and the respective query graph type. This information however is sufficient to calculate all node and edge coordinates in a single pass, i.e. with an asymptotic complexity of $\mathcal{O}(n)$, by using the formulas described in the following.
+We use a similar approach for all query graph types: First, we'll start with the calculation of the node coordinates. Also, we make the assumption that the relations are ordered in a breadth-first manner in the input array given to the tree parser algorithm. The relation $R_i$ corresponds to the $i$-th node $n_i$ in the query graph, and thus the notation used to refer to this node is simply using its index $i$ of the ordered set/array of nodes. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types, irrespective of implementation details. More details regarding the specific implementation are discussed in section \ref{sec:implementation}.
 
+As a second step, we calculate all the points used for drawing the graph edges. For this purpose, we need to calculate a start point $(x_s, y_s) \in \mathbb{R} \times \mathbb{R}$ and an end point $(x_e, y_e) \in \mathbb{R} \times \mathbb{R}$ and draw a straight line from the start point to the end point. As simple straight lines can be drawn by any rudimentary rendering engine we assume it is sufficient to calculate these two points.
 
-First, we'll start with the calculation of the node coordinates. We make the assumption that the relations are ordered in a breadth-first manner in the input array given to the tree parser algorithm. The relation $R_i$ corresponds to the $i$-th node $n_i$ in the query graph, and thus the notation used to refer to this node is simply using its index $i$ of the ordered set/array of nodes. The following paragraphs give an exhaustive walkthrough for the node coordinate calculation for all allowed query types, irrespective of implementation details. More details regarding the specific implementation are discussed in section \ref{sec:implementation}.
-
-As a second step, we calculate all the edge points. We need to calculate a start point $(x_s, y_s)$ and an end point $(x_e, y_e)$ and draw a straight line from the start point to the end point. Thus, it is sufficient to calculate these two points.
+\newpage
 
 \paragraph{Chain} 
 
@@ -255,7 +267,11 @@ Edges for star query graphs are drawn for all nodes at index $i > 0$ from their 
 \paragraph{Complete $\mathbf{k}$-ary Tree}
 
 The node position calculation for tree query graphs requires an additional parameter. 
-By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs can be drawn, since drawing non-complete graphs would require us to specfiy which tree leaves are filled, e.g. by storing \texttt{null} values in the relations array. In our toolset however we assume that $k = 2$, i.e. representing a complete binary query graph, so that we don't need any additional user inputs for this query type (TODO: Maybe add new UI component to specify $k$).
+By $k$ we denote the degree of the tree. So far only complete $k$-ary query graphs can be drawn, since drawing non-complete graphs would require us to specfiy which tree leaves are filled, e.g. by storing \texttt{null} values in the relations array. 
+
+\begin{note}
+In our toolset however we assume that $k = 2$, i.e. representing a complete binary query graph, so that we don't need any additional user inputs for this query type. Irrespective of $k$ this represents a ``tree'' type query graph and using any $k \geq 2$ provides only very little additional insight in conveying how the algorithm works.
+\end{note}
 
 First, we calculate the level $l_i$ for a given node at index $i$. This is given by
 
@@ -264,15 +280,15 @@ First, we calculate the level $l_i$ for a given node at index $i$. This is given
     l_i = \lfloor \log_{k}(i+1)\rfloor
 \end{equation}
 
-Furthermore, we calculate the number of nodes on the respective level, i.e. the width $\phi_{l_i}$ (Any better symbols for this than $\phi$?) of the tree at that level, which is given by
+Furthermore, we calculate the number of nodes on the respective level, i.e. the width $\phi_{l_i}$ of the tree at that level, which is given by
 \begin{equation}
-    \phi_{l_i} = 2^{l_i}
+    \phi_{l_i} = k^{l_i}
 \end{equation}
 
 In the next step, we calculate the current column $\rho$ (is there a better name and symbol?) for the current node. In this formula we make use of the width of the tree at the $i$-th level as calculated beforehand.
 
 \begin{equation}
-    \rho_{i} = i - 2^{\phi_{l_i} + 1}
+    \rho_{i} = i - k^{\phi_{l_i} + 1}
 \end{equation}
 
 Now we can directly calculate the $x$-coordinate for the current node, which is given by
@@ -296,7 +312,7 @@ Since we calculated $x_i$ and $y_i$ now the point $(x_i, y_i)$ can be defined.
 \subparagraph{Edges}
 The calculation for edge coordinates in tree query graphs requires us to calculate the index $i_p$ of the parent node first, for all $i > 0$. This is given by 
 \begin{equation}
-    i_p = \lfloor \frac{i-1}{2} \rfloor
+    i_p = \lfloor \frac{i-1}{k} \rfloor
 \end{equation}
 Now, we can calculate the node position for this parent node as specified in equations \ref{eq:qg-tree-level} through \ref{eq:qg-tree-y}. Hence, the edge coordinates are given by 
 \begin{equation}
@@ -392,8 +408,7 @@ $
 \paragraph{Labels}
 In addition to visualizing the relations as nodes and connections as edges in the query graph we want to draw labels for the cardinality of a relation and the selectivity between two relations.
 
-\subparagraph{Cardinality} The cardinality label is drawn right under a relation's node. We make the assumption that the width of the text $\sigma$ and its height $\tau$ at the specified font size is known by being provided by the canvas' layout engine, or can be calculated otherwise.
-// TODO: Finish
+\subparagraph{Cardinality} The cardinality label is drawn right under a relation's node. We make the assumption that the width of the text $\sigma$ and its height $\tau$ at the specified font size is either known by being provided by the canvas' layout engine, or can be calculated otherwise. The label is drawn by simply centering it on the corresponding node and moving it down by $\frac{\tau}{2}$.
 
 \subparagraph{Selectivity}
 The selectivity label is drawn at the center point of the straight line edge between two connected nodes. The coordinates for this point $(l_{cx}, l_{cy})$ are given by

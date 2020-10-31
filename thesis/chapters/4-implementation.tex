@@ -4,19 +4,21 @@
 \subsection{API Requirements and Design Goals}
 \label{subsub:api-requirements-goals}
 
+In this section we define and shortly describe some objectives that the toolset has to fulfil. 
+
 \paragraph{Orthogonality}
 Most importantly, the property  of orthogonality 
 as defined by Eric S. Raymond in \textit{The Art of Unix
 Programming} \cite{raymond2003compactness} has to be fulfilled for the visualization code with regards to the algorithm implementation's code, i.e. it should not change its behavior or state.
 
 \paragraph{Declarativity} One of the main goals of this framework is to minimize 
-the amount of code or configuration that has to be added to exisiting algorithms' implementations in order to make use of the visualization for its intended purpose in exploration or debugging. The visualization should therefore be specified as declaratively as 
+the amount of code or configuration that has to be added to existing algorithms' implementations in order to make use of the visualization for its intended purpose in exploration or debugging. The visualization should therefore be specified as declaratively as 
 possible, with the user specifying \textit{only} the relevant parameters–while minimizing the amount of required boilerplate code.
 
 %This allows for many side-effects like reusability, mainta
 
 \paragraph{Separation of Concerns}
-With the separation of the complex algorithm and user interface/visualization logic in mind it is imperative to keep the amount code required to create new visualizations as minimal as possible. 
+With the separation of the complex algorithm and user interface/visualization logic in mind it is imperative to keep the amount of code required to create new visualizations as minimal as possible. 
 Thus, we organize their architecture in a client-server 
 relationship, whereby the client specifies the join 
 problem parameters and configuration and the server can
@@ -29,18 +31,17 @@ The advantages of this approach are multifold:
           changing the other
     \item More complex join ordering algorithms can be 
           performed on a (more powerful) server
-    \item The above allow us to run the application 
-          within a web application without sacrificing 
-          the performance by limiting ourselves with a 
-          slow, interpreting JavaScript engine, but being 
-          able to run compiled and thus more optimized and therefore faster 
-          code
+    \item We are able to access the application 
+          via a web user interface without sacrificing 
+          any performance by limiting ourselves with a 
+          slow, interpreting JavaScript engine, but we are  
+          able to run compiled and thus more optimized and therefore faster code
     \item It allows us to formally specify interfaces between
           client and server %(Abbildung malen)
 \end{itemize}
 
 \paragraph{Flexibility}
-The visualization tools should be abstract enough that it is not catered towards a specific algorithm, but can used to visualize a wide range of algorithms, especially ones it has not been explicitly programmed for.  
+The visualization tools should be abstract enough that it is not catered towards a specific algorithm, but can be used to visualize a wide range of algorithms, especially ones it has not been explicitly programmed for.  
 
 Since there is a large number of data structures an algorithm can use for its implementation we limit ourselves to procedures involving a query graph with information about its number of relations, the query graph type as specified in \ref{subsub:query-types}, and its cardinalities and selectivities.
 This limitation is necessary to enforce a manageable scope for creating a minimum viable product.
@@ -69,12 +70,12 @@ instead of the algorithm itself. The \texttt{visualize} function then automatica
 \end{example}
 
 \paragraph{High signal-to-noise ratio} 
-In our implementation we are using code folding, enabled
+In many text editors it is possible to use code folding, enabled
 through the orthogonality property as mentioned in 
 section \ref{subsub:api-requirements-goals}. This allows
 us to completely show or hide the visualization code 
-when required. Thus, we can achieve an inobtrusive
-debugging tool that can be written alongisde an 
+when required. Thus, we can achieve an unobtrusive
+debugging tool that can be written alongside an 
 algorithm's implementation code and doesn't decrease
 its signal-to-noise ratio.
 
@@ -84,7 +85,7 @@ The visualized query graph should be drawn in a way that no edges are overlappin
 
 \subsection{Architecture}
 
-The following figure \ref{fig:sequence-diagram} illustrates a sequence diagram for the client-server architecture used for this project. At first, we retrieve all avaialable algorithms, denoted by $A$, from the server. This is used to asynchronously generate the available options in the algorithm selection picker. Retrieving the algorithms from the server has the advantage that new algorithm visualizations can be added server-side without changing, re-installing or re-deploying any client code.
+The following figure \ref{fig:sequence-diagram} illustrates a sequence diagram for the client-server architecture used for this project. At first, we retrieve all available algorithms, denoted by $A$, from the server. This is used to asynchronously generate the available options in the algorithm selection picker. Retrieving the algorithms from the server has the advantage that new algorithm visualizations can be added server-side without changing, re-installing or re-deploying any client code.
 
 Next up, the user can select all the parameters for the visualization. The first parameter is the algorithm $a \in A$ to be visualized. Moreover, the query graph type $qg \in {\text{\{``chain'', ``star'', ``cycle'', ``tree'', ``moerkotte''\}}}$ can be specified. Contrary to the algorithm, the query type is not fetched from the server as the client implementation explicitly has to know the available query graphs at build time, since they are used for calculating the position of different query graph nodes as detailed in section \ref{subsub:query-graphs}. 
 
@@ -96,7 +97,7 @@ As the server receives this request, it calls the corresponding algorithm by usi
 
 Upon receiving this response, the client renders the query graph including labels for cardinalities and selectivities, and edges for connected query graph nodes. Moreover, the algorithm's steps are rendered in a hierarchical table.
 
-As the rendering completes, the number of total steps |S| is calculated and the user is presented with two buttons to move to either the next or the previous step. After doing so, the user interface, including the query graph and the variable table, are rerendered accordingly.
+As the rendering completes, the number of total steps $\vert S\vert$ is calculated and the user is presented with two buttons to move to either the next or the previous step. After doing so, the user interface, including the query graph and the variable table, are re-rendered accordingly.
 
 \begin{figure}[H]
     \centering
@@ -129,10 +130,8 @@ As the rendering completes, the number of total steps |S| is calculated and the 
 
 
 \subsection{Choice of Technology}
-TODO: more detail, citations
 
-For the technology used in thr implementation of both client and server code we
-want to maximize
+For the technology used in the implementation of both client and server code we want to maximize
 
 \begin{enumerate}[label={(\roman*)}]
     \item \label{itm:accessibility} \textbf{Accessibility}, a minimal amount of effort required to access the application
@@ -143,11 +142,11 @@ want to maximize
 In order to maximize \ref{itm:accessibility} we create an application that runs in a web browser and doesn't need any user-initiated installation or update procedures.
 With the 2017 released WebAssembly (Wasm)\footnote{\url{https://webassembly.org}} portable byte-code standard still being in its infancy at around 90\% browser support\footnote{\url{https://caniuse.com/wasm}} and being recommended by the World Wide Web Consortium not until December 5th 2019\footnote{\url{https://www.w3.org/TR/wasm-core-1/}}, this leaves us with JavaScript as the only viable language for the client-side code. 
 
-Additionally, in order to modularize the user interface and adding the ability to import existing user interface components, we use \texttt{React.js}\footnote{\url{https://reactjs.org}}, as of writing this thesis the most popular JavaScript library for building user interfaces.
-%\footnote{Ranked by number of stars on \url{https://github.com/search?l=JavaScript&o=desc&q=language%3AJavaScript&s=stars&type=Repositories}}.
-% search?l=Go&o=desc&q=http&s=stars&type=Repositories
+Additionally, in order to modularize the user interface and adding the ability to import existing user interface components, we use \texttt{React.js}\footnote{\url{https://reactjs.org}}, as of writing this thesis the most popular JavaScript library for building user interfaces measured by ``Stars'' on the popular repository hosting website GitHub\footnote{\url{https://github.com/search?l=JavaScript&o=desc&q=language\%3AJavaScript&s=stars&type=Repositories}}.
 
-For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin}}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub\footnote{\url{https://github.com/}}.
+For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin}}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub\footnote{\url{https://github.com/search?l=Go&o=desc&q=http&s=stars&type=Repositories}}.
+
+By using two popular libraries and languages we ensure a good community support, a good availability of learning or tooling resources, and continuous development of the libraries. Therefore, contributions to the visualization toolset by developers other than the original author have a lower barrier of entry.
 
 %Thus, we resort to modern, but well-adopted languages and libraries.
 %The software should be built with technologies that prepare well for continued development and maintenance.
@@ -173,7 +172,12 @@ Since selectivities are symmetrical, they are stored once and once only in the J
 \setlength{\abovedisplayskip}{10pt}
 \setlength{\abovedisplayshortskip}{10pt}
 
-\paragraph{Complete Binary Tree}
+\paragraph{Complete k-ary Tree}
+
+\begin{note}
+    Similar to the drawing of $k$-ary trees we implement the generator only for $k=2$, despite our formulae giving the calculation steps for an arbitrary degree $k$. This is mostly to avoid having to convert the result from Go's \texttt{Pow} and \texttt{Log} result from \texttt{float64} back to \texttt{uint64}. For that reason we use a custom implementation of a logarithm returning a \texttt{uint}, which so far only works for base 2.
+\end{note}
+
 \subparagraph{Selectivities}
 Since implication \ref{eq:bfs-implication} holds, we only need to calculate selectivities for nodes which have children.
 Thus, first of all, we calculate the number of vertices with children $n_c$, i.e. the number of relation-pairs for which selectivity entries exist in the resulting JSON file.
@@ -215,21 +219,21 @@ Next up, we then define the set of vertices in the levels below $l_i$, denoted $
 
 Now, we need the cardinality of this set, defined as $n_{j<i}$ to get the number of nodes on all level smaller than $l_i$. This can be efficiently calculated using the following equation:
 \begin{equation}
-     n_{j<i} := \vert V_{l_{j<i}}\vert = 2^{l(v_i) + 1} - 1
+     n_{j<i} := \vert V_{l_{j<i}}\vert = k^{l(v_i) + 1} - 1
 \end{equation}
 
 This allows us to calculate the number of children for each level $l(v_i)$.
 \begin{equation}
-    \hat{l}_i = \min(2^{l(v_i) + 1}, n - n_{j<i})
+    \hat{l}_i = \min(k^{l(v_i) + 1}, n - n_{j<i})
 \end{equation}
 
 \begin{note}
-Note that $l(v_i)$ is not necessarily equal to the width of the level in a full $k$-ary tree, which is given by $2^{l(v_i) + 1}$, since some leaf nodes could be missing in the bottom level of the tree.
+Note that $l(v_i)$ is not necessarily equal to the width of the level in a full $k$-ary tree, which is given by $k^{l(v_i) + 1}$, since some leaf nodes could be missing in the bottom level of the tree.
 \end{note}
 
 Furthermore, we calculate the ``column'' $c_i$ of $v_i$, given by
 \begin{equation}
-    c_i = i - 2^{l(v_i)} + 1
+    c_i = i - k^{l(v_i)} + 1
 \end{equation}
 
 This lets us calculate the number of children $\hat{n}_i$ for a node at index $i$:
@@ -238,7 +242,7 @@ This lets us calculate the number of children $\hat{n}_i$ for a node at index $i
 \end{equation}
 
 \begin{note}
-    This $\hat{n}_i$ is equal to $k$ for most internal nodes in a sufficiently large tree. However, if $log_k(n) \notin \mathbb{N}$ there could be an internal node with $\hat{n}_i < k$, i.e. not all possible leaf nodes for the last node with childrens are filled.
+    This $\hat{n}_i$ is equal to $k$ for most internal nodes in a sufficiently large tree. However, if $log_k(n) \notin \mathbb{N}$ there could be an internal node with $\hat{n}_i < k$, i.e. not all possible leaf nodes for the last node with children are filled.
 \end{note}
 
 Now we can define the neighbors of $v_i$ as
@@ -246,7 +250,7 @@ Now we can define the neighbors of $v_i$ as
     \mathbb{N}_i = \{ x_{i, j} \}_{j=0}^{\hat{n}_i - 1} 
 \end{equation}
 
-We also calculate the lowest index of the node's neighbors $j_{min\mathbb{N}_i}$. (TODO: Not entirely sure about this notation).
+We also calculate the lowest index of the node's neighbors $j_{min\mathbb{N}_i}$.
 \begin{equation}
     j_{min\mathbb{N}_i} = ik + 1
 \end{equation}
@@ -271,15 +275,13 @@ Let us now define the set of all neighbors $\mathbb{N}$ for all indices $i < n$:
     \mathbb{N} = \{\mathbb{N}_i\}_{i=0}^{n-1}
 \end{equation}
 
-We can now set a selectivity for each $(x_i,j) \in \mathbb{N}_i \in \mathbb{N}$, where the selectivity $s_{i,j}$ is a random varialbe following a uniform distribution over the set $\mathbb{R} \cap [0,1]$.
+We can now set a selectivity for each $(x_i,j) \in \mathbb{N}_i \in \mathbb{N}$, where the selectivity $s_{i,j}$ is a random variable following a uniform distribution over the set $\mathbb{R} \cap [0,1]$.
 
 A Go implementation example of the symmetrical neighbor calculation is illustrated in algorithm \ref{alg:symNeighbors}. The assignment of selectivities to these entries is trivial and thus not illustrated here, but can be found in the supplementary code.
 
 \begin{note}
 The variable names in algorithm \ref{alg:symNeighbors} correspond to the names used in the previously used mathematical definitions. In the supplementary code to this thesis longer, more descriptive variable names are used.
 \end{note}
-
-%TODO: Replace \texttt{log2_{64}} with \texttt{math.Log}
 
 \begin{algorithm}[H]
 \begin{minted}{go}
@@ -437,7 +439,6 @@ type VariableTableEntry []uint
 \end{code}
 \vspace{0.8cm}
 
-TODO: Rename in code
 These variable table entries are stored in a \texttt{VariableTableRow} map. A string identifying the relation that corresponds to the \texttt{Identifier} in the \texttt{ObservedRelation} as the key of the map.
 
 \begin{code}
@@ -450,7 +451,7 @@ type VariableTableRow map[string]VariableTableEntry
 
 \paragraph{GraphState}
 
-The state of the query graph drawn in the user interface must be represented in order to unambigiously specify its configuration. We want to be able to give each node in the graph a color that corresponds to the \texttt{Color} field of the \texttt{ObservedRelation}. Hence, we first define a \texttt{NodeColor} type storing the \texttt{Index} of the relation, as well as the respective \texttt{Color}.
+The state of the query graph drawn in the user interface must be represented in order to unambiguously specify its configuration. We want to be able to give each node in the graph a color that corresponds to the \texttt{Color} field of the \texttt{ObservedRelation}. Hence, we first define a \texttt{NodeColor} type storing the \texttt{Index} of the relation, as well as the respective \texttt{Color}.
 
 \begin{code}
 \begin{minted}{go}
@@ -491,7 +492,7 @@ type VisualizationStep struct {
 \end{code}
 \vspace{0.8cm}
 
-Finally, we have defined all the types necessary to define a high-level \texttt{VisualizationRoutine}. This routine contains a \texttt{Name} field to describe its corresponding algorithm, e.g. ``EnumerateCsg'', as well as fields to store an \texttt{ObservedRelation} slice to specify the sets of relations that should be kept track of for this routine. Furthermore, we store a slice of all the routines steps. This \texttt{Steps} slice is genericly implemented using a pointer to Go's \texttt{interface{}} type, as it can be filled with either an atomic \texttt{VisualizationStep} or another \texttt{VisualizationRoutine}. This allows for subroutines or even recursive calls of other subroutines and creates a hierarchical structure of all steps in the visualization's JSON representation. 
+Finally, we have defined all the types necessary to define a high-level \texttt{VisualizationRoutine}. This routine contains a \texttt{Name} field to describe its corresponding algorithm, e.g. ``EnumerateCsg'', as well as fields to store an \texttt{ObservedRelation} slice to specify the sets of relations that should be kept track of for this routine. Furthermore, we store a slice of all the routines steps. This \texttt{Steps} slice is generically implemented using a pointer to Go's \texttt{interface{}} type, as it can be filled with either an atomic \texttt{VisualizationStep} or another \texttt{VisualizationRoutine}. This allows for subroutines or even recursive calls of other subroutines and creates a hierarchical structure of all steps in the visualization's JSON representation. 
 
 \begin{code}
 \begin{minted}{go}
@@ -521,12 +522,12 @@ We simplify the implementation for the \texttt{SetMinus} operation by omitting t
 \begin{algorithm}
 \begin{minted}{go}
 func SetMinus(S1 uint, S2 uint, length uint) uint {
-    mask := uint((1 << length) - 1)
+    // mask := uint((1 << length) - 1)
     // temp := S1 & S2
     // temp = ^temp
     // temp &= mask
     // return S1 & temp
-    return S1 & ^S2 & mask
+    return S1 & ^S2
 }
 \end{minted}
 \caption{Go implementation of \texttt{SetMinus}}
@@ -631,7 +632,7 @@ func Visualize(visualization Visualizable,
                JTC JoinTreeCreator) []*VisualizationRoutine
 \end{minted}
 
-This \texttt{visualize} function can be used to call a function that conforms to the \texttt{Visualizable} type as defined in \ref{fig:visalizable}, one example being our implementation of \texttt{DPccp}. This will automatically set the \texttt{VisualizationOn} Boolean to \texttt{true}, execute the algorithm, and set it back to its previous value after finishing the execution. Moreover, it will return all the emitted routines as a \texttt{*ViszalizationRoutine} slice and reset all local variables after execution.
+This \texttt{visualize} function can be used to call a function that conforms to the \texttt{Visualizable} type as defined in \ref{fig:visalizable}, one example being our implementation of \texttt{DPccp}. This will automatically set the \texttt{VisualizationOn} Boolean to \texttt{true}, execute the algorithm, and set it back to its previous value after finishing the execution. Moreover, it will return all the emitted routines as a \texttt{*VisualizationRoutine} slice and reset all local variables after execution.
 
 \begin{example}
     An implementation of the \texttt{DPccp} algorithm defined through the following function
@@ -679,7 +680,7 @@ After starting a visualization routine we either start a new routine that is add
 func AddVisualizationStep(QG QueryGraph, relations VariableTable)
 \end{minted}
 
-The implementation of this function will automatically construct a new \texttt{GraphState} from information in the passed \texttt{VariableTable} by retrieving its respective color configuration. This makes sure the observed relations and their corresponding nodes in the query graph have the same color without the need to specify it separately or explicitly creating the \texttt{GraphState}. Furthermore, a \texttt{UUID} is assigned to the visualization step, which used for efficient equivalence checks in the client implementation.
+The implementation of this function will automatically construct a new \texttt{GraphState} from information in the passed \texttt{VariableTable} by retrieving its respective color configuration. This makes sure the observed relations and their corresponding nodes in the query graph have the same color without the need to specify it separately or explicitly creating the \texttt{GraphState}. Furthermore, a \texttt{UUID} is assigned to the visualization step, which is used for efficient equivalence checks in the client implementation.
 
 \begin{fullwidth}[width=\textwidth + 0.5cm,leftmargin=-2.5cm]
 \begin{algorithm}[H]
@@ -714,7 +715,7 @@ func AddVisualizationStep(QG QueryGraph, relations VariableTable) {
 \end{fullwidth}
 
 \begin{note}
-For the time being, we make the assumption that only one node color can be assigned to each node in the visualized query graph. Thus, we must make sure that the sets of all observed relations are disjoint. In order to formalize this requirement we define the set of observed relations $O \in R$. Assume there are $v$ observed variables. For a concise mathematical definition we assume variable keys are integers $i \in \mathbb{N}$ from 0 to $v-1$. Notice these keys should be interpreted as keys of a dictionary or map data structure and don't necessarily correspond to the index of the relation.
+For the time being, we make the assumption that only one node color can be assigned to each node in the visualized query graph. Thus, we must make sure that the sets of all observed relations are disjoint. In order to formalize this requirement we define the set of observed relations $O \subseteq R$. Assume there are $v$ observed variables. For a concise mathematical definition we assume variable keys are integers $i \in \mathbb{N}$ from 0 to $v-1$. Notice these keys should be interpreted as keys of a dictionary or map data structure and don't necessarily correspond to the index of the relation.
 \begin{equation}
 O := \{O_i\}_{i=0}^{v-1}
 \end{equation}
@@ -731,18 +732,14 @@ However, the union of these sets $\bigcup_{i=0}^{v-1}{O_i}$ does not necessarily
 \subparagraph{Excursus: Impact on \texttt{DPccp} implementation}
 In \texttt{EnumerateCsgRec} inside \texttt{DPccp} we want to visualize the sets of relations $S$ and $X$, among others.  Assumption \ref{eq:disjointness-observed-relations} can then be fulfilled if we slightly change the definition of $\mathcal{B}_i$, so that inside \texttt{EnumerateCsgRec} $S \cap X = \emptyset$ holds. 
 
-\begin{theorem}
+\begin{conjecture}
 $\mathcal{B}_i := \{v_j\vert j \leq i\}$ can be redefined to $\mathcal{B}_i := \{v_j\vert j < i\}$ without changing the emits of the algorithm, i.e. in every call of \texttt{EnumerateCsgRec} we can still assume that $\{v_i\} \notin S', \forall S' \subseteq N$.
-\end{theorem}
+\end{conjecture}
 
 \begin{proof}
 Let us start at the \texttt{EnumerateCsgRec} call inside \texttt{EnumerateCsg}. The variables $S := \{v_i\}$ and $X := \mathcal{B}_i$ are used as parameters to \texttt{EnumerateCsgRec} and therefore, inside this call, \{$v_i\} \in S$. This will also hold for all recursive calls as the recursive set, denoted $S_{rec}$, will be defined as  $S_{rec} := S' \cup S \supseteq S$. From the definition of $\mathbb{N}(S)$ it follows that $v \notin \mathbb{N}(S) \forall v \in S $ and thus $v_i \notin \mathbb{N}(S)$. Since $N := \mathbb{N}(S)\setminus X$ it follows that $N \subseteq \mathbb{N}(S)$, from which it transitively follows that $\{v_i\} \notin N$. Thus, since $S' \in \mathcal{P}(N)\setminus\emptyset$ and therefore $S' \subseteq N$, it follows that $\{v_i\} \notin S'$.
 
 \end{proof}
-
-\paragraph{Usage}
-
-The usage of this algorithm is also demonstrated in the next section, \ref{subsub:implementation-dpccp}, where it is used in combination with the \texttt{EnumerateCsg} algorithm. We visualize the entire \texttt{DPccp} algorithm in the supplemented code. (TODO: No it's not, yet. It can be found in the supplementary code though).
 
 \subsubsection{DPccp}
 \label{subsub:implementation-dpccp}
@@ -939,76 +936,206 @@ As of today (\today), there is no official JSON schema definition file format ye
 \subsubsection{Join Problem}
 \label{subsub:join-problem-data-structure}
 
-The schema definition for join problems can be found in figure \ref{fig:json-joinproblem}.
+The schema definition for join problems can be found in data structure \ref{fig:json-joinproblem}.
 All the keys correspond to the explicitly defined JSON tags for the \texttt{JSONJoinProblem} type in the \texttt{joinProblemParser.go} file.
 
 \subsubsection{Visualization Routines}
-Likewise, there is a fixed JSON definition for an algorithm's visualization routines found in figure \ref{fig:json-visualization-routine}.
+Likewise, there is a fixed JSON definition for an algorithm's visualization routines found in data structure \ref{fig:json-visualization-routine}.
 
-TODO: They are not completely finished yet.
-
-\newpage
-
-\begin{figure}[H]
+\begin{code}
 \begin{minted}{json}
 {
-    "$schema": "http://json-schema.org/draft/2019-09/schema",
-    "title": "JoinProblem",
-    "type": "object",
-    "properties": {
-        "problemID": "number",
-        "neighbors": {
-            "number{relationID}": ["string{neighbors}"]
-        },
-        "numberOfRelations": "number",
-        "relations": [
-            "cardinality": "number",
-            "name": "string",
-            "problemID": "number",
-            "relationID": "number"
-        ],
-        "selectivities": {
-            "string{s1,s2}": "number"
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "JoinProblem",
+  "type": "object",
+  "required": [
+    "problemID",
+    "neighbors",
+    "numberOfRelations",
+    "relations",
+    "selectivities"
+  ],
+  "properties": {
+    "problemID": {
+      "type": "number"
+    },
+    "neighbors": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "string"
         }
+      }
+    },
+    "numberOfRelations": {
+      "type": "number"
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cardinality": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "problemID": {
+            "type": "number"
+          },
+          "relationID": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "selectivities": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9,]+$": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
     }
+  },
+  "additionalProperties": false
 }
+
 \end{minted}
 \caption{JSON schema of a join problem}
 \label{fig:json-joinproblem}
-\end{figure}
+\end{code}
 
-\newpage
-
-\begin{figure}[H]
-    \begin{minted}{json}
+\begin{code}
+\begin{minted}{json}
 {
-    "$schema": "http://json-schema.org/draft/2019-09/schema",
-    "title": "VisualizationRoutine",
-    "type": "object",
-    "properties": {
-        "name": "string",
-        "observedRelations": [
-            {
-                "identifier": "string",
-                "color": {
-                    "R": "number",
-                    "G": "number",
-                    "B": "number",
-                    "A": "number"
-                }
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Visualization",
+  "type": "object",
+  "required": ["queryGraph", "routines"],
+  "properties": {
+    "queryGraph": {
+      "type": "object",
+      "required": ["relationCardinalities", "selectivities", "neighbors"],
+      "additionalProperties": false,
+      "properties": {
+        "relationCardinalities": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "selectivities": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9]+$": {
+              "type": "number"
             }
-        ],
-        "steps": [
-            {
-                ""
+          },
+          "additionalProperties": false
+        },
+        "neighbors": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9]+$": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
             }
-        ]
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "routines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/subroutine"
+      }
     }
+  },
+  "definitions": {
+    "step": {
+      "type": "object",
+      "required": ["graphState", "variables", "uuid"],
+      "additionalProperties": false,
+      "properties": {
+        "graphState": {
+          "type": "object"
+        },
+        "variables": {
+          "type": "object"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
+    },
+    "subroutine": {
+      "type": "object",
+      "required": ["name", "observedRelations", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "observedRelations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["identifier", "color"],
+            "additionalProperties": false,
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "color": {
+                "type": "object",
+                "required": ["R", "G", "B", "A"],
+                "additionalProperties": false,
+                "properties": {
+                  "R": {
+                    "type": "number"
+                  },
+                  "G": {
+                    "type": "number"
+                  },
+                  "B": {
+                    "type": "number"
+                  },
+                  "A": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "steps": {
+          "type": ["array", "null"],
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/subroutine"
+              },
+              {
+                "$ref": "#/definitions/step"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
 \end{minted}
-\caption{JSON schema of a visualization routine}
 \label{fig:json-visualization-routine}
-\end{figure}
+\caption{JSON schema of a visualization}
+\end{code}
 
 \newpage
 
@@ -1142,7 +1269,7 @@ In the following, we list all actions that can mutate the application's Redux st
 \texttt{increaseStep} & Increases the visualization step by a specified amount\\\hline
 \texttt{decreaseStep} & Decreases the visualization step by a specified amount\\\hline
 \texttt{resetSteps} & Resets the visualization step back to 1\\\hline
-\texttt{updateSteps} & Updates steps (TODO: More extensive)\\\hline
+\texttt{updateSteps} & Updates steps stored locally\\\hline
 \texttt{updateCurrentStepUUID} & Updates the UUID in order to highlight the current step\\\hline
 \end{tabularx}
 \caption{Redux Actions}
@@ -1236,12 +1363,12 @@ As the client is fetching its data from the server please keep in mind that the 
 \end{note}
 
 \subsection{Deployment}
-TODO: Finish, move to appendix?
 
 One of the major benefits of using a client-server architecture and web technologies is that we can host the server part on an application server or platform-as-a-service offering such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine}} and the front-end (client) on a web server.
 This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side. Likewise, the deployment of new application versions is simple and can be done with a single shell instruction for both client and server.
 
 In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk}} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com}} for hosting the front-end.
+\newpage
 
 \paragraph{Prerequisites}   
 
@@ -1250,10 +1377,20 @@ The Google Cloud SDK must be installed using
 \begin{minted}{shell-session}
     $ curl https://sdk.cloud.google.com | bash
 \end{minted}
-Follow the instructions in the terminal session to continue. 
+Follow the instructions in the terminal session to finish the installation process. Further information is found on \url{https://cloud.google.com/sdk}.
 
 \subparagraph{Client}
-The user needs a GitHub account and host the repository on the very same. GitHub Pages\footnote{\url{https://pages.github.com}} has to be configured for the project. Now, we can simply deploy the project by typing
+The user needs a GitHub account and host the repository on their platform. GitHub Pages\footnote{\url{https://pages.github.com}} has to be configured for the project according to the instructions on \url{https://pages.github.com}.
+
+\subparagraph{Steps}
+Now, we can simply deploy the client and server with just one line of shell code.
+
+In order to deploy the server one can simply type
+\begin{minted}{shell-session}
+$ gcloud app deploy
+\end{minted}
+and for client
 \begin{minted}{shell-session}
 $ npm deploy
 \end{minted}
+to deploy the application.

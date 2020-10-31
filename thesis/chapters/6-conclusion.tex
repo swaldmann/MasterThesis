@@ -1,23 +1,18 @@
 \section{Conclusion}
 
+\vspace{-0.2cm}
 \subsection{Summary}
 
-TODO: Finish.
+The toolset presented in this thesis can declaratively visualize algorithms such as \texttt{DPccp}, while hiding many details of the visualization itself—such as graph rendering and subroutine stack creation—from its user. Join problems can be fully graphically represented on the client's browser window, including their cardinalities and selectivities, making it easy to reason about the steps the algorithm under observation will take, in case either or both of them are used in a cost function.
 
-\begin{itemize}
-    \item Supports higher-level drawings of datastructures to a degree where algorithms like DPCCP can be declaratively visualized while hiding details of the visualization implementation itself. To be precise, all algortihms containing on a query graph with disjoint observed relations can be visualized.
-\end{itemize}
+ Most importantly, the toolset is designed with reusability and extensibility in mind, providing the opportunity to easily add new visualizations. Naturally, closely related algorithms such as \texttt{DPsize}\cite{moerkotte2006analysis}, for which we also provide an implementation sample in the supplementary code, are part of this subset of already visualizable routines. To be precise, all algorithms for which we observe disjoint sets of relations can be visualized on a rendered query graph, without any modification to the visualization's server or client logic, but by merely implementing the algorithm and calling the publicly exposed functions of the library to start subroutines or add new steps. It is the library's users' judgement however to evaluate the sensibleness of each application, as there might be a large amount of visualization steps or not all relevant information is conveyed in the portrayed graph or table of relations.
 
-
-
-
-
+ \vspace{-0.1cm}
 \subsection{Future Work}
 
-TODO: Finish.
+There are still some open tasks that could be examined and implemented. As of now, the toolset can only be used on disjoint sets of relations. However, this disjointness requirement can be eliminated by adding the possibility to render multi-colored nodes in the client's query graph canvas.
+Further, as we implicitly interpret a bit vector as a set of relations, the type restriction on tracked variables could only be loosened by adding additional parameters to the variable observers to describe how to interpret them and format their respective outputs, thereby however posing a trade-off between declarativity and genericness.
 
-\begin{itemize}
-    \item Multi-color support for nodes
-    \item It could be possible that explicitly giving a \texttt{graphType} parameter to the \texttt{drawQueryGraph} method of the client is not necessary. This would however require us to infer the graph type from the relation's connections themselves.
-\end{itemize}
+In addition, the possible query graph types could be extended to cover other types such as non-complete trees, cliques or grids. Moreover, a possibility to user-define arbitrary trees could be provided. Even more generally, the library could be extended to display intermediate results of subroutines or providing the ability to track multiple tables of observed variables.
 
+All of these proposed changes are possibly implemented by using the current state of the project and its architecture as a baseline.

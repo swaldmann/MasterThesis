@@ -14,7 +14,7 @@ An entry in the table is described as a \textit{tuple}. Furthermore, we call the
 \subsubsection{Join}
 A join links two or more relations by building their cross product and filtering it with the help of a \textit{join predicate}. 
 The result is a new relation which contains all the joined tuples for which the predicate evaluates to true. We denote the join operator using the symbol "$\Join$". 
-As an example, we denote the corresponding join for the two relations $R$ and $S$ with ``$R \Join S$''.
+As an example, we denote the corresponding join for the two relations $R_i$ and $R_j$ and predicate ${p_{i,j}}$ with ``$R_i \Join_{p_{i,j}} R_j$''.
 
 \subsubsection{Selectivity}
 The selectivity of two relations is the ratio between the cardinality of their cross product and the number of elements in the join's resulting relation. 
@@ -31,10 +31,10 @@ Since we can assume that $|R_i\Join_{p_{i,j}}R_j| \geq 0$, $|R_i \times R_j| > 0
 
 For simplification purposes we only inspect joins with at most one join predicate. Hence, there is just one selectivity between two given relations.
 
-\subsubsection{Query Types}
+\subsubsection{Query Graphs}
 \label{subsub:query-types}
 
-Relations can be connected in many different ways. These connections can be visualized using a graph. There is a number of different query types, but most importantly we want to have a look at the following six query types, because they represent distinct problems:
+Relations can be connected in many different ways. These connections can be visualized using a graph. There is a number of different query types, but most importantly we want to have a look at the following six query types as covered in \cite{moerkotte2009building}, because they represent distinct problem categories in terms of suitableness for specific algorithms and general complexity:
 
 \begin{figure}[H]
     \captionsetup[subfigure]{justification=centering}
@@ -50,7 +50,7 @@ Relations can be connected in many different ways. These connections can be visu
         \endpsmatrix
         \caption{Chain}
     \end{subfigure}
-    \hspace{0.5cm}
+    \hspace{0.cm}
     \begin{subfigure}[t]{.4\textwidth}
         \centering
         \psmatrix[colsep=0.5cm,rowsep=0.5cm,mnode=circle]
@@ -64,7 +64,7 @@ Relations can be connected in many different ways. These connections can be visu
         \endpsmatrix 
         \caption{Star}
     \end{subfigure}
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{subfigure}[t]{.4\textwidth}
         \centering
@@ -93,7 +93,7 @@ Relations can be connected in many different ways. These connections can be visu
         \endpsmatrix
         \caption{Cyclic}
     \end{subfigure}
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{subfigure}[t]{.4\textwidth}
         \centering
@@ -130,7 +130,6 @@ Relations can be connected in many different ways. These connections can be visu
         \endpsmatrix
         \caption{Clique}
     \end{subfigure}
-    \vspace{0.3cm}
 
 \caption{Query Graphs}
 \end{figure}
@@ -140,7 +139,7 @@ Relations can be connected in many different ways. These connections can be visu
 An operator tree contains operators as inner nodes and relations as leaves.
 Through this tree the order in which the operations are executed can be graphically visualized.
 It typically contains any operator of Codd's relational model, however in this thesis we limit those to the only relevant join operator ($\Join$), which is derived from a cross product and a subsequent selection.
-Depending on the construction of the tree it can be classified as either \textit{left-deep}, \textit{right-deep}, \textit{zigzag} or \textit{bushy}.
+Depending on the structure of the tree it can be classified as either \textit{left-deep}, \textit{right-deep}, \textit{zigzag} or \textit{bushy}.
 
 \begin{example}
 The trees for $(R_1 \Join R_2) \Join R_3$, $R_1 \Join (R_2 \Join R_3)$, $(R_1 \Join (R_2 \Join R_3)) \Join R4$ and $(R_1 \Join R_2) \Join (R_3 \Join R_4)$ can be graphically represented using the following visualizations respectively:\\
@@ -204,7 +203,7 @@ The trees for $(R_1 \Join R_2) \Join R_3$, $R_1 \Join (R_2 \Join R_3)$, $(R_1 \J
 
 \subsubsection{Dynamic Programming}
 
-TODO
+Dynamic programming is an optimization technique for dividing complex and computationally expensive problems into sub-problems and reusing their intermediate results in order to prevent redundant calculations.
 
 \subsubsection{Bitvector Representation}
 \label{subsub:basics-bitvector}
@@ -254,7 +253,7 @@ It provides a router-level middleware that lets us specify API routes for our se
 \texttt{React.js}\footnote{\url{https://reactjs.org}} is a declarative, component-based JavaScript library for building user interfaces. 
 It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react}}, originally developed and maintained by Facebook.
 The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3}} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT}} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25}}.
-React components are JavaScript classes extending \texttt{React.Component} or implemented as functional components specified using the JSX language (see section \ref{subsub:basics-jsx}). Each component contains two, and only two, instance properties, \texttt{props} and \texttt{state}, both JavaScript objects. Whereas \texttt{props} contains all data passed to the component, \texttt{state} manages the component-internal state. Communication takes place in form of a unidirectional, top-down data data flow, avoiding two-way data binding. By keeping a library-internal \textit{virtual} Document Object Model (DOM) in-memory changes in the HTML structure can be efficiently (re-)rendered.
+React components are JavaScript classes extending \texttt{React.Component} or implemented as functional components specified using the JSX language (see section \ref{subsub:basics-jsx}). Each component contains two, and only two, instance properties, \texttt{props} and \texttt{state}, both JavaScript objects. Whereas \texttt{props} contains all data passed to the component, \texttt{state} manages the component-internal state. Communication takes place in form of a unidirectional, top-down data flow, avoiding two-way data binding. By keeping a library-internal \textit{virtual} Document Object Model (DOM) in-memory, changes in the HTML structure can be efficiently (re-)rendered.
 
 \subsubsection{JavaScript XML (JSX)}
 \label{subsub:basics-jsx}
