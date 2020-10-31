@@ -133,7 +133,6 @@ type NodeColor struct {
 type ObservedRelation struct {
 	Identifier string     `json:"identifier"`
 	Color      color.RGBA `json:"color"`
-	// TODO: Description string `json:"description"`
 }
 
 // VisualizationRoutineResult A description of the visualization routine's return value
@@ -150,9 +149,9 @@ type VisualizationRoutine struct {
 
 // VisualizationStep An atomic visualization step that transfers the visualization to a new state.
 type VisualizationStep struct {
-	GraphState GraphState    `json:"graphState"`
+	GraphState GraphState       `json:"graphState"`
 	Variables  VariableTableRow `json:"variables"`
-	UUID       string        `json:"uuid"`
+	UUID       string           `json:"uuid"`
 }
 
 /* ------------- */

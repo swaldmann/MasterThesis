@@ -343,7 +343,6 @@ func Ccross(T1 *Tree, T2 *Tree, QG QueryGraph) float64 {
 }
 
 func applyCostfuncRec(T1 *Tree, T2 *Tree, QG QueryGraph, costfunc costfunctionT) float64 {
-	// ToDo
 	return -1.0
 }
 
