@@ -240,7 +240,7 @@ We understand the term \textit{Orthogonality} as defined in \textit{The Art of U
 \subsubsection{Gin}
 \label{subsub:basics-gin}
 
-\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin}} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE}}.
+\texttt{Gin} is an open-source HTTP web framework hosted on GitHub\footnote{\url{https://github.com/gin-gonic/gin} (last accessed: October 27, 2020)} and licensed under the MIT license\footnote{\url{https://github.com/gin-gonic/gin/blob/master/LICENSE} (last accessed: October 27, 2020)}.
 It provides a router-level middleware that lets us specify API routes for our server-side code.
 %The exposed API routes and parameters are defined in section \ref{sub:api-entry-points}.
 
@@ -250,9 +250,9 @@ It provides a router-level middleware that lets us specify API routes for our se
 \subsubsection{React.js}
 \label{subsub:basics-reactjs}
 
-\texttt{React.js}\footnote{\url{https://reactjs.org}} is a declarative, component-based JavaScript library for building user interfaces. 
-It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react}}, originally developed and maintained by Facebook.
-The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3}} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT}} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25}}.
+\texttt{React.js}\footnote{\url{https://reactjs.org} (last accessed: October 27, 2020)} is a declarative, component-based JavaScript library for building user interfaces. 
+It is an open-source project hosted on GitHub\footnote{\url{https://github.com/facebook/react} (last accessed: October 27, 2020)}, originally developed and maintained by Facebook.
+The library was introduced and open-sourced on May 29, 2013\footnote{\url{https://github.com/facebook/react/tags?after=v0.3.3} (last accessed: October 27, 2020)} and is licensed under the permissive MIT license\footnote{\url{https://opensource.org/licenses/MIT} (last accessed: October 27, 2020)} since September 26, 2017\footnote{\url{https://github.com/facebook/react/commit/b765fb25} (last accessed: October 27, 2020)}.
 React components are JavaScript classes extending \texttt{React.Component} or implemented as functional components specified using the JSX language (see section \ref{subsub:basics-jsx}). Each component contains two, and only two, instance properties, \texttt{props} and \texttt{state}, both JavaScript objects. Whereas \texttt{props} contains all data passed to the component, \texttt{state} manages the component-internal state. Communication takes place in form of a unidirectional, top-down data flow, avoiding two-way data binding. By keeping a library-internal \textit{virtual} Document Object Model (DOM) in-memory, changes in the HTML structure can be efficiently (re-)rendered.
 
 \subsubsection{JavaScript XML (JSX)}
@@ -260,7 +260,7 @@ React components are JavaScript classes extending \texttt{React.Component} or im
 
 JavaScript XML (JSX) is an XML-style syntax extension to the JavaScript (ECMAScript) programming language.
 In addition to its HTML-like definition of the website's semantic structure, it allows JavaScript expressions when used in curly braces (\{\}).
-As such, it cannot be interpreted by web browsers, but has to be cross-compiled to valid JavaScript using a transpiler according to its specification\footnote{\url{https://facebook.github.io/jsx/}}.
+As such, it cannot be interpreted by web browsers, but has to be cross-compiled to valid JavaScript using a transpiler according to its specification\footnote{\url{https://facebook.github.io/jsx/} (last accessed: October 27, 2020)}.
 
 
 \begin{figure}[H]
@@ -284,6 +284,6 @@ class App extends React.Component {
 \subsubsection{Redux}
 \label{subsub:basics-redux}
 
-\texttt{Redux}\footnote{\url{https://redux.js.org}} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
-It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux}} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md}}.
-The library refers to itself as ``A predictable state container for JavaScript apps.''\footnote{Website title of \url{https://redux.js.org}}. It uses elements of functional programming, such as \texttt{map}, \texttt{reduce} or \texttt{filter} to transfer one state to the next. This is not achieved by mutating the current state, but by creating an entrirely new state. In order to optimize the expensive copying operations libraries such as Facebook's \texttt{Immutable.JS} \footnote{\url{https://redux.js.org/recipes/using-immutablejs-with-redux}} can be used in combination with \texttt{Redux}. All of the application's state is held in the global \texttt{Redux} \textit{store}, which is changed according to rules defined in \textit{reducers} by invoking defined \textit{actions} holding a payload.
+\texttt{Redux}\footnote{\url{https://redux.js.org} (last accessed: October 27, 2020)} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
+It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux} (last accessed: October 27, 2020)} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md} (last accessed: October 27, 2020)}.
+The library refers to itself as ``A predictable state container for JavaScript apps.''\footnote{Website title of \url{https://redux.js.org} (last accessed: October 27, 2020)}. It uses elements of functional programming, such as \texttt{map}, \texttt{reduce} or \texttt{filter} to transfer one state to the next. This is not achieved by mutating the current state, but by creating an entrirely new state. In order to optimize the expensive copying operations libraries such as Facebook's \texttt{Immutable.JS} \footnote{\url{https://redux.js.org/recipes/using-immutablejs-with-redux} (last accessed: October 27, 2020)} can be used in combination with \texttt{Redux}. All of the application's state is held in the global \texttt{Redux} \textit{store}, which is changed according to rules defined in \textit{reducers} by invoking defined \textit{actions} holding a payload.

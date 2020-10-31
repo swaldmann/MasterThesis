@@ -140,11 +140,11 @@ For the technology used in the implementation of both client and server code we 
 \end{enumerate}
 
 In order to maximize \ref{itm:accessibility} we create an application that runs in a web browser and doesn't need any user-initiated installation or update procedures.
-With the 2017 released WebAssembly (Wasm)\footnote{\url{https://webassembly.org}} portable byte-code standard still being in its infancy at around 90\% browser support\footnote{\url{https://caniuse.com/wasm}} and being recommended by the World Wide Web Consortium not until December 5th 2019\footnote{\url{https://www.w3.org/TR/wasm-core-1/}}, this leaves us with JavaScript as the only viable language for the client-side code. 
+With the 2017 released WebAssembly (Wasm)\footnote{\url{https://webassembly.org} (last accessed: October 27, 2020)} portable byte-code standard still being in its infancy at around 90\% browser support\footnote{\url{https://caniuse.com/wasm} (last accessed: October 27, 2020)} and being recommended by the World Wide Web Consortium not until December 5th 2019\footnote{\url{https://www.w3.org/TR/wasm-core-1/} (last accessed: October 27, 2020)}, this leaves us with JavaScript as the only viable language for the client-side code. 
 
-Additionally, in order to modularize the user interface and adding the ability to import existing user interface components, we use \texttt{React.js}\footnote{\url{https://reactjs.org}}, as of writing this thesis the most popular JavaScript library for building user interfaces measured by ``Stars'' on the popular repository hosting website GitHub\footnote{\url{https://github.com/search?l=JavaScript&o=desc&q=language\%3AJavaScript&s=stars&type=Repositories}}.
+Additionally, in order to modularize the user interface and adding the ability to import existing user interface components, we use \texttt{React.js}\footnote{\url{https://reactjs.org} (last accessed: October 27, 2020)}, as of writing this thesis the most popular JavaScript library for building user interfaces measured by ``Stars'' on the popular repository hosting website GitHub\footnote{\url{https://github.com/search?l=JavaScript&o=desc&q=language\%3AJavaScript&s=stars&type=Repositories} (last accessed: October 27, 2020)}.
 
-For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin}}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub\footnote{\url{https://github.com/search?l=Go&o=desc&q=http&s=stars&type=Repositories}}.
+For the server code and algorithm implementations we use the Go programming language and \texttt{gin-gonic}\footnote{\url{https://github.com/gin-gonic/gin} (last accessed: October 27, 2020)}, which at the time of writing this thesis is the most-starred HTTP framework on GitHub\footnote{\url{https://github.com/search?l=Go&o=desc&q=http&s=stars&type=Repositories} (last accessed: October 27, 2020)}.
 
 By using two popular libraries and languages we ensure a good community support, a good availability of learning or tooling resources, and continuous development of the libraries. Therefore, contributions to the visualization toolset by developers other than the original author have a lower barrier of entry.
 
@@ -155,7 +155,7 @@ By using two popular libraries and languages we ensure a good community support,
 
 \subsubsection{Join Problem Generator}
 We represent the join problems in a JSON format as defined in section \ref{subsub:join-problem-data-structure}. 
-Some JSON files are taken from the supplementary material to the ``IE 630 Query Optimization'' course exercises at the University of Mannheim\footnote{\url{https://www.wim.uni-mannheim.de/moerkotte/teaching/courses/query-optimization/}}
+Some JSON files are taken from the supplementary material to the ``IE 630 Query Optimization'' course exercises at the University of Mannheim\footnote{\url{https://www.wim.uni-mannheim.de/moerkotte/teaching/courses/query-optimization/} (last accessed: October 27, 2020)}
 , which contains examples for join problems with a query type $QT \in $ \{Chain, Clique, Cycle, Star\} and a number of relations $n \in [2,10]$. All further references to \texttt{joinProblemParser.go} or \texttt{infra.go} refer to the two (modified) files taken from this supplementary material.
 
 Additionally, we create a join problem generator for complete $k$-ary trees with a degree $k$ and a number of relations $n$.
@@ -335,7 +335,7 @@ Likewise, the creation of the Go \texttt{relations} slice is trivial and therefo
 \label{sub:data-structures}
 
 \subsubsection{Join Ordering}
-In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinProblemParser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/}}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
+In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinProblemParser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/} (last accessed: October 27, 2020)}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
 \vspace{0.6cm}
 
 \begin{code}
@@ -478,7 +478,7 @@ type GraphState struct {
 
 \paragraph{Steps and Routines}
 
-Finally, the data structures defined beforehand can be used to construct higher-level constructs such as the \textit{atomic} visualization step, represented as a \texttt{VisualizationStep} type. This type contains the \texttt{GraphState} for the current step, as well as the variables stored as a \texttt{VariableTableRow}. In order to identify a step in equivalence checks, we also assign a \texttt{UUID}, which is generated using Google's own \texttt{github.com/google/uuid}\footnote{\url{https://github.com/google/uuid}} package. This UUID is a 128 bit UUID based on RFC4122\footnote{\url{https://tools.ietf.org/html/rfc4122}}, which can be easily converted to a \texttt{string} using the \texttt{uuid.New().String()} function. This \texttt{UUID} is necessary as the reference to the exact instance of a struct is lost when marshalling it into JSON.
+Finally, the data structures defined beforehand can be used to construct higher-level constructs such as the \textit{atomic} visualization step, represented as a \texttt{VisualizationStep} type. This type contains the \texttt{GraphState} for the current step, as well as the variables stored as a \texttt{VariableTableRow}. In order to identify a step in equivalence checks, we also assign a \texttt{UUID}, which is generated using Google's own \texttt{github.com/google/uuid}\footnote{\url{https://github.com/google/uuid} (last accessed: October 27, 2020)} package. This UUID is a 128 bit UUID based on RFC4122\footnote{\url{https://tools.ietf.org/html/rfc4122} (last accessed: October 27, 2020)}, which can be easily converted to a \texttt{string} using the \texttt{uuid.New().String()} function. This \texttt{UUID} is necessary as the reference to the exact instance of a struct is lost when marshalling it into JSON.
 
 \begin{code}
 \begin{minted}{go}
@@ -513,11 +513,11 @@ This \texttt{VisualizationRoutine} is transferred as a top-level object when mak
 
 \subsubsection{Utility Functions}
 
-In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} and \url{joinproblemparser.go} file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
+In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} (last accessed: October 27, 2020) and \url{joinproblemparser.go} (last accessed: October 27, 2020) file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
 
 Modifications include:
 \paragraph{Simplification of \texttt{SetMinus}}
-We simplify the implementation for the \texttt{SetMinus} operation by omitting the use of a temporary helper variable for the result calculation. This is equivalent as it produces exactly the same assembly output as the old, commented-out code\footnote{using amd64 gc 1.15 compiler, compiled on \url{https://godbolt.org}}.
+We simplify the implementation for the \texttt{SetMinus} operation by omitting the use of a temporary helper variable for the result calculation. This is equivalent as it produces exactly the same assembly output as the old, commented-out code\footnote{using amd64 gc 1.15 compiler, compiled on \url{https://godbolt.org} (last accessed: October 27, 2020)}.
 
 \begin{algorithm}
 \begin{minted}{go}
@@ -919,19 +919,19 @@ func DPccp(QG QueryGraph, JTC JoinTreeCreator) *Tree {
 
 \subsubsection{Building}
 
-The server code is written in Go 1.15.1\footnote{\url{https://github.com/golang/go/releases/tag/go1.15.1}} released on September 1st 2020, and using the \texttt{go1.15.1 darwin/amd64} compiler. We do not set any custom build flags.
+The server code is written in Go 1.15.1\footnote{\url{https://github.com/golang/go/releases/tag/go1.15.1} (last accessed: October 27, 2020)} released on September 1st 2020, and using the \texttt{go1.15.1 darwin/amd64} compiler. We do not set any custom build flags.
 
-\paragraph{Linting} The project uses the Go language linter\footnote{\url{https://github.com/golang/lint}} to ensure a common coding and documentation style with what is used at Google, the creators of Go.
+\paragraph{Linting} The project uses the Go language linter\footnote{\url{https://github.com/golang/lint} (last accessed: October 27, 2020)} to ensure a common coding and documentation style with what is used at Google, the creators of Go.
 All of the supplied files (\texttt{infra.go} and \texttt{joinproblemparser.go}) have been modified to satisfy all linter requirements by doing some miscellaneous changes to remove warnings generated from this static analysis, e.g. by converting variable and function names from \texttt{snake\_case} to \texttt{camelCase}, or adding descriptive comments to exported functions. In addition, all newly created files adhere to the linter guidelines. As these changes are mostly trivial we omit further details here. 
 
 \subsection{JSON Representation}
 \label{sub:json-representation}
 
 The JSON representation of join problems and visualizations can be understood as the interface definition between server and client. 
-``JSON'' refers to the \textit{JavaScript Object Notation Data Interchange Format} as specified in RFC 8259\footnote{\url{https://tools.ietf.org/html/rfc8259}}.
+``JSON'' refers to the \textit{JavaScript Object Notation Data Interchange Format} as specified in RFC 8259\footnote{\url{https://tools.ietf.org/html/rfc8259} (last accessed: October 27, 2020)}.
 It is the output that can be interpreted language-independently and transferred between both entities. Since JSON files do not explicitly define semantics of their content, the server and the client have to agree on the data's interpretation.
 
-As of today (\today), there is no official JSON schema definition file format yet. Therfore, we use the most recent (``2019-09'') draft as specified by the Internet Engineering Task Force (IETF)\footnote{\url{https://www.ietf.org}}, released on September 19, 2019\footnote{\url{https://json-schema.org/draft/2019-09/json-schema-core.html}}. Its specification and further information can be found on its website \url{http://json-schema.org}.
+As of today (\today), there is no official JSON schema definition file format yet. Therfore, we use the most recent (``2019-09'') draft as specified by the Internet Engineering Task Force (IETF)\footnote{\url{https://www.ietf.org} (last accessed: October 27, 2020)}, released on September 19, 2019\footnote{\url{https://json-schema.org/draft/2019-09/json-schema-core.html} (last accessed: October 27, 2020)}. Its specification and further information can be found on its website \url{http://json-schema.org} (last accessed: October 27, 2020).
 
 \subsubsection{Join Problem}
 \label{subsub:join-problem-data-structure}
@@ -1003,7 +1003,6 @@ Likewise, there is a fixed JSON definition for an algorithm's visualization rout
   },
   "additionalProperties": false
 }
-
 \end{minted}
 \caption{JSON schema of a join problem}
 \label{fig:json-joinproblem}
@@ -1133,8 +1132,8 @@ Likewise, there is a fixed JSON definition for an algorithm's visualization rout
   }
 }
 \end{minted}
-\label{fig:json-visualization-routine}
 \caption{JSON schema of a visualization}
+\label{fig:json-visualization-routine}
 \end{code}
 
 \newpage
@@ -1142,10 +1141,10 @@ Likewise, there is a fixed JSON definition for an algorithm's visualization rout
 \subsection{Client Implementation}
 The client can interpret the JSON files as specified in section \ref{sub:json-representation} which are generated by the server. It initiates and manages all communication with the very same and lets the user specify all possible parameters of the visualization. Furthermore, it provides a bitmap GUI to graphically render all steps.
 
-For the client implementation we use the two JavaScript libraries \texttt{React.js}\footnote{\url{https://reactjs.org}} and \texttt{Redux}\footnote{\url{https://redux.js.org}} in order to be able to declaratively create a performant and maintainable client codebase. A rudimentary introduction is provided in sections \ref{subsub:basics-reactjs} through \ref{subsub:basics-redux}, and more extensive guides can be found on the libraries' respective websites.
+For the client implementation we use the two JavaScript libraries \texttt{React.js}\footnote{\url{https://reactjs.org} (last accessed: October 27, 2020)} and \texttt{Redux}\footnote{\url{https://redux.js.org} (last accessed: October 27, 2020)} in order to be able to declaratively create a performant and maintainable client codebase. A rudimentary introduction is provided in sections \ref{subsub:basics-reactjs} through \ref{subsub:basics-redux}, and more extensive guides can be found on the libraries' respective websites.
 
 \subsubsection{Project Structure} 
-In order to bootstrap the project, we use Facebook's \texttt{create-react-app}\footnote{\url{https://github.com/facebook/create-react-app}} command-line tool, which creates an initial project structure and installs transitive dependencies. From this starting point we create the following directory structure:
+In order to bootstrap the project, we use Facebook's \texttt{create-react-app}\footnote{\url{https://github.com/facebook/create-react-app} (last accessed: October 27, 2020)} command-line tool, which creates an initial project structure and installs transitive dependencies. From this starting point we create the following directory structure:
 
 \begin{figure}[H]
     \begin{forest}
@@ -1228,7 +1227,7 @@ Supplementary files, such as dotfiles configuring the \texttt{git} repository ar
         \item \texttt{App.js} is the entry point for specifying the \texttt{JSX} components
         \item \texttt{index.js} is setting up the app by creating the \texttt{Redux} store, initializing persistence layers and calling the \texttt{React} \texttt{render} method to initialize the rendering of the virtual Document Object Model (DOM)
     \end{itemize}
-    \item The \texttt{package.json}\footnote{\url{https://docs.npmjs.com/files/package.json}} defines the project's dependencies, shell scripts for building or deployment and other metadata like version number and linter configuration
+    \item The \texttt{package.json}\footnote{\url{https://docs.npmjs.com/files/package.json} (last accessed: October 27, 2020)} defines the project's dependencies, shell scripts for building or deployment and other metadata like version number and linter configuration
 \end{itemize}
 
 \paragraph{Dependencies}
@@ -1250,7 +1249,7 @@ We use the \textit{elegant pairing function} developed by Matthew Szudzik \cite{
 \end{equation}
 
 This is used as a \texttt{key} property for dynamically created \texttt{React.js} list items inside two stacked \texttt{map}s. This serves as a performance improvement, as per \texttt{React}'s official documentation, which states:\\
-``Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity''\footnote{\url{https://reactjs.org/docs/lists-and-keys.html}}.
+``Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity''\footnote{\url{https://reactjs.org/docs/lists-and-keys.html} (last accessed: October 27, 2020)}.
 
 \subsubsection{Redux Actions}
 In the following, we list all actions that can mutate the application's Redux state.
@@ -1282,7 +1281,7 @@ There are five main components making up the user interface. They are described 
 \texttt{JoinProblemSettings} contains controls to change the join problem and algorithm settings. It also contains a button to recalculate the specified algorithm with updated settings.
 
 \subparagraph{AlgorithmCanvas}
-The \texttt{AlgorithmCanvas} component contains a HTML5 \texttt{<canvas>} element\footnote{\url{https://html.spec.whatwg.org/multipage/canvas.html}} on which the query graph is drawn, and button controls to change the currently visualized step. 
+The \texttt{AlgorithmCanvas} component contains a HTML5 \texttt{<canvas>} element\footnote{\url{https://html.spec.whatwg.org/multipage/canvas.html} (last accessed: October 27, 2020)} on which the query graph is drawn, and button controls to change the currently visualized step. 
 
 \subparagraph{VariableTable}
 \texttt{VariableTable} renders a table of all the routines' steps.
@@ -1307,10 +1306,10 @@ If the \texttt{Redux} state's current step UUID is equal to a step's UUID the ta
 \end{figure}
 
 \subsubsection{Building}
-As the project makes heavy use of the modern ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm}} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io}} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
+As the project makes heavy use of the modern ECMAScript 2020\footnote{\url{https://www.ecma-international.org/publications/standards/Ecma-262.htm} (last accessed: October 27, 2020)} syntax, it is transpiled using the Babel\footnote{\url{https://babeljs.io} (last accessed: October 27, 2020)} cross-compiler to a more downwards-compatible JavaScript version when building the project to improve browser support.
 
 \paragraph{Linting}
-For the client-side code we use ESLint\footnote{\url{https://eslint.org}} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json}}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/}.
+For the client-side code we use ESLint\footnote{\url{https://eslint.org} (last accessed: October 27, 2020)} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json} (last accessed: October 27, 2020)}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/} (last accessed: October 27, 2020).
 
 %\paragraph{Dependencies}
 
@@ -1323,11 +1322,11 @@ For the client-side code we use ESLint\footnote{\url{https://eslint.org}} config
 
 In order to run the project locally some prerequisites have to be fulfilled:
 \begin{itemize}
-    \item A state-of-the-art web browser has to be installed, such as a recent version of Google Chrome\footnote{\url{https://www.google.com/chrome/}}, Mozilla Firefox\footnote{\url{https://www.mozilla.org/firefox/}}, Microsoft Edge\footnote{\url{https://www.microsoft.com/edge}}, or Apple Safari\footnote{\url{https://www.apple.com/safari/}}
-    \item The Go programming language has to be installed according to the official installation guidelines\footnote{\url{https://golang.org/doc/install}}
+    \item A state-of-the-art web browser has to be installed, such as a recent version of Google Chrome\footnote{\url{https://www.google.com/chrome/} (last accessed: October 27, 2020)}, Mozilla Firefox\footnote{\url{https://www.mozilla.org/firefox/} (last accessed: October 27, 2020)}, Microsoft Edge\footnote{\url{https://www.microsoft.com/edge} (last accessed: October 27, 2020)}, or Apple Safari\footnote{\url{https://www.apple.com/safari/} (last accessed: October 27, 2020)}
+    \item The Go programming language has to be installed according to the official installation guidelines\footnote{\url{https://golang.org/doc/install} (last accessed: October 27, 2020)}
     \item The Go environment has to be set up, namely correctly specifying the \texttt{\$GOOROOT} and \texttt{\$GOPATH} environment variables. Furthermore, the project has to be moved to the \texttt{\$GOPATH/src} directory
-    \item The Node Package Manager (npm) has to be installed along with the Node.js runtime\footnote{\url{https://www.npmjs.com/get-npm}}
-    \item While not required, it is strongly recommended to install the Git\footnote{\url{https://git-scm.com}} distributed version control system 
+    \item The Node Package Manager (npm) has to be installed along with the Node.js runtime\footnote{\url{https://www.npmjs.com/get-npm} (last accessed: October 27, 2020)}
+    \item While not required, it is strongly recommended to install the Git\footnote{\url{https://git-scm.com} (last accessed: October 27, 2020)} distributed version control system 
 \end{itemize}
 
 \subsubsection{Dependencies}
@@ -1356,7 +1355,7 @@ and, in another shell instance,
     $ cd client && npm start
 \end{minted}
 
-This will start two locally running web servers that can be accessed via \url{https://localhost:8080/} (Server) and \url{https://localhost:3000/} (Client).
+This will start two locally running web servers that can be accessed via \url{https://localhost:8080/} (last accessed: October 27, 2020) (Server) and \url{https://localhost:3000/} (last accessed: October 27, 2020) (Client).
 
 \begin{note}
 As the client is fetching its data from the server please keep in mind that the server has to be started \textit{before} accessing the client URL.
@@ -1364,10 +1363,10 @@ As the client is fetching its data from the server please keep in mind that the 
 
 \subsection{Deployment}
 
-One of the major benefits of using a client-server architecture and web technologies is that we can host the server part on an application server or platform-as-a-service offering such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine}} and the front-end (client) on a web server.
+One of the major benefits of using a client-server architecture and web technologies is that we can host the server part on an application server or platform-as-a-service offering such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine} (last accessed: October 27, 2020)} and the front-end (client) on a web server.
 This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side. Likewise, the deployment of new application versions is simple and can be done with a single shell instruction for both client and server.
 
-In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk}} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com}} for hosting the front-end.
+In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk} (last accessed: October 27, 2020)} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com} (last accessed: October 27, 2020)} for hosting the front-end.
 \newpage
 
 \paragraph{Prerequisites}   
@@ -1377,10 +1376,10 @@ The Google Cloud SDK must be installed using
 \begin{minted}{shell-session}
     $ curl https://sdk.cloud.google.com | bash
 \end{minted}
-Follow the instructions in the terminal session to finish the installation process. Further information is found on \url{https://cloud.google.com/sdk}.
+Follow the instructions in the terminal session to finish the installation process. Further information is found on \url{https://cloud.google.com/sdk} (last accessed: October 27, 2020).
 
 \subparagraph{Client}
-The user needs a GitHub account and host the repository on their platform. GitHub Pages\footnote{\url{https://pages.github.com}} has to be configured for the project according to the instructions on \url{https://pages.github.com}.
+The user needs a GitHub account and host the repository on their platform. GitHub Pages\footnote{\url{https://pages.github.com} (last accessed: October 27, 2020)} has to be configured for the project according to the instructions on \url{https://pages.github.com} (last accessed: October 27, 2020).
 
 \subparagraph{Steps}
 Now, we can simply deploy the client and server with just one line of shell code.
