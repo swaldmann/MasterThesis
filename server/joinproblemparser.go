@@ -22,13 +22,13 @@ sizes must be a subset of {2,...,10}
 type JSONRelation struct {
 	Cardinality float64 `json:"cardinality"`
 	Name        string  `json:"name"`
-	ProblemID         uint    `json:"problemID"`
-	RelationID         uint    `json:"relationID"`
+	ProblemID   uint    `json:"problemID"`
+	RelationID  uint    `json:"relationID"`
 }
 
 // JSONJoinProblem Represents a join problem in JSON
 type JSONJoinProblem struct {
-	ProblemID                uint               `json:"problemID"`
+	ProblemID         uint               `json:"problemID"`
 	Neighbors         map[uint]string    `json:"neighbors"`
 	NumberOfRelations uint               `json:"numberOfRelations"`
 	Relations         []JSONRelation     `json:"relations"`
