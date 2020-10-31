@@ -53,7 +53,6 @@ class JoinProblemSettings extends React.Component {
             actions,
             settingNumberOfRelations,
             settingGraphTypeValue,
-            algorithms,
             algorithm
         } = this.props
         const response = await fetch(ENDPOINT + "/algorithm/" + algorithm.value
