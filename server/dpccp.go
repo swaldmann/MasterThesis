@@ -75,7 +75,7 @@ func EnumerateCsg(QG QueryGraph) []uint {
 		v := uint(1 << i)
 
 		if VisualizationOn {
-			variableState := VariableTable{}
+			variableState := VariableTableRow{}
 			variableState["emit"] = IdxsOfSetBits(v)
 			AddVisualizationStep(QG, variableState)
 		}
@@ -114,7 +114,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 	}
 
 	if VisualizationOn && !(N == 0 && S != 1<<(n-1)) {
-		variableState := VariableTable{}
+		variableState := VariableTableRow{}
 		variableState["S"] = IdxsOfSetBits(S)
 		variableState["X"] = IdxsOfSetBits(SetMinus(X, S, n))
 		variableState["N"] = IdxsOfSetBits(N)
@@ -131,7 +131,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 		subgraphs = append(subgraphs, SuSPrime)
 
 		if VisualizationOn {
-			variableState := VariableTable{}
+			variableState := VariableTableRow{}
 			variableState["emit/S"] = IdxsOfSetBits(SuSPrime)
 			AddVisualizationStep(QG, variableState)
 		}
@@ -174,7 +174,7 @@ func EnumerateCmp(QG QueryGraph, S1 uint) []CsgCmpPair {
 		pairs = append(pairs, pair)
 
 		if VisualizationOn {
-			variableState := VariableTable{}
+			variableState := VariableTableRow{}
 			variableState["emit"] = IdxsOfSetBits(v)
 			AddVisualizationStep(QG, variableState)
 		}

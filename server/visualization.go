@@ -73,7 +73,7 @@ func EndVisualizationRoutine(result ...*VisualizationRoutineResult) {
 }
 
 // AddVisualizationStep Add a new atomic visualization step to the current routine
-func AddVisualizationStep(QG QueryGraph, relations VariableTable) {
+func AddVisualizationStep(QG QueryGraph, relations VariableTableRow) {
 	n := uint(len(QG.R))
 
 	nodeColors := []NodeColor{}
@@ -109,8 +109,8 @@ func AddVisualizationStep(QG QueryGraph, relations VariableTable) {
 // VariableTableEntry Entry in the variable table.
 type VariableTableEntry []uint
 
-// VariableTable Table holding values of variables over time.
-type VariableTable map[string]VariableTableEntry
+// VariableTableRow Table holding values of variables over time.
+type VariableTableRow map[string]VariableTableEntry
 
 // Algorithm Defines an algorithm.
 type Algorithm struct {
@@ -151,7 +151,7 @@ type VisualizationRoutine struct {
 // VisualizationStep An atomic visualization step that transfers the visualization to a new state.
 type VisualizationStep struct {
 	GraphState GraphState    `json:"graphState"`
-	Variables  VariableTable `json:"variables"`
+	Variables  VariableTableRow `json:"variables"`
 	UUID       string        `json:"uuid"`
 }
 
