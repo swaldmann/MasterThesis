@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "JoinProblem",
+  "type": "object",
+  "required": [
+    "problemID",
+    "neighbors",
+    "numberOfRelations",
+    "relations",
+    "selectivities"
+  ],
+  "properties": {
+    "problemID": {
+      "type": "number"
+    },
+    "neighbors": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "string"
+        }
+      }
+    },
+    "numberOfRelations": {
+      "type": "number"
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cardinality": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "problemID": {
+            "type": "number"
+          },
+          "relationID": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "selectivities": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9,]+$": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Visualization",
+  "type": "object",
+  "required": ["queryGraph", "routines"],
+  "properties": {
+    "queryGraph": {
+      "type": "object",
+      "required": ["relationCardinalities", "selectivities", "neighbors"],
+      "additionalProperties": false,
+      "properties": {
+        "relationCardinalities": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "selectivities": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9]+$": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "neighbors": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9]+$": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "routines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/subroutine"
+      }
+    }
+  },
+  "definitions": {
+    "step": {
+      "type": "object",
+      "required": ["graphState", "variables", "uuid"],
+      "additionalProperties": false,
+      "properties": {
+        "graphState": {
+          "type": "object"
+        },
+        "variables": {
+          "type": "object"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
+    },
+    "subroutine": {
+      "type": "object",
+      "required": ["name", "observedRelations", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "observedRelations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["identifier", "color"],
+            "additionalProperties": false,
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "color": {
+                "type": "object",
+                "required": ["R", "G", "B", "A"],
+                "additionalProperties": false,
+                "properties": {
+                  "R": {
+                    "type": "number"
+                  },
+                  "G": {
+                    "type": "number"
+                  },
+                  "B": {
+                    "type": "number"
+                  },
+                  "A": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "steps": {
+          "type": ["array", "null"],
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/subroutine"
+              },
+              {
+                "$ref": "#/definitions/step"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
