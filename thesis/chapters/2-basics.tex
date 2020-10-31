@@ -13,7 +13,7 @@ An entry in the table is described as a \textit{tuple}. Furthermore, we call the
 
 \subsubsection{Join}
 A join links two or more relations by building their cross product and filtering it with the help of a \textit{join predicate}. 
-The result is a new relation which contains all the joined tuples for which the predicate evaluates to true. We denote the join operator using the symbol "$\Join$". 
+The result is a new relation which contains all the joined tuples for which the predicate evaluates to true. We denote the join operator using the symbol ``$\Join$''. 
 As an example, we denote the corresponding join for the two relations $R_i$ and $R_j$ and predicate ${p_{i,j}}$ with ``$R_i \Join_{p_{i,j}} R_j$''.
 
 \subsubsection{Selectivity}
@@ -208,10 +208,10 @@ Dynamic programming is an optimization technique for dividing complex and comput
 \subsubsection{Bitvector Representation}
 \label{subsub:basics-bitvector}
 
-In alignment with \cite{moerkotte2009building} we represent sets of relations as bitvectors in the implementation. These are implemented using (unsigned) integer variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
+In alignment with \cite{moerkotte2009building} we represent sets of relations as bit vectors in the implementation. These are implemented using (unsigned) integer variables in the programming language of choice. When interpreting these integers as base 2, a ``1'' indicates the presence of a relation $R_i$, whereas a ``0'' is used to indicate absence.
 
 \begin{example}
-    Hence, the following bitvectors for a 3-bit integer map to the corresponding sets of relations as indicated in figure \ref{fig:bitvector}.
+    Hence, the following bit vectors for a 3-bit integer map to the corresponding sets of relations as indicated in figure \ref{fig:bitvector}.
     \begin{figure}[H]
         \begin{tabular}{ c | r }
             000 & \{\} \\ 
@@ -223,7 +223,7 @@ In alignment with \cite{moerkotte2009building} we represent sets of relations as
             110 & \{$R_2,R_3$\} \\
             111 & \{$R_1,R_2,R_3$\} \\
            \end{tabular}
-        \caption{Bitvector representation}
+        \caption{Bit vector representation}
         \label{fig:bitvector}
     \end{figure}
 \end{example}
@@ -286,4 +286,4 @@ class App extends React.Component {
 
 \texttt{Redux}\footnote{\url{https://redux.js.org} (last accessed: October 27, 2020)} is an open-source JavaScript library for application state management, commonly used in combination with \texttt{React.js}.
 It is hosted on GitHub\footnote{\url{https://github.com/reduxjs/redux} (last accessed: October 27, 2020)} and licensed under the MIT license\footnote{\url{https://github.com/reduxjs/redux/blob/master/LICENSE.md} (last accessed: October 27, 2020)}.
-The library refers to itself as ``A predictable state container for JavaScript apps.''\footnote{Website title of \url{https://redux.js.org} (last accessed: October 27, 2020)}. It uses elements of functional programming, such as \texttt{map}, \texttt{reduce} or \texttt{filter} to transfer one state to the next. This is not achieved by mutating the current state, but by creating an entrirely new state. In order to optimize the expensive copying operations libraries such as Facebook's \texttt{Immutable.JS} \footnote{\url{https://redux.js.org/recipes/using-immutablejs-with-redux} (last accessed: October 27, 2020)} can be used in combination with \texttt{Redux}. All of the application's state is held in the global \texttt{Redux} \textit{store}, which is changed according to rules defined in \textit{reducers} by invoking defined \textit{actions} holding a payload.
+The library refers to itself as ``A predictable state container for JavaScript apps.''\footnote{Website title of \url{https://redux.js.org} (last accessed: October 27, 2020)}. It uses elements of functional programming, such as \texttt{map}, \texttt{reduce} or \texttt{filter} to transfer one state to the next. This is not achieved by mutating the current state, but by creating an entirely new state. In order to optimize the expensive copying operations libraries such as Facebook's \texttt{Immutable.JS} \footnote{\url{https://redux.js.org/recipes/using-immutablejs-with-redux} (last accessed: October 27, 2020)} can be used in combination with \texttt{Redux}. All of the application's state is held in the global \texttt{Redux} \textit{store}, which is changed according to rules defined in \textit{reducers} by invoking defined \textit{actions} holding a payload.

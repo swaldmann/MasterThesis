@@ -7,20 +7,20 @@ A significant amount of time has to be allocated to internalizing new concepts f
 
 In order to improve accessibility and comprehensibility, researchers and lecturers create visual aids such as sketches, graphs, output tables to keep track of certain variables in the algorithm's execution, coloring, or informal textual descriptions to make their content more accessible. 
 
-However, these visualizations are usually limited by the constraints put on them by the typesetting system they are written in, which produces output to be printed on physical paper: they are static, they cover just one example or a very small and incomplete subset of possible examples, and they are often manually specified instead of generated from an already existing implementation of an algorithm. Moreover, scientific journals even further broaden those constraints by imposing page or word limits on article submissions. While it is possible to create graphical representations of data structures like graphs in a typesetting system such as \LaTeX using libraries like \texttt{pgf-tikz}\footnote{\url{https://github.com/pgf-tikz/pgf} (last accessed: October 27, 2020) (last access: October 27, 2020)}, those are often cumbersome and time-consuming to specify.
+However, these visualizations are usually limited by the constraints put on them by the typesetting system they are written in, which produces output to be printed on physical paper: they are static, they cover just one example or a very small and incomplete subset of possible examples, and they are often manually specified instead of generated from an already existing implementation of an algorithm. Moreover, scientific journals even further broaden those constraints by imposing page or word limits on article submissions. While it is possible to create graphical representations of data structures like graphs in a typesetting system such as \LaTeX using libraries like \texttt{pgf-tikz}\footnote{\url{https://github.com/pgf-tikz/pgf} (last access: October 27, 2020)}, those are often cumbersome and time-consuming to specify.
 One of the most powerful, but scarcely available tools are algorithm visualizations that are interactive, dynamically created, and can be used on a large subset of all possible inputs. 
 
 % Thus, seeking to minimize the time required by providing helpful supplementary material 
 % Any technique to simplify understanding and thought processes used in the construction and implementation of an algorithm 
 
 
-With today's consumer electronics, such as laptops or tablet computers, giving the possibility to consume media digitally on flexible graphical user interfaces (GUI), these limitations seem artificial and mostly stem from the ``printability'' aspect of physical paper. A further explanation for the lack of available visualizations is that researchers and instructors often don't have the time or resources to produce high-quality, interactive visualizations for their algorithms.
+With today's consumer electronics, such as laptops or tablet computers, giving the possibility to consume media digitally on flexible graphical user interfaces (GUI) these limitations seem artificial and mostly stem from the ``printability'' aspect of physical paper. A further explanation for the lack of available visualizations is the fact that researchers and instructors often don't have the time or resources to produce high-quality, interactive visualizations for their algorithms.
 
 % A common compromise is to use presentation software like Microsoft PowerPoint which comps  
 
 While the 2002 publications from Hundhausen et al. \cite{hundhausen2002meta} and Naps et al. \cite{naps2002exploring} criticize the efficacy of algorithm visualizations as a pedagogical tool, numerous successful examples have emerged in more recent years.
-Hohman et al. present and discuss many of such examples in their 2020 article ``Communicating with Interactive Articles'' \cite{hohman2020communicating}.
-The YouTube channel ``3blue1brown''\footnote{\url{https://www.youtube.com/c/3blue1brown} (last accessed: October 27, 2020) (last access: October 27, 2020)}, who specializes on the visualization of concepts in mathematics and computer science, has more than 3 million subscribers and 160 million views in its mere 5 years of existence, and is collaborating with reputable universities such as the Massachusets Institute of Technology to create supplementary material for their lectures \footnote{\url{https://www.patreon.com/posts/mit-lectures-41240316} (last accessed: October 27, 2020) (last access: October 27, 2020)}, thereby making a case for a high demand in such kinds of visual aids to understand complex concepts.
+Hohman et al. present and discuss many such examples in their 2020 article ``Communicating with Interactive Articles'' \cite{hohman2020communicating}.
+The YouTube channel ``3blue1brown''\footnote{\url{https://www.youtube.com/c/3blue1brown} (last access: October 27, 2020)}, who specializes on the visualization of concepts in mathematics and computer science, has gained more than 3 million subscribers and 160 million views in its mere 5 years of existence, and is collaborating with reputable universities such as the Massachusets Institute of Technology to create supplementary material for their lectures \footnote{\url{https://www.patreon.com/posts/mit-lectures-41240316} (last access: October 27, 2020)}.
 
 \subsection{Goal of this Thesis}
 This thesis aims to specify and implement a toolset to let us create such an interactive and dynamically created visualization for the algorithm \texttt{DPccp} as introduced in \cite{moerkotte2006analysis}. Instead of catering to  this specific algorithm we want to keep reusability in mind and try to avoid hardcoded solutions wherever possible.
@@ -28,10 +28,3 @@ This thesis aims to specify and implement a toolset to let us create such an int
 We also try to minimize the amount of time required to create such a visualization by specifying a declarative toolset that can be used alongside already existing implementations of algorithms—no explicit drawing is needed.
 
 The generic and declarative nature of the toolset makes it not just a useful teaching tool for one particular algorithm, but can even be used among professional computer scientists and software engineers as a quick visual debugging and exploration technique.
-
-%Instead of investigating what the constitutents of an algorithm \textit{could} be and
-%implementing them accordingly, we use a top-down approach and implement the steps of
-%two pre-chosen algorithms, namely \texttt{DPccp} \cite{moerkotte2006analysis} and Adaptive Radix Trees \cite{leis2013adaptive}.
-
-%Lack of good tooling in database algorithm development.
-%Visual debugging and aids more commonplace.

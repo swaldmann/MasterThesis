@@ -15,8 +15,6 @@ Programming} \cite{raymond2003compactness} has to be fulfilled for the visualiza
 the amount of code or configuration that has to be added to existing algorithms' implementations in order to make use of the visualization for its intended purpose in exploration or debugging. The visualization should therefore be specified as declaratively as 
 possible, with the user specifying \textit{only} the relevant parameters–while minimizing the amount of required boilerplate code.
 
-%This allows for many side-effects like reusability, mainta
-
 \paragraph{Separation of Concerns}
 With the separation of the complex algorithm and user interface/visualization logic in mind it is imperative to keep the amount of code required to create new visualizations as minimal as possible. 
 Thus, we organize their architecture in a client-server 
@@ -37,7 +35,7 @@ The advantages of this approach are multifold:
           slow, interpreting JavaScript engine, but we are  
           able to run compiled and thus more optimized and therefore faster code
     \item It allows us to formally specify interfaces between
-          client and server %(Abbildung malen)
+          client and server
 \end{itemize}
 
 \paragraph{Flexibility}
@@ -158,9 +156,9 @@ We represent the join problems in a JSON format as defined in section \ref{subsu
 Some JSON files are taken from the supplementary material to the ``IE 630 Query Optimization'' course exercises at the University of Mannheim\footnote{\url{https://www.wim.uni-mannheim.de/moerkotte/teaching/courses/query-optimization/} (last accessed: October 27, 2020)}
 , which contains examples for join problems with a query type $QT \in $ \{Chain, Clique, Cycle, Star\} and a number of relations $n \in [2,10]$. All further references to \texttt{joinProblemParser.go} or \texttt{infra.go} refer to the two (modified) files taken from this supplementary material.
 
-Additionally, we create a join problem generator for complete $k$-ary trees with a degree $k$ and a number of relations $n$.
+Additionally, we create a join problem generator for complete $k$-ary trees with a degree $k$ and a number of relations $n$. These calculations can also be conducted in $\mathcal{O}(n)$, as demonstrated in the following.
 
-Since selectivities are symmetrical, they are stored once and once only in the JSON. This means, if an edge ($R_0, R_1$) in the query graph exists, we don't store ($R_1, R_0$) explicitly as well. However, we store the selectivities in a breadth-first manner starting from $R_0$, i.e. the edge always points from the relation with the smaller index to the larger one. More formally, we can say that the following implication holds:
+Since selectivities are symmetrical, they are stored once and once only in the JSON. This means, if an edge ($R_0, R_1$) in the query graph exists, we \textit{don't} store ($R_1, R_0$) explicitly as well. However, we store the selectivities in a breadth-first manner starting from $R_0$, i.e. the edge always points from the relation with the smaller index to the larger one. More formally, we can say that the following implication holds:
 
 \begin{equation}
     \forall (R_i, R_j) \in E \implies i < j
@@ -212,12 +210,12 @@ Furthermore, we need to determine the level $l(v_i)$ of each node $v_i$ in the t
     l_i = l(v_i) = log_k(i+1)
 \end{equation}
 
-Next up, we then define the set of vertices in the levels below $l_i$, denoted $V_{l_{i<j}}$, as follows:
+As a next step, we then define the set of vertices in the levels below $l_i$, denoted $V_{l_{i<j}}$, as follows:
 \begin{equation}
     V_{l_{j<i}} := \{v_j \in V \vert l(v_j) < l(v_i) \}
 \end{equation}
 
-Now, we need the cardinality of this set, defined as $n_{j<i}$ to get the number of nodes on all level smaller than $l_i$. This can be efficiently calculated using the following equation:
+Now, we need the cardinality of this set, denoted by $n_{j<i}$, to get the number of nodes on all level smaller than $l_i$. This can be efficiently calculated using the following equation:
 \begin{equation}
      n_{j<i} := \vert V_{l_{j<i}}\vert = k^{l(v_i) + 1} - 1
 \end{equation}
@@ -265,7 +263,7 @@ The current index of the neighbor is thus given by
     \sigma_{i,j} = j_{min\mathbb{N}_i} + \tau_{i,j}
 \end{equation}
 
-Finally, we can set all $x_{i, j} \in \mathbb{N}_i$ as $\sigma{i,j}$
+Finally, we can set all $x_{i, j} \in \mathbb{N}_i$ as $\sigma_{i,j}$
 \begin{equation}
     x_{i, j} = \sigma_{i,j}
 \end{equation}
@@ -280,7 +278,7 @@ We can now set a selectivity for each $(x_i,j) \in \mathbb{N}_i \in \mathbb{N}$,
 A Go implementation example of the symmetrical neighbor calculation is illustrated in algorithm \ref{alg:symNeighbors}. The assignment of selectivities to these entries is trivial and thus not illustrated here, but can be found in the supplementary code.
 
 \begin{note}
-The variable names in algorithm \ref{alg:symNeighbors} correspond to the names used in the previously used mathematical definitions. In the supplementary code to this thesis longer, more descriptive variable names are used.
+The variable names in algorithm \ref{alg:symNeighbors} correspond to the names used in the previously introduced mathematical definitions. In the supplementary code to this thesis longer, more descriptive variable names are used.
 \end{note}
 
 \begin{algorithm}[H]
@@ -336,7 +334,7 @@ Likewise, the creation of the Go \texttt{relations} slice is trivial and therefo
 
 \subsubsection{Join Ordering}
 In order to parse and represent a join problem from a JSON file we use the already existing data structures \texttt{JSONRelation} and \texttt{JSONJoinProblem} from \texttt{joinProblemParser.go}. Both are implicitly marshalled and unmarshalled when converted from or to JSON because of the built-in JSON encoding and decoding for custom data structures using the Go standard library's \texttt{encoding/json} package\footnote{\url{https://golang.org/pkg/encoding/json/} (last accessed: October 27, 2020)}. However we add \texttt{struct} tags to explicitly set the corresponding JSON keys.
-\vspace{0.6cm}
+\vspace{0.2cm}
 
 \begin{code}
 \begin{minted}{go}
@@ -349,7 +347,7 @@ type JSONRelation struct {
 \end{minted}
 \caption{\texttt{JSONRelation} type}
 \end{code}
-\vspace{0.6cm}
+\vspace{0.2cm}
 
 \begin{code}
 \begin{minted}{go}
@@ -365,7 +363,7 @@ type JSONJoinProblem struct {
 \end{code}
 \vspace{0.8cm}
 
-We'll take the \texttt{QueryGraph} \texttt{struct} from \texttt{infra.go} and add a \texttt{map} to a \texttt{uint} slice of neighbors for each relation, which itself is represented as a \texttt{uint} bitvector and used as the map's key.
+We'll take the \texttt{QueryGraph} \texttt{struct} from \texttt{infra.go} and add a \texttt{map} to a \texttt{uint} slice of neighbors for each relation, which itself is represented as a \texttt{uint} bit vector and used as the map's key.
 
 \begin{code}
 \begin{minted}{go}
@@ -378,8 +376,6 @@ type QueryGraph struct {
 \caption{\texttt{QueryGraph} type}
 \end{code}
 \vspace{0.8cm}
-
-
 
 Also, we introduce a struct for representing csg-cmp-pairs.
 \begin{code}
@@ -403,6 +399,7 @@ For the visualization we define some data structures used to declaratively speci
 
 First, we specify an \texttt{Algorithm} type that can be returned to the client when requesting the list of algorithms which can be visualized. Each algorithm contains a \texttt{Label} string describing the algorithm, e.g. ``DPccp'' as well as a \texttt{Value} string giving the algorithm's identifier for server requests. This \texttt{Value} string is by convention a camel-cased name of the algorithm starting with a lower-case character, whereas the \texttt{Label} can also contain special or whitespace characters. This differentiation is made to allow human-readable algorithm names as well as URL-encodable identifiers for the API's path parameter.
 
+\newpage
 \begin{code}
 \begin{minted}{go}   
 type Algorithm struct {
@@ -429,7 +426,7 @@ type ObservedRelation struct {
 \end{code}
 \vspace{0.8cm}
 
-Furthermore, we introduce a \texttt{VariableTableEntry} type that can be specified individually for each observed relation, in each atomic visualization step. In our application, this entry is a \texttt{uint} slice depicting the current variable's set of relations in bitvector representation.
+Furthermore, we introduce a \texttt{VariableTableEntry} type that can be specified individually for each observed relation, in each atomic visualization step. In our application, this entry is a \texttt{uint} slice depicting the current variable's set of relations in bit vector representation.
 
 \begin{code}
 \begin{minted}{go}
@@ -478,7 +475,7 @@ type GraphState struct {
 
 \paragraph{Steps and Routines}
 
-Finally, the data structures defined beforehand can be used to construct higher-level constructs such as the \textit{atomic} visualization step, represented as a \texttt{VisualizationStep} type. This type contains the \texttt{GraphState} for the current step, as well as the variables stored as a \texttt{VariableTableRow}. In order to identify a step in equivalence checks, we also assign a \texttt{UUID}, which is generated using Google's own \texttt{github.com/google/uuid}\footnote{\url{https://github.com/google/uuid} (last accessed: October 27, 2020)} package. This UUID is a 128 bit UUID based on RFC4122\footnote{\url{https://tools.ietf.org/html/rfc4122} (last accessed: October 27, 2020)}, which can be easily converted to a \texttt{string} using the \texttt{uuid.New().String()} function. This \texttt{UUID} is necessary as the reference to the exact instance of a struct is lost when marshalling it into JSON.
+Finally, the data structures defined beforehand can be used to construct higher-level constructs such as the \textit{atomic} visualization step, represented as a \texttt{VisualizationStep} type. This type contains the \texttt{GraphState} for the current step, as well as the variables stored as a \texttt{VariableTableRow}. In order to identify a step in equivalence checks, we also assign a \texttt{UUID}, which is generated using Google's own \texttt{github.com/google/uuid}\footnote{\url{https://github.com/google/uuid} (last accessed: October 27, 2020)} package. This UUID is a 128 bit UUID based on RFC4122\footnote{\url{https://tools.ietf.org/html/rfc4122} (last accessed: October 27, 2020)}, which can be easily converted to a \texttt{string} using the \texttt{uuid.New().String()} function. This \texttt{UUID} is necessary as the reference (i.e. memory address) to the exact instance of a struct is lost when marshalling it into a JSON.
 
 \begin{code}
 \begin{minted}{go}
@@ -492,7 +489,7 @@ type VisualizationStep struct {
 \end{code}
 \vspace{0.8cm}
 
-Finally, we have defined all the types necessary to define a high-level \texttt{VisualizationRoutine}. This routine contains a \texttt{Name} field to describe its corresponding algorithm, e.g. ``EnumerateCsg'', as well as fields to store an \texttt{ObservedRelation} slice to specify the sets of relations that should be kept track of for this routine. Furthermore, we store a slice of all the routines steps. This \texttt{Steps} slice is generically implemented using a pointer to Go's \texttt{interface{}} type, as it can be filled with either an atomic \texttt{VisualizationStep} or another \texttt{VisualizationRoutine}. This allows for subroutines or even recursive calls of other subroutines and creates a hierarchical structure of all steps in the visualization's JSON representation. 
+Finally, we have defined all the types necessary to define a high-level \texttt{VisualizationRoutine}. This routine contains a \texttt{Name} field to describe its corresponding algorithm, e.g. ``EnumerateCsg'', as well as fields to store an \texttt{ObservedRelation} slice to specify the sets of relations that should be kept track of for this routine. Furthermore, we store a slice of all the routines' steps. This \texttt{Steps} slice is generically implemented using a pointer to Go's \texttt{interface{}} type, as it can be filled with either an atomic \texttt{VisualizationStep} or another \texttt{VisualizationRoutine}. This allows for subroutines or even recursive calls of other subroutines and creates a hierarchical structure of all steps in the visualization's JSON representation. 
 
 \begin{code}
 \begin{minted}{go}
@@ -513,9 +510,9 @@ This \texttt{VisualizationRoutine} is transferred as a top-level object when mak
 
 \subsubsection{Utility Functions}
 
-In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \url{infra.go} (last accessed: October 27, 2020) and \url{joinproblemparser.go} (last accessed: October 27, 2020) file provided for the exercises in the Query Optimization (CS50x) course \texttt{} at the Chair of Practical Computer Science III at the University of Mannheim.
+In order to provide a starting point for the algorithm implementation, we use a modified and extended version of the \texttt{infra.go} and \texttt{joinproblemparser.go} file provided for the exercises in the Query Optimization (IE 630) course at the Chair of Practical Computer Science III at the University of Mannheim.
 
-Modifications include:
+All modifications are briefly discussed in the following.
 \paragraph{Simplification of \texttt{SetMinus}}
 We simplify the implementation for the \texttt{SetMinus} operation by omitting the use of a temporary helper variable for the result calculation. This is equivalent as it produces exactly the same assembly output as the old, commented-out code\footnote{using amd64 gc 1.15 compiler, compiled on \url{https://godbolt.org} (last accessed: October 27, 2020)}.
 
@@ -650,10 +647,10 @@ DPccp(QG, JTC)
 \end{example}
 
 \begin{note}
-Notice that the function definition of \texttt{DPccp} doesn't have to be changed from its original implementation at all here. Thus, potenitially already existing calls to \texttt{DPccp} don't have to be modified.
+Notice that the function definition of \texttt{DPccp} doesn't have to be changed from its original implementation at all here. Thus, potentially already existing calls to \texttt{DPccp} don't have to be modified.
 \end{note}
 
-Within the function implementation we can now use the exported visalization functions to start new routines and add new visualization steps. Before adding the first step, we have to call the following function at least once: 
+Within the function implementation we can now use the exported visualization functions to start new routines and add new visualization steps. Before adding the first step, we have to call the following function at least once: 
 \begin{minted}{go}
 func StartVisualizationRoutine(routine *VisualizationRoutine)
 \end{minted}
@@ -670,7 +667,7 @@ As the name implies, this function can be used to start a new visualization rout
         \nodepart{five}DPccp
     };
     \end{tikzpicture}
-\caption{Sample excution stack for \texttt{DPccp}}
+\caption{Sample execution stack for \texttt{DPccp}}
 \label{fig:execution-stack}
 \end{figure}
 
@@ -747,7 +744,7 @@ Let us start at the \texttt{EnumerateCsgRec} call inside \texttt{EnumerateCsg}. 
 In the following we discuss the Go implementation of \texttt{DPccp} and its enumeration routines, namely \texttt{EnumerateCsg}, \texttt{EnumerateCsgRec}, and \texttt{EnumerateCmp}. We begin with the enumeration algorithms so we can later use them in the actual \texttt{DPccp} algorithm.
 For all algorithms, we implement the intersection of two arbitrary sets $S_1$ and $S_2$, $S_1 \cap S_2$, by using a bitwise AND (\texttt{\&}) and their union $S_1 \cup S_2$ using a bitwise OR (\texttt{|}).\\
 
-\texttt{EnumerateCsg} will calculate all connected subgraphs in the query graph in a breadth-first manner, beginning with the relation with the highest index. Thus, the slice of relations \texttt{R} of the query graph \texttt{QG} is traversed in descending order. As discussed in \ref{subsub:basics-bitvector} the relations are stored as a bitvector and can be individually accessed by shifting $1$ by the respective relation's index to the left. We make use of arithmetic integer overflow for the \texttt{for} loop's exit condition as $i \geq 0$ cannot be used as the \texttt{uint} cannot be smaller than 0. In order to get the set of relations $\mathcal{B}_i$ we shift 1 by $(i+1) - 1$ to the left, leaving us with a 64-bit unsigned integer with all bits set to 1 at index $j < i$ and $64 - (i-1)$ leading zeroes, thus representing relations $\{R_{j} \in R \vert j < i\}$. We keep track of a \texttt{subgraphs} \texttt{[]uint} slice which collects the recursively constructed subgraphs from \texttt{EnumerateCsgRec} and return the result of this slice after appending all emitted subgraphs.
+\texttt{EnumerateCsg} will calculate all connected subgraphs in the query graph in a breadth-first manner, beginning with the relation with the highest index. Thus, the slice of relations \texttt{R} of the query graph \texttt{QG} is traversed in descending order. As discussed in \ref{subsub:basics-bitvector} the relations are stored as a bit vector and can be individually accessed by shifting $1$ by the respective relation's index to the left. We make use of arithmetic integer overflow for the \texttt{for} loop's exit condition as $i \geq 0$ cannot be used as the \texttt{uint} cannot be smaller than 0. In order to get the set of relations $\mathcal{B}_i$ we shift 1 by $(i+1) - 1$ to the left, leaving us with a 64-bit unsigned integer with all bits set to 1 at index $j < i$ and $64 - (i-1)$ leading zeroes, thus representing relations $\{R_{j} \in R \vert j < i\}$. We keep track of a \texttt{subgraphs} \texttt{[]uint} slice which collects the recursively constructed subgraphs from \texttt{EnumerateCsgRec} and return the result of this slice after appending all emitted subgraphs.
 \vspace{0.4cm}
 
 \begin{algorithm}[H]
@@ -773,7 +770,7 @@ func EnumerateCsg(QG QueryGraph) []uint {
 Now, we need to implement the \texttt{EnumerateCsgRec} subroutine used inside the implementation of \texttt{EnumerateCsg}. Similarly, we keep track of all emitted subgraphs by defining a \texttt{subgraphs} slice, to which all emitted subgraphs are appended. This approach also works for recursive calls to \texttt{EnumerateCsgRec}. In order to calculate the subsets $S' \subset N$ we use the \texttt{PowerSet} function defined in algorithm \ref{alg:implementation-powerset}.
 
 \begin{note}
-Alternatively, we could also use a pointer to a \texttt{[]uint} slice containing all subgraphs that is passed along as a paremeter to \texttt{EnumerateCsgRec} and thus lets us append to the original slice instance directly. However, we choose this approach as it requires only function-scoped variables and thus makes the function's state more local and predictable, and thus arguably easier to understand and debug.
+Alternatively, we could also use a pointer to a \texttt{[]uint} slice containing all subgraphs that is passed along as a parameter to \texttt{EnumerateCsgRec} and thus lets us append to the original slice instance directly. However, we choose this approach as it requires only function-scoped variables and thus makes the function's state more local and predictable, and thus arguably easier to understand and debug.
 \end{note}
 
 \vspace{0.4cm}
@@ -807,7 +804,7 @@ func EnumerateCsgRec(QG QueryGraph, S uint, X uint) []uint {
 \label{alg:enumeratecsgrec}
 \end{algorithm}
 
-In \texttt{EnumerateCmp}, we find complementary subgraphs to each connected subraph $S_1$.
+In \texttt{EnumerateCmp}, we find complementary subgraphs to each connected subgraph $S_1$.
 Here, we use the \texttt{MinUintSetBitIndex} function defined in \ref{alg:implementation-minuintslice} to calculate the index for the relation with the smallest index $i_{min}$ inside the passed subset $S_1$, i.e.
 \begin{equation}
 i_{min} = \arg\min_i(R_i \in S_1)
@@ -931,7 +928,7 @@ The JSON representation of join problems and visualizations can be understood as
 ``JSON'' refers to the \textit{JavaScript Object Notation Data Interchange Format} as specified in RFC 8259\footnote{\url{https://tools.ietf.org/html/rfc8259} (last accessed: October 27, 2020)}.
 It is the output that can be interpreted language-independently and transferred between both entities. Since JSON files do not explicitly define semantics of their content, the server and the client have to agree on the data's interpretation.
 
-As of today (\today), there is no official JSON schema definition file format yet. Therfore, we use the most recent (``2019-09'') draft as specified by the Internet Engineering Task Force (IETF)\footnote{\url{https://www.ietf.org} (last accessed: October 27, 2020)}, released on September 19, 2019\footnote{\url{https://json-schema.org/draft/2019-09/json-schema-core.html} (last accessed: October 27, 2020)}. Its specification and further information can be found on its website \url{http://json-schema.org} (last accessed: October 27, 2020).
+As of today (\today), there is no official JSON schema definition file format yet. Therefore, we use the most recent (``2019-09'') draft as specified by the Internet Engineering Task Force (IETF)\footnote{\url{https://www.ietf.org} (last accessed: October 27, 2020)}, released on September 19, 2019\footnote{\url{https://json-schema.org/draft/2019-09/json-schema-core.html} (last accessed: October 27, 2020)}. Its specification and further information can be found on its website \url{http://json-schema.org} (last accessed: October 27, 2020).
 
 \subsubsection{Join Problem}
 \label{subsub:join-problem-data-structure}
@@ -1252,7 +1249,7 @@ This is used as a \texttt{key} property for dynamically created \texttt{React.js
 ``Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity''\footnote{\url{https://reactjs.org/docs/lists-and-keys.html} (last accessed: October 27, 2020)}.
 
 \subsubsection{Redux Actions}
-In the following, we list all actions that can mutate the application's Redux state.
+In the following, we list all actions that can mutate the application's Redux state.\newpage
 
 \begin{table}[H]
 \setlength\extrarowheight{2pt}
@@ -1287,7 +1284,7 @@ The \texttt{AlgorithmCanvas} component contains a HTML5 \texttt{<canvas>} elemen
 \texttt{VariableTable} renders a table of all the routines' steps.
 
 \subparagraph{VariableTableEntry}
-\texttt{VariableTableEntry} is a component used inside a \texttt{VariableTable} that displays the observed relation variable keys in their respective color and the values taken on by these variables as a set of relations.
+\texttt{VariableTableEntry} is a component used inside a \texttt{VariableTable} that displays the observed relation's variable keys in their respective color and the values taken on by these variables as a set of relations.
 
 It can also recursively hold child \texttt{VariableTableEntry} components for stacked routines. 
 In order to visualize hierarchy, it can darken its background color depending on the stack's size at the time of the execution of the corresponding subroutine.
@@ -1312,9 +1309,6 @@ As the project makes heavy use of the modern ECMAScript 2020\footnote{\url{https
 For the client-side code we use ESLint\footnote{\url{https://eslint.org} (last accessed: October 27, 2020)} configured with the \texttt{"react-app"} template\footnote{\url{https://github.com/facebook/create-react-app/blob/master/.eslintrc.json} (last accessed: October 27, 2020)}, which itself is an extension of the \texttt{"eslint:recommended"} template as specified on \url{https://eslint.org/docs/rules/} (last accessed: October 27, 2020).
 
 %\paragraph{Dependencies}
-
-%Since we're restructurig the files from the QueryCompiler exercise to increase modularity and reusability . We define all packages in a way that no cyclical dependencies exist.
-
 \subsection{Installation and Development}
 
 \subsubsection{Prerequisites}
@@ -1355,16 +1349,16 @@ and, in another shell instance,
     $ cd client && npm start
 \end{minted}
 
-This will start two locally running web servers that can be accessed via \url{https://localhost:8080/} (last accessed: October 27, 2020) (Server) and \url{https://localhost:3000/} (last accessed: October 27, 2020) (Client).
+This will start two locally running web servers that can be accessed via \url{https://localhost:8080/} (Server) and \url{https://localhost:3000/} (Client).
 
 \begin{note}
-As the client is fetching its data from the server please keep in mind that the server has to be started \textit{before} accessing the client URL.
+As the client is fetching its data from the server keep in mind that the server has to be started \textit{before} accessing the client URL.
 \end{note}
 
 \subsection{Deployment}
 
 One of the major benefits of using a client-server architecture and web technologies is that we can host the server part on an application server or platform-as-a-service offering such as Google's Cloud App Engine\footnote{\url{https://cloud.google.com/appengine} (last accessed: October 27, 2020)} and the front-end (client) on a web server.
-This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side. Likewise, the deployment of new application versions is simple and can be done with a single shell instruction for both client and server.
+This way, the user of the visualization neither has to install nor update the application himself, as this duty is completely on the host's side. Further, the deployment of new application versions is simple and can be done with a single shell instruction for both client and server.
 
 In the following we demonstrate how to set up the entire application stack, both client and server, in order to get from the cloned repository to a deployed application using the Google Cloud SDK\footnote{\url{https://cloud.google.com/sdk} (last accessed: October 27, 2020)} for the server-side application and GitHub Pages\footnote{\url{https://pages.github.com} (last accessed: October 27, 2020)} for hosting the front-end.
 \newpage
@@ -1388,8 +1382,7 @@ In order to deploy the server one can simply type
 \begin{minted}{shell-session}
 $ gcloud app deploy
 \end{minted}
-and for client
+and, for the client:
 \begin{minted}{shell-session}
 $ npm deploy
 \end{minted}
-to deploy the application.
